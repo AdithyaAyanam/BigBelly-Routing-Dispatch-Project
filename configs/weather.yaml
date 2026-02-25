@@ -1,0 +1,5 @@
+weather:
+  enabled: false
+  provider: "open-meteo"
+  compost_rain_multiplier: 1.15
+  compost_heat_multiplier: 1.10

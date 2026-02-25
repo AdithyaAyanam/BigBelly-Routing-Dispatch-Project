@@ -1,0 +1,15 @@
+project:
+  campus: "UCB"
+  timezone: "America/Los_Angeles"
+
+paths:
+  data_raw: "data/raw"
+  data_interim: "data/interim"
+  data_processed: "data/processed"
+  outputs_runs: "outputs/runs"
+  outputs_latest: "outputs/latest"
+
+run:
+  lookback_days: 120
+  lookahead_days: 3
+  top_k_stops: 35

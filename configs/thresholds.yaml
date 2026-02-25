@@ -1,0 +1,8 @@
+bins:
+  bigbelly_cap_gal: 150
+  alert_threshold_gal: 90
+
+vehicles:
+  truck_capacity_gal: 900
+  truck_capacity_lbs: 1375
+  num_vehicles: 2

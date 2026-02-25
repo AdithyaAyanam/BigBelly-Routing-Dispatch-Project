@@ -1,0 +1,8 @@
+time:
+  time_per_bin_min: 4.0
+  time_to_dump_min: 15.0
+  shift_time_limit_min: 480
+
+travel:
+  avg_speed_mph: 8.0
+  use_network: false
