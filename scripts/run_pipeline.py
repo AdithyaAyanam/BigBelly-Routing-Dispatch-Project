@@ -1,6 +1,6 @@
 # scripts/run_pipeline.py
 """
-DATA PIPELINE (no EDA, no forecasting):
+DATA PIPELINE :
 1) Load raw collections + assets from data/raw/
 2) Clean types (timestamps, fullness %, stream labels) + remove duplicates
 3) Merge collections ↔ assets on Serial to attach bin metadata + Lat/Lng

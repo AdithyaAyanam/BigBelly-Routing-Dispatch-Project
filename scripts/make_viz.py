@@ -48,6 +48,7 @@ def save_line_plot(x, y, title: str, xlabel: str, ylabel: str, outpath: Path) ->
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.gcf().autofmt_xdate() 
     plt.tight_layout()
     plt.savefig(outpath, dpi=200)
     plt.close()
