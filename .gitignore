@@ -27,6 +27,8 @@ data/processed/
 *.feather
 
 # Outputs (generated)
+outputs/
+outputs/**
 outputs/runs/
 outputs/latest/
 outputs/logs/
