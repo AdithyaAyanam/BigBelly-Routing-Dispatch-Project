@@ -173,15 +173,25 @@ def build_projection_table(
     )
 
     base["stream"] = base["stream"].fillna("Unknown").apply(canonical_stream)
-    base["days_since_last_service"] = base["days_since_last_service"].fillna(7).clip(lower=0)
+    base["days_since_last_service_raw"] = base["days_since_last_service"]
+
+    # Keep only bins with reasonably recent service history for the prototype
+    base = base[
+    base["days_since_last_service_raw"].notna() &
+    (base["days_since_last_service_raw"] <= 21)
+    ].copy()
+
+    # Cap days-since-last-service so stale records do not explode the fill estimate
+    base["days_since_last_service"] = base["days_since_last_service_raw"].clip(lower=0, upper=10)
 
     base["daily_fill_growth_pct"] = base["Serial"].map(bin_growth)
     base["daily_fill_growth_pct"] = base["daily_fill_growth_pct"].fillna(base["stream"].map(stream_growth))
     base["daily_fill_growth_pct"] = base["daily_fill_growth_pct"].fillna(overall_growth)
 
-    # Estimated current fill at time 0
-    base["current_fill_pct_est"] = base["daily_fill_growth_pct"] * base["days_since_last_service"]
-
+    # Cap estimated current fill for the prototype
+    base["current_fill_pct_est"] = (
+    base["daily_fill_growth_pct"] * base["days_since_last_service"]
+    ).clip(lower=0, upper=125)
     for d in range(horizon_days):
         base[f"fill_day_{d}"] = base["current_fill_pct_est"] + base["daily_fill_growth_pct"] * d
 

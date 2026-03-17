@@ -28,23 +28,65 @@ def ensure_dirs(root: Path) -> dict[str, Path]:
     processed_dir.mkdir(parents=True, exist_ok=True)
     return {"root": root, "processed": processed_dir}
 
-
 def choose_instance(df: pd.DataFrame, max_bins: int | None, required_only: bool) -> pd.DataFrame:
     out = df.copy()
 
     if required_only:
         out = out[out["must_service_within_horizon"]].copy()
 
-    out = out.sort_values(
-        by=["service_deadline", "days_since_last_service", "Serial"],
-        ascending=[True, False, True],
-        na_position="last",
-    ).reset_index(drop=True)
+    if "service_deadline" not in out.columns:
+        out["service_deadline"] = np.nan
 
-    if max_bins is not None:
-        out = out.head(max_bins).copy()
+    required = out[out["service_deadline"].notna()].copy()
+    optional = out[out["service_deadline"].isna()].copy()
 
-    return out.reset_index(drop=True)
+    if required.empty:
+        chosen = optional.copy()
+        if max_bins is not None:
+            chosen = chosen.head(max_bins)
+        return chosen.reset_index(drop=True)
+
+    required["service_deadline"] = required["service_deadline"].astype(int)
+
+    picks = []
+
+    if max_bins is None:
+        return required.sort_values(
+            ["service_deadline", "days_since_last_service", "Serial"],
+            ascending=[True, False, True]
+        ).reset_index(drop=True)
+
+    # Spread picks across deadlines 0..6 first
+    per_deadline = max(1, max_bins // 7)
+
+    for d in range(7):
+        bucket = required[required["service_deadline"] == d].sort_values(
+            ["days_since_last_service", "Serial"],
+            ascending=[False, True]
+        )
+        picks.append(bucket.head(per_deadline))
+
+    chosen = pd.concat(picks, ignore_index=True).drop_duplicates(subset=["Serial"])
+
+    # Fill remaining slots with other required bins first
+    if len(chosen) < max_bins:
+        remaining_required = required[~required["Serial"].isin(chosen["Serial"])].sort_values(
+            ["service_deadline", "days_since_last_service", "Serial"],
+            ascending=[True, False, True]
+        )
+        need = max_bins - len(chosen)
+        chosen = pd.concat([chosen, remaining_required.head(need)], ignore_index=True)
+
+    # Only if still short, add optional bins
+    if len(chosen) < max_bins:
+        remaining_optional = optional.sort_values(
+            ["days_since_last_service", "Serial"],
+            ascending=[False, True]
+        )
+        need = max_bins - len(chosen)
+        chosen = pd.concat([chosen, remaining_optional.head(need)], ignore_index=True)
+
+    return chosen.reset_index(drop=True)
 
 
 def main() -> None:
@@ -156,7 +198,7 @@ def main() -> None:
     # Each truck chooses exactly one stream per day
     for k in trucks:
         for d in days:
-            model += lpSum(z[k][s][d] for s in streams) == 1, f"one_stream_{k}_{d}"
+            model += lpSum(z[k][s][d] for s in streams) <= 1
 
     # Stream compatibility
     for i in bins:
