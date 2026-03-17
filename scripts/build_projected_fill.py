@@ -212,7 +212,7 @@ def compute_last_service(df_merged: pd.DataFrame, anchor_date: pd.Timestamp) -> 
     # Floor to day so we compare dates rather than timestamps
     last["last_service_date"] = last["Collection_Time"].dt.floor("D")
 
- 3   # Compute how many days since the bin was last serviced
+    # Compute how many days since the bin was last serviced
     last["days_since_last_service"] = (
         anchor_date.floor("D") - last["last_service_date"]
     ).dt.days.clip(lower=0)
