@@ -145,3 +145,22 @@ Key Takeaways
 4. Waste drives operational load
 5. Midweek alert concentration
 6. Sensor readings are discrete bands
+
+## How to run:
+1. Install dependencies:
+   pip install numpy pandas pyarrow pulp
+
+2. Run the data pipeline:
+   python scripts/run_pipeline.py
+
+3. Build 7-day projected fill inputs:
+   python scripts/build_projected_fill.py
+
+4. Solve a small 7-day scheduling instance:
+   python scripts/solve_7day_schedule.py --max-bins 14 --num-trucks 2 --truck-capacity-gal 300 --truck-work-min 180
+
+Outputs are written to data/processed/, including:
+- bin_7day_projection_inputs.csv
+- small_instance_service_schedule.csv
+- small_instance_truck_streams.csv
+- small_instance_truck_load_check.csv
