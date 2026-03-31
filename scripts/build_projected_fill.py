@@ -8,25 +8,34 @@ Purpose
 Build a 7-day projected-fill input table for the Bigbelly scheduling model.
 
 This script prepares the forecasting / preprocessing inputs that feed the
-7-day scheduling MILP. It does NOT assign trucks or routes. Instead, it
+7-day scheduling MILP. It does NOT assign trucks or build routes. Instead, it
 estimates how quickly each bin fills, how full it is today, and what the
-service triggers look like over the next 7 days.
+service-trigger picture looks like over the next 7 days under a no-service
+projection.
 
 This version is aligned with the current modeling direction:
 1. No geographic zoning.
 2. Stream-specific service policy:
    - Waste: 60% threshold
    - Compostables: 60% threshold
-   - Bottles/Cans: no fill threshold, rely on 7-day rule
+   - Bottles/Cans: no fill threshold, rely on the 7-day rule
 3. Output fields support an inventory-based downstream model:
    - current_fill_pct_est
    - daily_fill_growth_pct
    - threshold_pct
-   - deadline_threshold
-   - deadline_interval
-   - service_deadline
-4. Includes projected gallons and pounds for each day so the scheduler
-   can enforce realistic mass and volume constraints.
+   - deadline_threshold / deadline_interval / service_deadline
+   - clearer aliases:
+       initial_deadline_threshold_no_service
+       initial_deadline_interval_no_service
+       initial_service_deadline_no_service
+4. Includes projected gallons and pounds by day so the scheduler can enforce
+   realistic mass and volume constraints.
+5. Adds per-bin handling-weight QA flags.
+6. Carries routing-relevant access fields through the file if available:
+   - Access_Lat
+   - Access_Lng
+   - Stop_ID
+   - service_walk_min
 
 Inputs
 ------
@@ -46,14 +55,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+
 # -------------------------------------------------------------
-# Stream density assumptions (lb/gal)
+# Default stream density assumptions (lb/gal)
 # -------------------------------------------------------------
-# These values convert projected gallons into projected pounds.
-# They are consistent with the project’s operational assumptions.
-STREAM_DENSITY_LB_PER_GAL = {
+# These are intentionally parameterized in main() so they can be
+# changed from the command line without editing code.
+DEFAULT_STREAM_DENSITY_LB_PER_GAL = {
     "Waste": 1.0,
-    "Compostables": 2.9,
+    "Compostables": 1.2,   # lighter food + paper mix placeholder
     "Bottles/Cans": 0.3,
 }
 
@@ -153,6 +163,7 @@ def clean_assets(
     df_assets: pd.DataFrame,
     default_threshold_pct: float,
     enforce_stream_policy: bool,
+    stream_density_lb_per_gal: dict[str, float],
 ) -> pd.DataFrame:
     """
     Clean and standardize the assets/bin master table.
@@ -164,7 +175,8 @@ def clean_assets(
     - retain/parse any raw threshold fields from the asset export
     - optionally override those with the currently approved stream policy
     - attach density assumptions
-    - coerce Lat/Lng to numeric where present
+    - coerce coordinate / access fields to numeric where present
+    - carry stop-level routing fields when available
     """
     df = df_assets.copy()
 
@@ -209,12 +221,33 @@ def clean_assets(
             lambda s: policy_threshold_for_stream(s, fallback_threshold_pct=default_threshold_pct)
         )
 
-    for col in ["Lat", "Lng"]:
+    # Numeric fields that may be present
+    for col in ["Lat", "Lng", "Access_Lat", "Access_Lng", "service_walk_min"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # Stop fields for routing
+    if "Stop_ID" in df.columns:
+        df["Stop_ID"] = df["Stop_ID"].astype(str).str.strip()
+    else:
+        df["Stop_ID"] = df["Serial"]
+
+    if "service_walk_min" not in df.columns:
+        df["service_walk_min"] = 0.0
+
+    # If truck-access coordinates are missing, fall back to raw Lat/Lng
+    if "Access_Lat" not in df.columns:
+        df["Access_Lat"] = np.nan
+    if "Access_Lng" not in df.columns:
+        df["Access_Lng"] = np.nan
+
+    if "Lat" in df.columns:
+        df["Access_Lat"] = df["Access_Lat"].fillna(df["Lat"])
+    if "Lng" in df.columns:
+        df["Access_Lng"] = df["Access_Lng"].fillna(df["Lng"])
+
     # Attach density for later mass projections
-    df["density_lb_per_gal"] = df["stream"].map(STREAM_DENSITY_LB_PER_GAL).fillna(1.0)
+    df["density_lb_per_gal"] = df["stream"].map(stream_density_lb_per_gal).fillna(1.0)
 
     return df
 
@@ -333,7 +366,7 @@ def compute_last_service(df_merged: pd.DataFrame, anchor_date: pd.Timestamp) -> 
 def threshold_deadline(row: pd.Series, horizon_days: int) -> float:
     """
     Return the first day in the horizon when projected fill reaches
-    or exceeds the bin's threshold.
+    or exceeds the bin's threshold, under the no-service projection.
 
     If the stream has no fill threshold, return NaN.
     """
@@ -386,6 +419,8 @@ def build_projection_table(
     default_bin_capacity_gal: float,
     default_service_min: float,
     default_travel_min: float,
+    safe_bin_content_lb: float,
+    hard_bin_content_lb: float,
 ) -> pd.DataFrame:
     """
     Construct the final 7-day modeling table.
@@ -394,7 +429,7 @@ def build_projection_table(
     - merges asset data and recent service history
     - assigns a daily fill growth estimate
     - estimates current fill at day 0
-    - projects fill over the next 7 days
+    - projects fill over the next 7 days under no service
     - computes threshold and interval deadlines
     - computes projected gallons and projected pounds by day
     - attaches simple operational parameters for downstream use
@@ -422,6 +457,10 @@ def build_projection_table(
             "density_lb_per_gal",
             "Lat",
             "Lng",
+            "Access_Lat",
+            "Access_Lng",
+            "Stop_ID",
+            "service_walk_min",
         ]
         if c in base.columns
     ]
@@ -466,13 +505,19 @@ def build_projection_table(
     # Attach simple default operating parameters
     base["bin_capacity_gal"] = float(default_bin_capacity_gal)
     base["avg_service_min"] = float(default_service_min)
+
+    # Keep original name for compatibility with current scheduler,
+    # and also provide a clearer alias.
     base["avg_travel_proxy_min"] = float(default_travel_min)
+    base["avg_travel_proxy_min_phase1"] = float(default_travel_min)
 
     # Build projected fields day by day
     for d in range(horizon_days):
         fill_col = f"fill_day_{d}"
         gal_col = f"pickup_gal_day_{d}"
         lb_col = f"pickup_lb_day_{d}"
+        safe_flag_col = f"bin_over_safe_lb_day_{d}"
+        hard_flag_col = f"bin_over_hard_lb_day_{d}"
 
         base[fill_col] = (
             base["current_fill_pct_est"] + base["daily_fill_growth_pct"] * d
@@ -480,6 +525,10 @@ def build_projection_table(
 
         base[gal_col] = base["bin_capacity_gal"] * base[fill_col] / 100.0
         base[lb_col] = base[gal_col] * base["density_lb_per_gal"]
+
+        # Practical handling QA flags
+        base[safe_flag_col] = base[lb_col] > float(safe_bin_content_lb)
+        base[hard_flag_col] = base[lb_col] > float(hard_bin_content_lb)
 
     # Compute threshold-based and 7-day-rule-based deadlines
     base["deadline_threshold"] = base.apply(
@@ -505,6 +554,11 @@ def build_projection_table(
 
     base["must_service_within_horizon"] = base["service_deadline"].notna()
 
+    # Clearer aliases so it is obvious these are no-service urgency estimates
+    base["initial_deadline_threshold_no_service"] = base["deadline_threshold"]
+    base["initial_deadline_interval_no_service"] = base["deadline_interval"]
+    base["initial_service_deadline_no_service"] = base["service_deadline"]
+
     # Final output column order
     cols = (
         [
@@ -515,22 +569,33 @@ def build_projection_table(
             "threshold_pct_raw",
             "density_lb_per_gal",
             "days_since_last_service",
+            "days_since_last_service_raw",
             "daily_fill_growth_pct",
             "current_fill_pct_est",
             "bin_capacity_gal",
             "avg_service_min",
             "avg_travel_proxy_min",
+            "avg_travel_proxy_min_phase1",
+            "Stop_ID",
+            "service_walk_min",
+            "Lat",
+            "Lng",
+            "Access_Lat",
+            "Access_Lng",
         ]
         + [f"fill_day_{d}" for d in range(horizon_days)]
         + [f"pickup_gal_day_{d}" for d in range(horizon_days)]
         + [f"pickup_lb_day_{d}" for d in range(horizon_days)]
+        + [f"bin_over_safe_lb_day_{d}" for d in range(horizon_days)]
+        + [f"bin_over_hard_lb_day_{d}" for d in range(horizon_days)]
         + [
             "deadline_threshold",
             "deadline_interval",
             "service_deadline",
+            "initial_deadline_threshold_no_service",
+            "initial_deadline_interval_no_service",
+            "initial_service_deadline_no_service",
             "must_service_within_horizon",
-            "Lat",
-            "Lng",
         ]
     )
     cols = [c for c in cols if c in base.columns]
@@ -567,6 +632,16 @@ def main() -> None:
     parser.add_argument("--default-bin-capacity-gal", type=float, default=150.0)
     parser.add_argument("--default-service-min", type=float, default=4.0)
     parser.add_argument("--default-travel-min", type=float, default=10.0)
+
+    # Stream densities
+    parser.add_argument("--waste-density", type=float, default=DEFAULT_STREAM_DENSITY_LB_PER_GAL["Waste"])
+    parser.add_argument("--compost-density", type=float, default=DEFAULT_STREAM_DENSITY_LB_PER_GAL["Compostables"])
+    parser.add_argument("--recycling-density", type=float, default=DEFAULT_STREAM_DENSITY_LB_PER_GAL["Bottles/Cans"])
+
+    # Practical handling thresholds
+    parser.add_argument("--safe-bin-content-lb", type=float, default=250.0)
+    parser.add_argument("--hard-bin-content-lb", type=float, default=400.0)
+
     parser.add_argument(
         "--use-stream-threshold-policy",
         action="store_true",
@@ -590,11 +665,18 @@ def main() -> None:
     df_merged = pd.read_parquet(merged_fp)
     df_assets = pd.read_parquet(assets_fp)
 
+    stream_density_lb_per_gal = {
+        "Waste": float(args.waste_density),
+        "Compostables": float(args.compost_density),
+        "Bottles/Cans": float(args.recycling_density),
+    }
+
     # Clean / standardize assets
     df_assets = clean_assets(
-        df_assets,
+        df_assets=df_assets,
         default_threshold_pct=args.default_threshold_pct,
         enforce_stream_policy=args.use_stream_threshold_policy,
+        stream_density_lb_per_gal=stream_density_lb_per_gal,
     )
 
     # Make sure time is parsed consistently
@@ -624,6 +706,8 @@ def main() -> None:
         default_bin_capacity_gal=args.default_bin_capacity_gal,
         default_service_min=args.default_service_min,
         default_travel_min=args.default_travel_min,
+        safe_bin_content_lb=args.safe_bin_content_lb,
+        hard_bin_content_lb=args.hard_bin_content_lb,
     )
 
     out["anchor_date"] = anchor_date
@@ -643,6 +727,9 @@ def main() -> None:
     print(f"[INFO] assets in output = {len(out):,}")
     print(f"[INFO] required within horizon = {int(out['must_service_within_horizon'].sum()):,}")
     print(f"[INFO] growth rows retained after IQR filter = {len(hist):,}")
+    print(f"[INFO] stream densities (lb/gal) = {stream_density_lb_per_gal}")
+    print(f"[INFO] safe_bin_content_lb = {args.safe_bin_content_lb}")
+    print(f"[INFO] hard_bin_content_lb = {args.hard_bin_content_lb}")
 
     preview_cols = [
         "Serial",
@@ -653,9 +740,9 @@ def main() -> None:
         "fill_day_0",
         "fill_day_6",
         "threshold_pct",
-        "deadline_threshold",
-        "deadline_interval",
-        "service_deadline",
+        "initial_deadline_threshold_no_service",
+        "initial_deadline_interval_no_service",
+        "initial_service_deadline_no_service",
     ]
     preview_cols = [c for c in preview_cols if c in out.columns]
 
