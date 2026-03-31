@@ -355,7 +355,7 @@ def main() -> None:
                     "extra_dumps": extra_dump_count,
                     "minutes_used_without_dumps": round(total_min, 2),
                     "minutes_used_total": round(total_min + args.dump_turnaround_min * extra_dump_count, 2),
-                    "minutes_capacity": args.truck_work-min,
+                    "minutes_capacity": args.truck_work_min,
                 }
             )
 
