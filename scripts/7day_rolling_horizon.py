@@ -746,7 +746,15 @@ def main() -> None:
             )
 
         due_df = pd.DataFrame(due_records)
-        day_work = day_work.merge(due_df, left_index=True, right_on="row_idx", how="left").drop(columns=["row_idx"])
+        if due_df.empty:
+            day_work = day_work.copy()
+            day_work["due_day"] = np.nan
+            day_work["overflow_day"] = np.nan
+            day_work["projected_pickup_gal"] = np.nan
+            day_work["priority"] = np.nan
+            day_work["days_since_service_state"] = np.nan
+        else:
+            day_work = day_work.merge(due_df, left_index=True, right_on="row_idx", how="left").drop(columns=["row_idx"])
 
         # Inventory log before service on this day
         for _, row in day_work.iterrows():
