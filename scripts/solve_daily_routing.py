@@ -19,9 +19,10 @@ For each (day, stream) pair that has scheduled pickups:
 2. Read which trucks are assigned to that stream on that day.
 3. Map bins -> Stop_ID using bin_stop_lookup.csv.
 4. Map Stop_ID -> routing node using routing_nodes.csv.
-5. If there is one active truck and capacity is not binding, solve a
+5. Aggregate bin-level pickup demand to stop-level demand.
+6. If there is one active truck and capacity is not binding, solve a
    single-truck route.
-6. Otherwise solve a capacitated VRP with OR-Tools.
+7. Otherwise solve a capacitated VRP with OR-Tools.
 
 Important note
 --------------
@@ -62,19 +63,9 @@ except Exception as exc:  # pragma: no cover
     ) from exc
 
 
-# -------------------------------------------------------------
-# Helpers
-# -------------------------------------------------------------
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
-def normalize_stop_id(x: object) -> str | None:
-    if pd.isna(x):
-        return None
-    s = str(x).strip()
-    if s.endswith(".0"):
-        s = s[:-2]
-    return s if s else None
 
 def ensure_dirs(root: Path) -> dict[str, Path]:
     data_dir = root / "data"
@@ -96,6 +87,15 @@ def canonical_stream(x: object) -> str:
         "single stream": "Bottles/Cans",
     }
     return lookup.get(s, str(x).strip() if str(x).strip() else "Unknown")
+
+
+def normalize_stop_id(x: object) -> str | None:
+    if pd.isna(x):
+        return None
+    s = str(x).strip()
+    if s.endswith(".0"):
+        s = s[:-2]
+    return s if s else None
 
 
 def read_projection(paths: dict[str, Path], input_path: str | None = None) -> pd.DataFrame:
@@ -217,9 +217,6 @@ def solve_ortools_vrp(
     }
 
 
-# -------------------------------------------------------------
-# Main
-# -------------------------------------------------------------
 def main() -> None:
     parser = argparse.ArgumentParser(description="Solve daily Bigbelly routing from Phase 1 schedule.")
     parser.add_argument("--projection-input", type=str, default=None)
@@ -312,7 +309,9 @@ def main() -> None:
     enriched["Stop_ID"] = enriched["Serial"].map(serial_to_stop)
     enriched["Stop_ID"] = enriched["Stop_ID"].apply(normalize_stop_id)
 
-    missing_stops = sorted(enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist())
+    missing_stops = sorted(
+        enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist()
+    )
     if missing_stops:
         raise KeyError(
             f"The following scheduled bins are missing from bin_stop_lookup.csv: {missing_stops[:10]}"
@@ -359,10 +358,15 @@ def main() -> None:
 
         trucks = active["truck"].astype(str).tolist()
 
-        # Build local node list: node 0 is depot, then one node per scheduled stop.
-        # Multiple bins may share the same stop node.
-        local_nodes = [{"local_node": 0, "global_node": int(args.depot_node), "Stop_ID": None, "Serial": None, "label": "DEPOT"}]
+        local_nodes = [{
+            "local_node": 0,
+            "global_node": int(args.depot_node),
+            "Stop_ID": None,
+            "Serial": None,
+            "label": "DEPOT",
+        }]
         stop_rows = grp[["Stop_ID", "Description"]].drop_duplicates(subset=["Stop_ID"]).copy()
+
         for _, r in stop_rows.iterrows():
             local_nodes.append(
                 {
@@ -392,7 +396,6 @@ def main() -> None:
                 row.append(int(round(float(matrix_df.loc[gi, gj]))))
             matrix_minutes.append(row)
 
-        # Aggregate bin-level service and pickup demands to stop-level nodes.
         stop_agg = (
             grp.groupby("Stop_ID", as_index=False)
             .agg(
@@ -410,7 +413,9 @@ def main() -> None:
         label_lookup: dict[int, str] = {0: "DEPOT"}
 
         stop_label_map = grp.groupby("Stop_ID")["Description"].first().to_dict()
-        stop_bins_map = grp.groupby("Stop_ID")["Serial"].apply(lambda x: ";".join(sorted(set(x.astype(str))))).to_dict()
+        stop_bins_map = grp.groupby("Stop_ID")["Serial"].apply(
+            lambda x: ";".join(sorted(set(x.astype(str))))
+        ).to_dict()
 
         for _, r in stop_agg.iterrows():
             ln = stop_to_local[str(r.Stop_ID)]
