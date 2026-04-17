@@ -32,3 +32,4 @@ outputs/**
 outputs/runs/
 outputs/latest/
 outputs/logs/
+cache/
