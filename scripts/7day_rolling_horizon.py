@@ -270,7 +270,7 @@ def compute_priority(
 
     if overflow_day is not None and overflow_day <= current_day + 1:
         score += 300.0
-        
+
     score += 120.0 * max(0, 3 - max(days_to_due, 0))
     score += 0.12 * projected_pickup_gal
     score += 8.0 * min(days_since_service, 7.0)
@@ -287,7 +287,7 @@ def compute_priority(
 def stream_caps(args: argparse.Namespace) -> dict[str, float]:
     return {
         "Waste": args.waste_volume_gal,
-        "Compostables": args.compost_volume_gal,
+        "Compostables": 1.10 * args.compost_volume_gal,
         "Bottles/Cans": args.recycling_volume_gal,
     }
 
@@ -371,11 +371,16 @@ def plan_stream_for_day(
         nonlocal used_gal, used_lb, used_min
         g = safe_float(row["projected_pickup_gal"])
         lb = g * safe_float(row["density_lb_per_gal"], 1.0)
-        mins = safe_float(row["avg_service_min"], 4.0) + safe_float(row["avg_travel_proxy_min"], 3.0)
+        base_mins = safe_float(row["avg_service_min"], 4.0) + safe_float(row["avg_travel_proxy_min"], 3.0)
+
+        if str(row["stream"]) == "Compostables":
+            mins = 0.9 * base_mins
+        else:
+            mins = base_mins
 
         # Softly allow required bins even if it pushes demand beyond single-pass capacity;
         # later we estimate extra dumps.
-        regular_limit_time = daily_time_cap_total
+        regular_limit_time = 0.9 * daily_time_cap_total
         if used_min + mins > regular_limit_time + 1e-9:
             return False
 
@@ -394,7 +399,12 @@ def plan_stream_for_day(
         nonlocal used_gal, used_lb, used_min, selected_rows
         g = safe_float(row["projected_pickup_gal"])
         lb = g * safe_float(row["density_lb_per_gal"], 1.0)
-        mins = safe_float(row["avg_service_min"], 4.0) + safe_float(row["avg_travel_proxy_min"], 3.0)
+        base_mins = safe_float(row["avg_service_min"], 4.0) + safe_float(row["avg_travel_proxy_min"], 3.0)
+
+        if str(row["stream"]) == "Compostables":
+            mins = 0.9 * base_mins
+        else:
+            mins = base_mins
         used_gal += g
         used_lb += lb
         used_min += mins
@@ -420,12 +430,21 @@ def plan_stream_for_day(
 
         due_soon = pd.notna(row["due_day"]) and row["due_day"] <= day + 1
         overflow_soon = pd.notna(row["overflow_day"]) and row["overflow_day"] <= day + 1
-        if str(row["stream"]) == "Compostables":
-            meaningful_pickup = pickup_gal >= 50.0
-        elif str(row["stream"]) == "Waste":
-            meaningful_pickup = pickup_gal >= 35.0
-        else:  # Bottles/Cans
-            meaningful_pickup = pickup_gal >= 30.0
+        
+        if day == 0:
+            if str(row["stream"]) == "Compostables":
+                meaningful_pickup = pickup_gal >= 70.0
+            elif str(row["stream"]) == "Waste":
+                meaningful_pickup = pickup_gal >= 50.0
+            else:  # Bottles/Cans
+                meaningful_pickup = pickup_gal >= 40.0
+        else:
+            if str(row["stream"]) == "Compostables":
+                meaningful_pickup = pickup_gal >= 50.0
+            elif str(row["stream"]) == "Waste":
+                meaningful_pickup = pickup_gal >= 35.0
+            else:  # Bottles/Cans
+                meaningful_pickup = pickup_gal >= 30.0
 
         # much tighter optional screening
         if not (due_soon or overflow_soon or meaningful_pickup):

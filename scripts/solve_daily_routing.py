@@ -194,7 +194,7 @@ def solve_ortools_vrp(
 
     solution = routing.SolveWithParameters(search)
     if solution is None:
-        raise RuntimeError("OR-Tools could not find a feasible routing solution.")
+       return None
 
     routes: list[list[int]] = []
     route_minutes: list[int] = []
@@ -216,6 +216,85 @@ def solve_ortools_vrp(
         "route_minutes": route_minutes,
     }
 
+def solve_with_stop_dropping(
+    stop_agg: pd.DataFrame,
+    stop_to_local: dict[str, int],
+    matrix_minutes_full: list[list[int]],
+    vehicle_gal_caps: list[int],
+    vehicle_lb_caps: list[int],
+    vehicle_time_caps: list[int],
+    min_stops_to_keep: int = 3,
+):
+    """
+    Retry VRP by dropping the smallest-demand stop until feasible.
+
+    Returns:
+      result,
+      kept_stop_ids,
+      dropped_stop_ids,
+      service_minutes,
+      gallon_demands,
+      pound_demands
+    """
+    working = stop_agg.copy()
+    dropped_stop_ids: list[str] = []
+
+    while len(working) >= min_stops_to_keep:
+        kept_stop_ids = working["Stop_ID"].astype(str).tolist()
+        kept_local_nodes = [0] + [stop_to_local[s] for s in kept_stop_ids]
+
+        old_to_new = {old: new for new, old in enumerate(kept_local_nodes)}
+
+        submatrix = []
+        for old_i in kept_local_nodes:
+            row = []
+            for old_j in kept_local_nodes:
+                row.append(matrix_minutes_full[old_i][old_j])
+            submatrix.append(row)
+
+        service_minutes = [0] * len(kept_local_nodes)
+        gallon_demands = [0] * len(kept_local_nodes)
+        pound_demands = [0] * len(kept_local_nodes)
+
+        for _, r in working.iterrows():
+            old_ln = stop_to_local[str(r.Stop_ID)]
+            new_ln = old_to_new[old_ln]
+            service_minutes[new_ln] = int(round(float(r.stop_service_min)))
+            gallon_demands[new_ln] = int(round(float(r.stop_pickup_gal)))
+            pound_demands[new_ln] = int(round(float(r.stop_pickup_lb)))
+
+        result = solve_ortools_vrp(
+            matrix_minutes=submatrix,
+            service_minutes=service_minutes,
+            gallon_demands=gallon_demands,
+            pound_demands=pound_demands,
+            vehicle_gal_caps=vehicle_gal_caps,
+            vehicle_lb_caps=vehicle_lb_caps,
+            vehicle_time_caps=vehicle_time_caps,
+            depot_index=0,
+        )
+
+        if result is not None:
+            result["kept_local_nodes_original"] = kept_local_nodes
+            return (
+                result,
+                kept_stop_ids,
+                dropped_stop_ids,
+                service_minutes,
+                gallon_demands,
+                pound_demands,
+            )
+
+        working = working.sort_values(
+            ["stop_pickup_gal", "stop_pickup_lb", "stop_service_min"],
+            ascending=[True, True, True],
+        ).copy()
+
+        drop_stop = str(working.iloc[0]["Stop_ID"])
+        dropped_stop_ids.append(drop_stop)
+        working = working.iloc[1:].copy()
+
+    return None, [], dropped_stop_ids, [], [], []
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Solve daily Bigbelly routing from Phase 1 schedule.")
@@ -270,6 +349,10 @@ def main() -> None:
         raise ValueError("Service schedule is empty. Solve Phase 1 first.")
 
     schedule = schedule.dropna(subset=["Serial", "service_day", "truck", "stream"]).copy()
+    schedule = schedule[schedule["service_day"] == 0].copy()
+
+    if schedule.empty:
+        raise ValueError("No day-0 service assignments found for routing.")
     schedule["Serial"] = schedule["Serial"].astype(str).str.strip()
     schedule["stream"] = schedule["stream"].apply(canonical_stream)
     schedule["service_day"] = schedule["service_day"].astype(int)
@@ -466,20 +549,40 @@ def main() -> None:
             }
         )
 
-        result = solve_ortools_vrp(
-            matrix_minutes=matrix_minutes,
-            service_minutes=service_minutes,
-            gallon_demands=gallon_demands,
-            pound_demands=pound_demands,
+        result, kept_stop_ids, dropped_stop_ids, service_minutes, gallon_demands, pound_demands = solve_with_stop_dropping(
+            stop_agg=stop_agg,
+            stop_to_local=stop_to_local,
+            matrix_minutes_full=matrix_minutes,
             vehicle_gal_caps=vehicle_gal_caps,
             vehicle_lb_caps=vehicle_lb_caps,
             vehicle_time_caps=vehicle_time_caps,
-            depot_index=0,
+        )
+
+        if result is None:
+            print(
+                f"[WARN] Could not find feasible routing solution for day={day}, stream={stream}. "
+                "Skipping this stream-day."
+            )
+            continue
+
+        if dropped_stop_ids:
+            print(
+                f"[WARN] Routing infeasible for day={day}, stream={stream}. "
+                f"Dropped {len(dropped_stop_ids)} low-demand stop(s): {dropped_stop_ids[:10]}"
+                + (" ..." if len(dropped_stop_ids) > 10 else "")
+            )
+
+        kept_local_nodes_original = result.get(
+            "kept_local_nodes_original",
+            list(range(len(matrix_minutes)))
         )
 
         for vehicle_idx, route in enumerate(result["routes"]):
             truck = trucks[vehicle_idx]
-            route_node_count = sum(1 for n in route if n != 0)
+
+            original_route = [kept_local_nodes_original[n] for n in route]
+
+            route_node_count = sum(1 for n in original_route if n != 0)
             route_gal = sum(gallon_demands[n] for n in route)
             route_lb = sum(pound_demands[n] for n in route)
             route_min = result["route_minutes"][vehicle_idx]
@@ -505,9 +608,9 @@ def main() -> None:
             )
 
             stop_order = 0
-            for local_node in route:
+            for reduced_node, original_node in zip(route, original_route):
                 stop_order += 1
-                stop_id = stop_lookup.get(local_node)
+                stop_id = stop_lookup.get(original_node)
                 serials_here = stop_bins_map.get(stop_id, None) if stop_id is not None else None
                 route_stop_rows.append(
                     {
@@ -516,14 +619,14 @@ def main() -> None:
                         "truck": truck,
                         "routing_mode": mode,
                         "stop_order": stop_order,
-                        "local_node": int(local_node),
+                        "local_node": int(original_node),
                         "Stop_ID": stop_id,
                         "Serials_at_stop": serials_here,
-                        "label": label_lookup.get(local_node, "DEPOT"),
-                        "is_depot": int(local_node == 0),
-                        "pickup_gal": int(gallon_demands[local_node]),
-                        "pickup_lb": int(pound_demands[local_node]),
-                        "service_min": int(service_minutes[local_node]),
+                        "label": label_lookup.get(original_node, "DEPOT"),
+                        "is_depot": int(original_node == 0),
+                        "pickup_gal": int(gallon_demands[reduced_node]),
+                        "pickup_lb": int(pound_demands[reduced_node]),
+                        "service_min": int(service_minutes[reduced_node]),
                     }
                 )
 
