@@ -309,6 +309,7 @@ def main() -> None:
     stop_to_node = stop_map_from_nodes(nodes_df)
     serial_to_stop = dict(zip(bin_stop_lookup["Serial"], bin_stop_lookup["Stop_ID"]))
 
+    enriched["Stop_ID"] = enriched["Serial"].map(serial_to_stop)
     enriched["Stop_ID"] = enriched["Stop_ID"].apply(normalize_stop_id)
 
     missing_stops = sorted(enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist())
