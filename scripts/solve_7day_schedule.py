@@ -162,10 +162,16 @@ def interval_deadline(days_since_last_service: float, horizon_days: int) -> floa
     return np.nan
 
 
+def safe_value(var: object) -> float:
+    """Return a numeric value from a PuLP variable, defaulting None to 0."""
+    v = value(var)
+    return 0.0 if v is None else float(v)
+
+
 # -------------------------------------------------------------
 # Helper: pick a small prototype instance for demonstration
 # -------------------------------------------------------------
-def choose_instance(df: pd.DataFrame, max_bins: int | None, required_only: bool) -> pd.DataFrame:
+def choose_instance(df: pd.DataFrame, max_bins: int | None, required_only: bool, horizon_days: int) -> pd.DataFrame:
     """
     Select a small representative prototype instance from the full
     projected-fill input table.
@@ -205,10 +211,10 @@ def choose_instance(df: pd.DataFrame, max_bins: int | None, required_only: bool)
         ).reset_index(drop=True)
 
     picks = []
-    per_deadline = max(1, max_bins // 7)
+    per_deadline = max(1, max_bins // max(1, horizon_days))
 
     # First, try to grab some bins from each deadline bucket.
-    for d in range(7):
+    for d in range(horizon_days):
         bucket = required[required["service_deadline"] == d].sort_values(
             ["days_since_last_service", "Serial"],
             ascending=[False, True],
@@ -259,8 +265,9 @@ def main() -> None:
     """
     parser = argparse.ArgumentParser(description="Solve a 7-day Bigbelly scheduling instance.")
     parser.add_argument("--input", type=str, default=None, help="Path to bin_7day_projection_inputs.parquet or .csv")
-    parser.add_argument("--max-bins", type=int, default=18, help="Prototype instance size")
+    parser.add_argument("--max-bins", type=int, default=None, help="Optional instance size cap; default keeps all eligible bins")
     parser.add_argument("--num-trucks", type=int, default=3)
+    parser.add_argument("--horizon-days", type=int, default=7, help="Planning horizon length in days")
 
     # Truck capacity parameters
     parser.add_argument("--truck-mass-lb", type=float, default=1300.0)
@@ -272,6 +279,10 @@ def main() -> None:
     parser.add_argument("--truck-work-min", type=float, default=480.0)
     parser.add_argument("--dump-turnaround-min", type=float, default=17.0)
     parser.add_argument("--max-extra-dumps", type=int, default=8)
+    parser.add_argument("--max-overtime-min", type=float, default=180.0, help="Maximum overtime allowed per truck-day")
+    parser.add_argument("--overtime-penalty-per-min", type=float, default=0.02, help="Penalty per overtime minute in the planning objective")
+    parser.add_argument("--cbc-time-limit-sec", type=int, default=180, help="CBC solve time limit in seconds")
+    parser.add_argument("--cbc-gap-rel", type=float, default=0.05, help="Relative MIP gap tolerance for CBC")
 
     # Optional filter
     parser.add_argument("--required-only", action="store_true")
@@ -330,7 +341,7 @@ def main() -> None:
     if "service_deadline" not in df.columns:
         df["service_deadline"] = np.nan
     if "deadline_interval" not in df.columns:
-        df["deadline_interval"] = df["days_since_last_service"].apply(lambda x: interval_deadline(x, 7))
+        df["deadline_interval"] = df["days_since_last_service"].apply(lambda x: interval_deadline(x, args.horizon_days))
 
     df["stream"] = df["stream"].apply(canonical_stream)
     df["must_service_within_horizon"] = df["must_service_within_horizon"].fillna(False).astype(bool)
@@ -338,7 +349,7 @@ def main() -> None:
     # ---------------------------------------------------------
     # Choose a smaller prototype instance for solve
     # ---------------------------------------------------------
-    instance = choose_instance(df, max_bins=args.max_bins, required_only=args.required_only)
+    instance = choose_instance(df, max_bins=args.max_bins, required_only=args.required_only, horizon_days=args.horizon_days)
     if instance.empty:
         raise ValueError("No bins available for solve after filtering.")
 
@@ -347,7 +358,7 @@ def main() -> None:
     # ---------------------------------------------------------
     bins = instance["Serial"].astype(str).tolist()
     streams = [s for s in sorted(instance["stream"].dropna().astype(str).unique().tolist()) if s != "Unknown"]
-    days = list(range(7))
+    days = list(range(args.horizon_days))
     trucks = [f"T{k + 1}" for k in range(args.num_trucks)]
 
     # ---------------------------------------------------------
@@ -426,6 +437,9 @@ def main() -> None:
         cat=LpInteger,
     )
 
+    # overtime_min[k,d] = overtime minutes used by truck k on day d
+    overtime_min = LpVariable.dicts("overtime_min", (trucks, days), lowBound=0, upBound=args.max_overtime_min)
+
     # inventory_gal[i,d] = start-of-day fill in bin i on day d
     inventory_gal = LpVariable.dicts("inventory_gal", (bins, days), lowBound=0)
 
@@ -450,8 +464,9 @@ def main() -> None:
 
     model += (
         lpSum(x[i][d] for i in bins for d in days)
-        + epsilon * lpSum((6 - d) * x[i][d] for i in bins for d in days)
+        + epsilon * lpSum((days[-1] - d) * x[i][d] for i in bins for d in days)
         + dump_penalty * lpSum(extra_dumps[k][s][d] for k in trucks for s in streams for d in days)
+        + args.overtime_penalty_per_min * lpSum(overtime_min[k][d] for k in trucks for d in days)
     )
 
     # ---------------------------------------------------------
@@ -617,20 +632,22 @@ def main() -> None:
             )
 
             model += (
-                service_and_travel + dump_minutes <= args.truck_work_min
+                service_and_travel + dump_minutes <= args.truck_work_min + overtime_min[k][d]
             ), f"workload_{k}_{d}"
 
     # ---------------------------------------------------------
     # Solve the model
     # ---------------------------------------------------------
-    solver = PULP_CBC_CMD(msg=False)
+    solver = PULP_CBC_CMD(msg=False, timeLimit=args.cbc_time_limit_sec, gapRel=args.cbc_gap_rel)
     model.solve(solver)
 
     status = LpStatus[model.status]
+    objective_value = safe_value(model.objective)
     print(f"[STATUS] {status}")
+    print(f"[OBJECTIVE] {objective_value:.3f}")
 
-    if status != "Optimal":
-        print("Model did not solve to optimality. Try reducing max_bins or increasing daily truck resources.")
+    if status not in {"Optimal", "Not Solved", "Undefined", "Integer Feasible"}:
+        print("Model did not find a usable feasible solution. Try increasing resources, overtime, or solver time.")
         return
 
     # ---------------------------------------------------------
@@ -639,14 +656,14 @@ def main() -> None:
     schedule_rows = []
     for i in bins:
         for d in days:
-            if value(x[i][d]) > 0.5:
+            if safe_value(x[i][d]) > 0.5:
                 truck = None
                 for k in trucks:
-                    if value(y[i][k][d]) > 0.5:
+                    if safe_value(y[i][k][d]) > 0.5:
                         truck = k
                         break
 
-                fill_pct_before = 100.0 * value(inventory_gal[i][d]) / float(bin_capacity_gal[i])
+                fill_pct_before = 100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i])
 
                 schedule_rows.append(
                     {
@@ -654,10 +671,10 @@ def main() -> None:
                         "stream": bin_stream[i],
                         "service_day": d,
                         "truck": truck,
-                        "inventory_gal_before_service": round(value(inventory_gal[i][d]), 2),
+                        "inventory_gal_before_service": round(safe_value(inventory_gal[i][d]), 2),
                         "inventory_pct_before_service": round(fill_pct_before, 2),
-                        "pickup_gal": round(value(pickup_gal[i][d]), 2),
-                        "pickup_lb": round(value(pickup_gal[i][d]) * density_lb_per_gal[i], 2),
+                        "pickup_gal": round(safe_value(pickup_gal[i][d]), 2),
+                        "pickup_lb": round(safe_value(pickup_gal[i][d]) * density_lb_per_gal[i], 2),
                         "interval_deadline": None if pd.isna(deadline_interval[i]) else int(deadline_interval[i]),
                     }
                 )
@@ -687,9 +704,9 @@ def main() -> None:
             chosen_stream = None
             chosen_extra_dumps = 0
             for s in streams:
-                if value(z[k][s][d]) > 0.5:
+                if safe_value(z[k][s][d]) > 0.5:
                     chosen_stream = s
-                    chosen_extra_dumps = int(round(value(extra_dumps[k][s][d])))
+                    chosen_extra_dumps = int(round(safe_value(extra_dumps[k][s][d])))
                     break
 
             truck_stream_rows.append(
@@ -707,18 +724,18 @@ def main() -> None:
     load_rows = []
     for d in days:
         for k in trucks:
-            total_gal = sum(value(pickup_gal_truck[i][k][d]) for i in bins)
-            total_lb = sum(density_lb_per_gal[i] * value(pickup_gal_truck[i][k][d]) for i in bins)
-            total_min = sum((service_min[i] + travel_min[i]) * value(y[i][k][d]) for i in bins)
+            total_gal = sum(safe_value(pickup_gal_truck[i][k][d]) for i in bins)
+            total_lb = sum(density_lb_per_gal[i] * safe_value(pickup_gal_truck[i][k][d]) for i in bins)
+            total_min = sum((service_min[i] + travel_min[i]) * safe_value(y[i][k][d]) for i in bins)
 
             assigned_stream = None
             extra_dump_count = 0
             volume_cap = None
 
             for s in streams:
-                if value(z[k][s][d]) > 0.5:
+                if safe_value(z[k][s][d]) > 0.5:
                     assigned_stream = s
-                    extra_dump_count = int(round(value(extra_dumps[k][s][d])))
+                    extra_dump_count = int(round(safe_value(extra_dumps[k][s][d])))
                     volume_cap = stream_volume_cap[s] * (1 + extra_dump_count)
                     break
 
@@ -734,7 +751,9 @@ def main() -> None:
                     "extra_dumps": extra_dump_count,
                     "minutes_used_without_dumps": round(total_min, 2),
                     "minutes_used_total": round(total_min + args.dump_turnaround_min * extra_dump_count, 2),
-                    "minutes_capacity": args.truck_work_min,
+                    "overtime_min": round(safe_value(overtime_min[k][d]), 2),
+                    "minutes_capacity_regular": args.truck_work_min,
+                    "minutes_capacity_with_overtime": round(args.truck_work_min + safe_value(overtime_min[k][d]), 2),
                 }
             )
 
@@ -751,13 +770,37 @@ def main() -> None:
                     "day": d,
                     "inventory_gal_start": round(value(inventory_gal[i][d]), 2),
                     "inventory_pct_start": round(
-                        100.0 * value(inventory_gal[i][d]) / float(bin_capacity_gal[i]), 2
+                        100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i]), 2
                     ),
-                    "pickup_flag": int(round(value(x[i][d]))),
-                    "pickup_gal": round(value(pickup_gal[i][d]), 2),
-                    "inventory_gal_after_service": round(value(post_service_inventory_gal[i][d]), 2),
+                    "pickup_flag": int(round(safe_value(x[i][d]))),
+                    "pickup_gal": round(safe_value(pickup_gal[i][d]), 2),
+                    "inventory_gal_after_service": round(safe_value(post_service_inventory_gal[i][d]), 2),
                 }
             )
+
+    # ---------------------------------------------------------
+    # Output 5: planning summary
+    # ---------------------------------------------------------
+    total_pickups = sum(safe_value(x[i][d]) for i in bins for d in days)
+    total_extra_dumps = sum(safe_value(extra_dumps[k][s][d]) for k in trucks for s in streams for d in days)
+    total_overtime = sum(safe_value(overtime_min[k][d]) for k in trucks for d in days)
+    overflow_bin_days = sum(1 for i in bins for d in days if safe_value(inventory_gal[i][d]) > float(bin_capacity_gal[i]) + 1e-6)
+    planning_summary_df = pd.DataFrame([
+        {
+            "status": status,
+            "objective_value": round(objective_value, 3),
+            "horizon_days": args.horizon_days,
+            "num_bins_in_instance": len(bins),
+            "num_trucks": args.num_trucks,
+            "truck_work_min": args.truck_work_min,
+            "total_pickups": round(total_pickups, 2),
+            "total_extra_dumps": round(total_extra_dumps, 2),
+            "total_overtime_min": round(total_overtime, 2),
+            "overflow_bin_days": int(overflow_bin_days),
+            "cbc_time_limit_sec": args.cbc_time_limit_sec,
+            "cbc_gap_rel": args.cbc_gap_rel,
+        }
+    ])
 
     # ---------------------------------------------------------
     # Convert outputs to DataFrames
@@ -774,6 +817,7 @@ def main() -> None:
     truck_stream_fp = paths["processed"] / "small_instance_truck_streams.csv"
     load_fp = paths["processed"] / "small_instance_truck_load_check.csv"
     inventory_fp = paths["processed"] / "small_instance_inventory_trajectory.csv"
+    planning_summary_fp = paths["processed"] / "small_instance_planning_summary.csv"
 
     # ---------------------------------------------------------
     # Save outputs
@@ -782,11 +826,13 @@ def main() -> None:
     truck_stream_df.to_csv(truck_stream_fp, index=False)
     load_df.to_csv(load_fp, index=False)
     inventory_df.to_csv(inventory_fp, index=False)
+    planning_summary_df.to_csv(planning_summary_fp, index=False)
 
     print(f"[OK] Wrote: {schedule_fp}")
     print(f"[OK] Wrote: {truck_stream_fp}")
     print(f"[OK] Wrote: {load_fp}")
     print(f"[OK] Wrote: {inventory_fp}")
+    print(f"[OK] Wrote: {planning_summary_fp}")
 
     print("\nSchedule preview:")
     print(schedule_df.head(15).to_string(index=False))
