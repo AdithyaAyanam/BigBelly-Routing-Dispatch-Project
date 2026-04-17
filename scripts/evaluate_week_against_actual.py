@@ -5,11 +5,11 @@ evaluate_week_against_actual.py
 -------------------------------------------------------------
 Purpose
 -------
-Create a simple week-level comparison between:
-1. actual operations, and
+Create a fair week-level comparison between:
+1. actual operations on the same modeled bin subset, and
 2. the model's weekly plan + daily routing outputs
 
-This is a reporting / evaluation helper, not an optimization model.
+This avoids comparing a partial modeled subset against all actual campus pickups.
 
 Inputs
 ------
@@ -18,11 +18,11 @@ Expected files:
 - data/processed/small_instance_service_schedule.csv
 - data/processed/small_instance_planning_summary.csv
 - data/processed/daily_route_plan.csv
-- optionally bin_7day_projection_inputs.parquet or .csv for weights / labels
 
 Outputs
 -------
 - data/processed/weekly_actual_vs_model_summary.csv
+- data/processed/weekly_actual_vs_model_modeled_subset.csv
 """
 
 import argparse
@@ -59,7 +59,7 @@ def canonical_stream(x: object) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compare actual weekly operations to model outputs.")
+    parser = argparse.ArgumentParser(description="Compare actual weekly operations to model outputs on the same modeled bin subset.")
     parser.add_argument("--actual-start-date", type=str, required=True, help="Actual week start date, YYYY-MM-DD")
     parser.add_argument("--actual-end-date", type=str, required=True, help="Actual week end date, YYYY-MM-DD")
     args = parser.parse_args()
@@ -86,34 +86,73 @@ def main() -> None:
     planning = pd.read_csv(plan_fp)
     routes = pd.read_csv(route_fp)
 
+    # -----------------------------
+    # Clean actual data
+    # -----------------------------
     actual["Collection_Time"] = pd.to_datetime(actual["Collection_Time"], errors="coerce")
     actual = actual[actual["Collection_Time"].notna()].copy()
     actual["date"] = actual["Collection_Time"].dt.floor("D")
-    actual["Stream_Type"] = actual["Stream_Type"].apply(canonical_stream)
+
+    if "Stream_Type" in actual.columns:
+        actual["stream"] = actual["Stream_Type"].apply(canonical_stream)
+    else:
+        actual["stream"] = "Unknown"
+
+    if "Serial" not in actual.columns:
+        raise KeyError("collections_merged.parquet must contain Serial for subset comparison.")
+
+    actual["Serial"] = actual["Serial"].astype(str).str.strip()
+
+    # -----------------------------
+    # Clean model outputs
+    # -----------------------------
+    sched["Serial"] = sched["Serial"].astype(str).str.strip()
+    sched["stream"] = sched["stream"].apply(canonical_stream)
+    routes["stream"] = routes["stream"].apply(canonical_stream)
 
     start = pd.to_datetime(args.actual_start_date)
     end = pd.to_datetime(args.actual_end_date)
 
-    actual_week = actual[(actual["date"] >= start) & (actual["date"] <= end)].copy()
+    # All actual operations in the chosen week
+    actual_week_all = actual[(actual["date"] >= start) & (actual["date"] <= end)].copy()
 
-    actual_summary = (
-        actual_week.groupby("Stream_Type")
+    # Modeled bin subset = unique bins that appear in the model schedule
+    modeled_bins = set(sched["Serial"].dropna().astype(str).str.strip().unique().tolist())
+
+    # Actual operations restricted to the same modeled bin subset
+    actual_week_subset = actual_week_all[actual_week_all["Serial"].isin(modeled_bins)].copy()
+
+    # -----------------------------
+    # Summaries: actual subset
+    # -----------------------------
+    actual_subset_summary = (
+        actual_week_subset.groupby("stream")
         .size()
-        .rename("actual_pickups")
+        .rename("actual_pickups_same_subset")
         .reset_index()
-        .rename(columns={"Stream_Type": "stream"})
     )
 
+    actual_subset_bin_counts = pd.DataFrame(
+        [{"modeled_bin_count": len(modeled_bins), "actual_pickups_same_subset_total": len(actual_week_subset)}]
+    )
+
+    # -----------------------------
+    # Summaries: model schedule
+    # -----------------------------
     model_sched_summary = (
         sched.groupby("stream")
         .agg(
             model_pickups=("Serial", "count"),
             model_pickup_gal=("pickup_gal", "sum"),
             model_pickup_lb=("pickup_lb", "sum"),
+            modeled_unique_bins=("Serial", "nunique"),
         )
         .reset_index()
     )
 
+    # -----------------------------
+    # Summaries: model routing
+    # -----------------------------
     model_route_summary = (
         routes.groupby("stream")
         .agg(
@@ -125,17 +164,24 @@ def main() -> None:
         .reset_index()
     )
 
-    summary = actual_summary.merge(model_sched_summary, on="stream", how="outer")
+    # -----------------------------
+    # Merge stream-level comparison
+    # -----------------------------
+    summary = actual_subset_summary.merge(model_sched_summary, on="stream", how="outer")
     summary = summary.merge(model_route_summary, on="stream", how="outer")
     summary = summary.fillna(0)
 
+    # -----------------------------
+    # Add overall row
+    # -----------------------------
     overall = pd.DataFrame([
         {
             "stream": "OVERALL",
-            "actual_pickups": float(summary["actual_pickups"].sum()),
+            "actual_pickups_same_subset": float(summary["actual_pickups_same_subset"].sum()),
             "model_pickups": float(summary["model_pickups"].sum()),
             "model_pickup_gal": float(summary["model_pickup_gal"].sum()),
             "model_pickup_lb": float(summary["model_pickup_lb"].sum()),
+            "modeled_unique_bins": float(summary["modeled_unique_bins"].sum()),
             "model_route_count": float(summary["model_route_count"].sum()),
             "model_route_gal": float(summary["model_route_gal"].sum()),
             "model_route_lb": float(summary["model_route_lb"].sum()),
@@ -166,11 +212,21 @@ def main() -> None:
         overall[col] = planning_one.iloc[0][col]
 
     out = pd.concat([summary, overall], ignore_index=True)
+
+    # -----------------------------
+    # Save outputs
+    # -----------------------------
     out_fp = paths["processed"] / "weekly_actual_vs_model_summary.csv"
+    subset_fp = paths["processed"] / "weekly_actual_vs_model_modeled_subset.csv"
     out.to_csv(out_fp, index=False)
+    actual_week_subset.to_csv(subset_fp, index=False)
 
     print(f"[OK] Wrote: {out_fp}")
+    print(f"[OK] Wrote: {subset_fp}")
+    print("\nStream-level comparison on modeled bin subset:")
     print(out.to_string(index=False))
+    print("\nModeled subset info:")
+    print(actual_subset_bin_counts.to_string(index=False))
 
 
 if __name__ == "__main__":

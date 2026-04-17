@@ -231,6 +231,10 @@ def main() -> None:
     parser.add_argument("--overtime-penalty-per-min", type=float, default=0.02)
     parser.add_argument("--cbc-time-limit-sec", type=int, default=180)
     parser.add_argument("--cbc-gap-rel", type=float, default=0.05)
+    
+    parser.add_argument("--overflow-penalty", type=float, default=5.0, help="Penalty per overflow bin-day")
+    parser.add_argument("--tiny-pickup-threshold-gal", type=float, default=5.0, help="Threshold for tiny pickups")
+    parser.add_argument("--tiny-pickup-penalty", type=float, default=0.25, help="Penalty for scheduling a tiny pickup")
 
     parser.add_argument("--required-only", action="store_true")
     parser.add_argument(
@@ -375,6 +379,8 @@ def main() -> None:
     post_service_inventory_gal = LpVariable.dicts("post_service_inventory_gal", (bins, days), lowBound=0)
     pickup_gal = LpVariable.dicts("pickup_gal", (bins, days), lowBound=0)
     pickup_gal_truck = LpVariable.dicts("pickup_gal_truck", (bins, trucks, days), lowBound=0)
+    tiny_pickup = LpVariable.dicts("tiny_pickup", (bins, days), cat=LpBinary)
+    overflow_flag = LpVariable.dicts("overflow_flag", (bins, days), cat=LpBinary)
 
     epsilon = 0.001
     dump_penalty = 0.01
@@ -384,6 +390,8 @@ def main() -> None:
         + epsilon * lpSum((days[-1] - d) * x[i][d] for i in bins for d in days)
         + dump_penalty * lpSum(extra_dumps[k][s][d] for k in trucks for s in streams for d in days)
         + args.overtime_penalty_per_min * lpSum(overtime_min[k][d] for k in trucks for d in days)
+        + args.overflow_penalty * lpSum(overflow_flag[i][d] for i in bins for d in days)
+        + args.tiny_pickup_penalty * lpSum(tiny_pickup[i][d] for i in bins for d in days)
     )
 
     for i in bins:
@@ -411,6 +419,24 @@ def main() -> None:
                 pickup_gal[i][d] <= max_inventory_gal[i] * x[i][d]
             ), f"pickup_activate_{i}_{d}"
 
+            # Overflow flag:
+            # if inventory exceeds nominal bin capacity, overflow_flag can turn on
+            model += (
+                inventory_gal[i][d]
+                <= float(bin_capacity_gal[i]) + (max_inventory_gal[i] - float(bin_capacity_gal[i])) * overflow_flag[i][d]
+            ), f"overflow_flag_link_{i}_{d}"
+
+            # Tiny-pickup flag:
+            # if pickup is tiny, tiny_pickup can turn on and be penalized in objective
+            model += (
+                pickup_gal[i][d]
+                <= args.tiny_pickup_threshold_gal + max_inventory_gal[i] * (1 - tiny_pickup[i][d])
+            ), f"tiny_pickup_upper_{i}_{d}"
+
+            model += (
+                x[i][d] >= tiny_pickup[i][d]
+            ), f"tiny_pickup_only_if_service_{i}_{d}"
+            
             if pd.notna(threshold_gal[i]):
                 model += (
                     inventory_gal[i][d] <= threshold_gal[i] + max_inventory_gal[i] * x[i][d]
