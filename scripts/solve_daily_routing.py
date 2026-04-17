@@ -17,21 +17,19 @@ Modeling approach
 For each (day, stream) pair that has scheduled pickups:
 1. Read the bins scheduled for that day/stream.
 2. Read which trucks are assigned to that stream on that day.
-3. If there is one active truck and capacity is not binding, treat the problem as a single-truck route.
-4. Otherwise solve a capacitated VRP with OR-Tools.
+3. Map bins -> Stop_ID using bin_stop_lookup.csv.
+4. Map Stop_ID -> routing node using routing_nodes.csv.
+5. If there is one active truck and capacity is not binding, solve a
+   single-truck route.
+6. Otherwise solve a capacitated VRP with OR-Tools.
 
 Important note
 --------------
-This is a strong routing starter that uses actual route sequencing.
+This is a practical routing layer that uses actual route sequencing.
 It is still a first practical implementation, not a perfect multi-trip VRP with
-intermediate dump returns. However, it already matches Professor Yano's key
-routing direction much better than using only average travel proxies.
-
-If a truck-day has extra dump cycles in the Phase 1 output, this file handles
-that approximately by enlarging the effective capacity of that truck for the
-stream-day. This keeps the daily routing layer consistent with the weekly
-planning model, but it is still an approximation because explicit dump-return
-legs are not yet inserted into the route itself.
+intermediate dump returns. Extra dump cycles from Phase 1 are handled
+approximately by enlarging the effective truck capacity for that stream-day.
+A later enhancement can model explicit dump returns inside the route.
 
 Inputs
 ------
@@ -40,6 +38,7 @@ Expected files in data/processed:
 - small_instance_truck_streams.csv
 - bin_7day_projection_inputs.parquet or .csv
 - routing_nodes.csv
+- bin_stop_lookup.csv
 - travel_matrix_wide.csv
 
 Outputs
@@ -111,11 +110,11 @@ def load_matrix(wide_fp: Path) -> pd.DataFrame:
     return mat.sort_index().sort_index(axis=1)
 
 
-def node_map_from_nodes(nodes_df: pd.DataFrame) -> dict[str, int]:
+def stop_map_from_nodes(nodes_df: pd.DataFrame) -> dict[str, int]:
     out: dict[str, int] = {}
     for row in nodes_df.itertuples(index=False):
-        if row.node_type == "bin" and pd.notna(row.Serial):
-            out[str(row.Serial).strip()] = int(row.node_id)
+        if str(row.node_type).strip().lower() == "stop" and pd.notna(row.Stop_ID):
+            out[str(row.Stop_ID).strip()] = int(row.node_id)
     return out
 
 
@@ -219,6 +218,7 @@ def main() -> None:
     parser.add_argument("--schedule", type=str, default=None)
     parser.add_argument("--truck-streams", type=str, default=None)
     parser.add_argument("--routing-nodes", type=str, default=None)
+    parser.add_argument("--bin-stop-lookup", type=str, default=None)
     parser.add_argument("--travel-matrix", type=str, default=None)
     parser.add_argument("--truck-mass-lb", type=float, default=1300.0)
     parser.add_argument("--waste-volume-gal", type=float, default=500.0)
@@ -241,6 +241,7 @@ def main() -> None:
         Path(args.truck_streams) if args.truck_streams else paths["processed"] / "small_instance_truck_streams.csv"
     )
     routing_nodes_fp = Path(args.routing_nodes) if args.routing_nodes else paths["processed"] / "routing_nodes.csv"
+    bin_stop_lookup_fp = Path(args.bin_stop_lookup) if args.bin_stop_lookup else paths["processed"] / "bin_stop_lookup.csv"
     travel_matrix_fp = Path(args.travel_matrix) if args.travel_matrix else paths["processed"] / "travel_matrix_wide.csv"
 
     if not schedule_fp.exists():
@@ -249,12 +250,15 @@ def main() -> None:
         raise FileNotFoundError("Could not find small_instance_truck_streams.csv")
     if not routing_nodes_fp.exists():
         raise FileNotFoundError("Could not find routing_nodes.csv")
+    if not bin_stop_lookup_fp.exists():
+        raise FileNotFoundError("Could not find bin_stop_lookup.csv")
     if not travel_matrix_fp.exists():
         raise FileNotFoundError("Could not find travel_matrix_wide.csv")
 
     schedule = pd.read_csv(schedule_fp)
     truck_streams = pd.read_csv(truck_stream_fp)
     nodes_df = pd.read_csv(routing_nodes_fp)
+    bin_stop_lookup = pd.read_csv(bin_stop_lookup_fp)
     matrix_df = load_matrix(travel_matrix_fp)
 
     if schedule.empty:
@@ -274,6 +278,10 @@ def main() -> None:
     truck_streams["day"] = pd.to_numeric(truck_streams["day"], errors="coerce").astype("Int64")
     truck_streams["extra_dumps"] = pd.to_numeric(truck_streams["extra_dumps"], errors="coerce").fillna(0).astype(int)
 
+    bin_stop_lookup = bin_stop_lookup.copy()
+    bin_stop_lookup["Serial"] = bin_stop_lookup["Serial"].astype(str).str.strip()
+    bin_stop_lookup["Stop_ID"] = bin_stop_lookup["Stop_ID"].astype(str).str.strip()
+
     projection_small = projection[[
         "Serial",
         "avg_service_min",
@@ -290,11 +298,26 @@ def main() -> None:
     else:
         enriched["Description"] = enriched["Description"].fillna(enriched["Serial"])
 
-    serial_to_node = node_map_from_nodes(nodes_df)
-    missing_nodes = sorted(set(enriched["Serial"]) - set(serial_to_node.keys()))
-    if missing_nodes:
+    stop_to_node = stop_map_from_nodes(nodes_df)
+    serial_to_stop = dict(zip(bin_stop_lookup["Serial"], bin_stop_lookup["Stop_ID"]))
+
+    enriched["Stop_ID"] = enriched["Serial"].map(serial_to_stop)
+
+    missing_stops = sorted(enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist())
+    if missing_stops:
         raise KeyError(
-            f"The following scheduled bins are missing from routing_nodes.csv: {missing_nodes[:10]}"
+            f"The following scheduled bins are missing from bin_stop_lookup.csv: {missing_stops[:10]}"
+        )
+
+    missing_node_stops = sorted(
+        enriched.loc[~enriched["Stop_ID"].astype(str).isin(stop_to_node.keys()), "Stop_ID"]
+        .astype(str)
+        .unique()
+        .tolist()
+    )
+    if missing_node_stops:
+        raise KeyError(
+            f"The following scheduled Stop_ID values are missing from routing_nodes.csv: {missing_node_stops[:10]}"
         )
 
     stream_volume_cap = {
@@ -316,7 +339,6 @@ def main() -> None:
         active = active.sort_values("truck").reset_index(drop=True)
 
         if active.empty:
-            # Fallback: use trucks named in the schedule.
             active = pd.DataFrame(
                 {
                     "day": [int(day)] * grp["truck"].nunique(),
@@ -328,27 +350,29 @@ def main() -> None:
 
         trucks = active["truck"].astype(str).tolist()
 
-        # Build local node list: node 0 is depot, then one node per scheduled bin.
-        local_nodes = [{"local_node": 0, "global_node": int(args.depot_node), "Serial": None, "label": "DEPOT"}]
-        for _, r in grp.iterrows():
+        # Build local node list: node 0 is depot, then one node per scheduled stop.
+        # Multiple bins may share the same stop node.
+        local_nodes = [{"local_node": 0, "global_node": int(args.depot_node), "Stop_ID": None, "Serial": None, "label": "DEPOT"}]
+        stop_rows = grp[["Stop_ID", "Description"]].drop_duplicates(subset=["Stop_ID"]).copy()
+        for _, r in stop_rows.iterrows():
             local_nodes.append(
                 {
                     "local_node": len(local_nodes),
-                    "global_node": int(serial_to_node[str(r.Serial)]),
-                    "Serial": str(r.Serial),
+                    "global_node": int(stop_to_node[str(r.Stop_ID)]),
+                    "Stop_ID": str(r.Stop_ID),
+                    "Serial": None,
                     "label": str(r.Description),
                 }
             )
         local_nodes_df = pd.DataFrame(local_nodes)
 
         local_to_global = dict(zip(local_nodes_df["local_node"], local_nodes_df["global_node"]))
-        serial_to_local = {
-            row.Serial: int(row.local_node)
+        stop_to_local = {
+            row.Stop_ID: int(row.local_node)
             for row in local_nodes_df.itertuples(index=False)
-            if pd.notna(row.Serial)
+            if pd.notna(row.Stop_ID)
         }
 
-        # Matrix in local-node order.
         local_ids = local_nodes_df["local_node"].tolist()
         matrix_minutes = []
         for i in local_ids:
@@ -359,21 +383,33 @@ def main() -> None:
                 row.append(int(round(float(matrix_df.loc[gi, gj]))))
             matrix_minutes.append(row)
 
-        # Per-node service / demand arrays for OR-Tools.
+        # Aggregate bin-level service and pickup demands to stop-level nodes.
+        stop_agg = (
+            grp.groupby("Stop_ID", as_index=False)
+            .agg(
+                stop_pickup_gal=("pickup_gal", "sum"),
+                stop_pickup_lb=("pickup_lb", "sum"),
+                stop_service_min=("avg_service_min", "sum"),
+            )
+            .copy()
+        )
+
         service_minutes = [0] * len(local_ids)
         gallon_demands = [0] * len(local_ids)
         pound_demands = [0] * len(local_ids)
-        serial_lookup: dict[int, str] = {}
+        stop_lookup: dict[int, str] = {}
         label_lookup: dict[int, str] = {0: "DEPOT"}
 
-        for _, r in grp.iterrows():
-            ln = serial_to_local[str(r.Serial)]
-            service_minutes[ln] = int(round(float(r.avg_service_min)))
-            gallon_demands[ln] = int(round(float(r.pickup_gal)))
-            # Use reported pickup_lb when available so it stays consistent with Phase 1.
-            pound_demands[ln] = int(round(float(r.pickup_lb)))
-            serial_lookup[ln] = str(r.Serial)
-            label_lookup[ln] = str(r.Description)
+        stop_label_map = grp.groupby("Stop_ID")["Description"].first().to_dict()
+        stop_bins_map = grp.groupby("Stop_ID")["Serial"].apply(lambda x: ";".join(sorted(set(x.astype(str))))).to_dict()
+
+        for _, r in stop_agg.iterrows():
+            ln = stop_to_local[str(r.Stop_ID)]
+            service_minutes[ln] = int(round(float(r.stop_service_min)))
+            gallon_demands[ln] = int(round(float(r.stop_pickup_gal)))
+            pound_demands[ln] = int(round(float(r.stop_pickup_lb)))
+            stop_lookup[ln] = str(r.Stop_ID)
+            label_lookup[ln] = str(stop_label_map.get(str(r.Stop_ID), r.Stop_ID))
 
         total_gal = sum(gallon_demands)
         total_lb = sum(pound_demands)
@@ -395,11 +431,26 @@ def main() -> None:
         total_effective_gal_cap = sum(vehicle_gal_caps)
         total_effective_lb_cap = sum(vehicle_lb_caps)
 
-        # Decide TSP vs VRP.
-        use_tsp = False
+        use_single_truck_route = False
         if num_trucks == 1:
             nonbinding_capacity = (total_gal <= base_vol_cap) and (total_lb <= args.truck_mass_lb)
-            use_tsp = nonbinding_capacity
+            use_single_truck_route = nonbinding_capacity
+
+        route_summary_rows.append(
+            {
+                "day": int(day),
+                "stream": stream,
+                "scheduled_bins": int(len(grp)),
+                "scheduled_stops": int(len(stop_rows)),
+                "active_trucks": int(num_trucks),
+                "selected_mode": "SingleTruckRoute" if use_single_truck_route and num_trucks == 1 else "VRP",
+                "total_pickup_gal": int(total_gal),
+                "total_pickup_lb": int(total_lb),
+                "total_service_min_only": int(total_service_min),
+                "total_effective_volume_cap": int(total_effective_gal_cap),
+                "total_effective_mass_cap": int(total_effective_lb_cap),
+            }
+        )
 
         result = solve_ortools_vrp(
             matrix_minutes=matrix_minutes,
@@ -418,7 +469,7 @@ def main() -> None:
             route_gal = sum(gallon_demands[n] for n in route)
             route_lb = sum(pound_demands[n] for n in route)
             route_min = result["route_minutes"][vehicle_idx]
-            mode = "SingleTruckRoute" if use_tsp and num_trucks == 1 else "VRP"
+            mode = "SingleTruckRoute" if use_single_truck_route and num_trucks == 1 else "VRP"
 
             if route_node_count == 0:
                 continue
@@ -442,6 +493,8 @@ def main() -> None:
             stop_order = 0
             for local_node in route:
                 stop_order += 1
+                stop_id = stop_lookup.get(local_node)
+                serials_here = stop_bins_map.get(stop_id, None) if stop_id is not None else None
                 route_stop_rows.append(
                     {
                         "day": int(day),
@@ -450,7 +503,8 @@ def main() -> None:
                         "routing_mode": mode,
                         "stop_order": stop_order,
                         "local_node": int(local_node),
-                        "Serial": serial_lookup.get(local_node),
+                        "Stop_ID": stop_id,
+                        "Serials_at_stop": serials_here,
                         "label": label_lookup.get(local_node, "DEPOT"),
                         "is_depot": int(local_node == 0),
                         "pickup_gal": int(gallon_demands[local_node]),
@@ -459,24 +513,9 @@ def main() -> None:
                     }
                 )
 
-        route_summary_rows.append(
-            {
-                "day": int(day),
-                "stream": stream,
-                "scheduled_bins": int(len(grp)),
-                "active_trucks": int(num_trucks),
-                "selected_mode": "SingleTruckRoute" if use_tsp and num_trucks == 1 else "VRP",
-                "total_pickup_gal": int(total_gal),
-                "total_pickup_lb": int(total_lb),
-                "total_service_min_only": int(total_service_min),
-                "total_effective_volume_cap": int(total_effective_gal_cap),
-                "total_effective_mass_cap": int(total_effective_lb_cap),
-            }
-        )
-
-    route_plan_df = pd.DataFrame(route_plan_rows).sort_values(["day", "stream", "truck"])
-    route_stops_df = pd.DataFrame(route_stop_rows).sort_values(["day", "stream", "truck", "stop_order"])
-    route_summary_df = pd.DataFrame(route_summary_rows).sort_values(["day", "stream"])
+    route_plan_df = pd.DataFrame(route_plan_rows)
+    route_stops_df = pd.DataFrame(route_stop_rows)
+    route_summary_df = pd.DataFrame(route_summary_rows)
 
     plan_fp = paths["processed"] / "daily_route_plan.csv"
     stops_fp = paths["processed"] / "daily_route_stops.csv"
@@ -492,7 +531,9 @@ def main() -> None:
 
     if not route_plan_df.empty:
         print("\nRoute plan preview:")
-        print(route_plan_df.head(20).to_string(index=False))
+        print(route_plan_df.head(15).to_string(index=False))
+    else:
+        print("\nNo active routes were generated.")
 
 
 if __name__ == "__main__":
