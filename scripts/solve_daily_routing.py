@@ -68,6 +68,13 @@ except Exception as exc:  # pragma: no cover
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
+def normalize_stop_id(x: object) -> str | None:
+    if pd.isna(x):
+        return None
+    s = str(x).strip()
+    if s.endswith(".0"):
+        s = s[:-2]
+    return s if s else None
 
 def ensure_dirs(root: Path) -> dict[str, Path]:
     data_dir = root / "data"
@@ -113,8 +120,9 @@ def load_matrix(wide_fp: Path) -> pd.DataFrame:
 def stop_map_from_nodes(nodes_df: pd.DataFrame) -> dict[str, int]:
     out: dict[str, int] = {}
     for row in nodes_df.itertuples(index=False):
-        if str(row.node_type).strip().lower() == "stop" and pd.notna(row.Stop_ID):
-            out[str(row.Stop_ID).strip()] = int(row.node_id)
+        stop_id = normalize_stop_id(getattr(row, "Stop_ID", None))
+        if str(row.node_type).strip().lower() == "stop" and stop_id is not None:
+            out[stop_id] = int(row.node_id)
     return out
 
 
@@ -280,7 +288,7 @@ def main() -> None:
 
     bin_stop_lookup = bin_stop_lookup.copy()
     bin_stop_lookup["Serial"] = bin_stop_lookup["Serial"].astype(str).str.strip()
-    bin_stop_lookup["Stop_ID"] = bin_stop_lookup["Stop_ID"].astype(str).str.strip()
+    bin_stop_lookup["Stop_ID"] = bin_stop_lookup["Stop_ID"].apply(normalize_stop_id)
 
     projection_small = projection[[
         "Serial",
@@ -301,7 +309,7 @@ def main() -> None:
     stop_to_node = stop_map_from_nodes(nodes_df)
     serial_to_stop = dict(zip(bin_stop_lookup["Serial"], bin_stop_lookup["Stop_ID"]))
 
-    enriched["Stop_ID"] = enriched["Serial"].map(serial_to_stop)
+    enriched["Stop_ID"] = enriched["Stop_ID"].apply(normalize_stop_id)
 
     missing_stops = sorted(enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist())
     if missing_stops:
