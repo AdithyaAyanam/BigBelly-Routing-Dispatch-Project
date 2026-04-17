@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 """
@@ -18,7 +17,7 @@ Modeling approach
 For each (day, stream) pair that has scheduled pickups:
 1. Read the bins scheduled for that day/stream.
 2. Read which trucks are assigned to that stream on that day.
-3. If there is one active truck and capacity is not binding, solve a TSP.
+3. If there is one active truck and capacity is not binding, treat the problem as a single-truck route.
 4. Otherwise solve a capacitated VRP with OR-Tools.
 
 Important note
@@ -30,8 +29,9 @@ routing direction much better than using only average travel proxies.
 
 If a truck-day has extra dump cycles in the Phase 1 output, this file handles
 that approximately by enlarging the effective capacity of that truck for the
-stream-day. A later enhancement can model explicit depot returns inside the
-route.
+stream-day. This keeps the daily routing layer consistent with the weekly
+planning model, but it is still an approximation because explicit dump-return
+legs are not yet inserted into the route itself.
 
 Inputs
 ------
@@ -287,6 +287,8 @@ def main() -> None:
     enriched["density_lb_per_gal"] = pd.to_numeric(enriched["density_lb_per_gal"], errors="coerce").fillna(1.0)
     if "Description" not in enriched.columns:
         enriched["Description"] = enriched["Serial"]
+    else:
+        enriched["Description"] = enriched["Description"].fillna(enriched["Serial"])
 
     serial_to_node = node_map_from_nodes(nodes_df)
     missing_nodes = sorted(set(enriched["Serial"]) - set(serial_to_node.keys()))
@@ -325,7 +327,6 @@ def main() -> None:
             )
 
         trucks = active["truck"].astype(str).tolist()
-        truck_to_idx = {t: j for j, t in enumerate(trucks)}
 
         # Build local node list: node 0 is depot, then one node per scheduled bin.
         local_nodes = [{"local_node": 0, "global_node": int(args.depot_node), "Serial": None, "label": "DEPOT"}]
@@ -417,7 +418,7 @@ def main() -> None:
             route_gal = sum(gallon_demands[n] for n in route)
             route_lb = sum(pound_demands[n] for n in route)
             route_min = result["route_minutes"][vehicle_idx]
-            mode = "TSP" if use_tsp and num_trucks == 1 else "VRP"
+            mode = "SingleTruckRoute" if use_tsp and num_trucks == 1 else "VRP"
 
             if route_node_count == 0:
                 continue
@@ -464,7 +465,7 @@ def main() -> None:
                 "stream": stream,
                 "scheduled_bins": int(len(grp)),
                 "active_trucks": int(num_trucks),
-                "selected_mode": "TSP" if use_tsp and num_trucks == 1 else "VRP",
+                "selected_mode": "SingleTruckRoute" if use_tsp and num_trucks == 1 else "VRP",
                 "total_pickup_gal": int(total_gal),
                 "total_pickup_lb": int(total_lb),
                 "total_service_min_only": int(total_service_min),
