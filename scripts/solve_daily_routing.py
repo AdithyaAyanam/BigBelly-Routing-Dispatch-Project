@@ -308,7 +308,7 @@ def main() -> None:
     parser.add_argument("--waste-volume-gal", type=float, default=500.0)
     parser.add_argument("--compost-volume-gal", type=float, default=500.0)
     parser.add_argument("--recycling-volume-gal", type=float, default=450.0)
-    parser.add_argument("--truck-work-min", type=float, default=480.0)
+    parser.add_argument("--truck-work-min", type=float, default=750.0)
     parser.add_argument("--depot-node", type=int, default=0)
     args = parser.parse_args()
 

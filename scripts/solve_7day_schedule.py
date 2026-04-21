@@ -82,8 +82,32 @@ from pulp import (
     value,
 )
 
-MAX_FILL_FACTOR = 1.25
+MAX_FILL_FACTOR = 1.50
+# Observed field operations assumptions from Bigbelly driver conversation:
+# - 3 lift-equipped trucks are normally used
+# - 1 backup truck without a lift exists but is not normally used
+# - drivers work staggered shifts:
+#     4:00 AM - 12:30 PM
+#     6:00 AM - 2:30 PM
+#     8:00 AM - 4:30 PM
+# This implies that a truck may be reused across the day by different drivers.
+# In this implementation, we approximate that operational reality by using
+# an expanded effective truck-day minutes assumption rather than a strict
+# single 480-minute block per truck.
 
+
+NORMAL_LIFT_TRUCKS = 3
+BACKUP_NONLIFT_TRUCKS = 1
+
+SHIFT_WINDOWS = [
+    ("S1", 4 * 60, 12 * 60 + 30),   # 4:00–12:30
+    ("S2", 6 * 60, 14 * 60 + 30),   # 6:00–2:30
+    ("S3", 8 * 60, 16 * 60 + 30),   # 8:00–4:30
+]
+
+FLEET_DAY_START_MIN = 4 * 60
+FLEET_DAY_END_MIN = 16 * 60 + 30
+FLEET_DAY_SPAN_MIN = FLEET_DAY_END_MIN - FLEET_DAY_START_MIN   # 750 min
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -224,6 +248,12 @@ def main() -> None:
     parser.add_argument("--recycling-volume-gal", type=float, default=450.0)
 
     parser.add_argument("--truck-work-min", type=float, default=480.0)
+    parser.add_argument(
+    "--use-observed-shift-span",
+    action="store_true",
+    help="Approximate staggered driver shifts by using an expanded effective truck-day span",
+    )
+    
     parser.add_argument("--dump-turnaround-min", type=float, default=17.0)
     parser.add_argument("--max-extra-dumps", type=int, default=8)
 
@@ -235,7 +265,7 @@ def main() -> None:
     parser.add_argument("--overflow-penalty", type=float, default=5.0, help="Penalty per overflow bin-day")
     parser.add_argument("--tiny-pickup-threshold-gal", type=float, default=5.0, help="Threshold for tiny pickups")
     parser.add_argument("--tiny-pickup-penalty", type=float, default=0.25, help="Penalty for scheduling a tiny pickup")
-
+    
     parser.add_argument("--required-only", action="store_true")
     parser.add_argument(
         "--require-routable",
@@ -247,6 +277,9 @@ def main() -> None:
     root = repo_root()
     paths = ensure_dirs(root)
 
+    if args.num_trucks != NORMAL_LIFT_TRUCKS:
+        print(f"[WARN] Field observation suggests {NORMAL_LIFT_TRUCKS} normal lift trucks, but num_trucks={args.num_trucks}")
+    
     if args.input:
         input_fp = Path(args.input)
     else:
@@ -322,6 +355,22 @@ def main() -> None:
     bin_capacity_gal = dict(zip(instance["Serial"], instance["bin_capacity_gal"]))
     density_lb_per_gal = dict(zip(instance["Serial"], instance["density_lb_per_gal"]))
 
+    # Revised operational resource assumption based on field observation:
+    # 3 lift-equipped trucks are normally used.
+    # Drivers work staggered shifts, so trucks may be reused across the day.
+    # We approximate this by expanding the effective truck-day minutes.
+
+    effective_truck_work_min = args.truck_work_min
+    resource_model = "single_shift_truck_day"
+
+    if args.use_observed_shift_span:
+        effective_truck_work_min = FLEET_DAY_SPAN_MIN   # 750 min from 4:00 AM to 4:30 PM
+        resource_model = "observed_shift_span_truck_day"
+
+    print(f"[INFO] resource_model = {resource_model}")
+    print(f"[INFO] truck_work_min_input = {args.truck_work_min}")
+    print(f"[INFO] effective_truck_work_min = {effective_truck_work_min}")
+
     max_inventory_gal = {
         i: float(bin_capacity_gal[i]) * MAX_FILL_FACTOR
         for i in bins
@@ -381,6 +430,7 @@ def main() -> None:
     pickup_gal_truck = LpVariable.dicts("pickup_gal_truck", (bins, trucks, days), lowBound=0)
     tiny_pickup = LpVariable.dicts("tiny_pickup", (bins, days), cat=LpBinary)
     overflow_flag = LpVariable.dicts("overflow_flag", (bins, days), cat=LpBinary)
+    threshold_violation = LpVariable.dicts("threshold_violation", (bins, days), lowBound=0)
 
     epsilon = 0.001
     dump_penalty = 0.01
@@ -392,6 +442,7 @@ def main() -> None:
         + args.overtime_penalty_per_min * lpSum(overtime_min[k][d] for k in trucks for d in days)
         + args.overflow_penalty * lpSum(overflow_flag[i][d] for i in bins for d in days)
         + args.tiny_pickup_penalty * lpSum(tiny_pickup[i][d] for i in bins for d in days)
+        + 0.5 * lpSum(threshold_violation[i][d] for i in bins for d in days)
     )
 
     for i in bins:
@@ -418,6 +469,8 @@ def main() -> None:
             model += (
                 pickup_gal[i][d] <= max_inventory_gal[i] * x[i][d]
             ), f"pickup_activate_{i}_{d}"
+           
+        
 
             # Overflow flag:
             # if inventory exceeds nominal bin capacity, overflow_flag can turn on
@@ -432,15 +485,19 @@ def main() -> None:
                 pickup_gal[i][d]
                 <= args.tiny_pickup_threshold_gal + max_inventory_gal[i] * (1 - tiny_pickup[i][d])
             ), f"tiny_pickup_upper_{i}_{d}"
-
+            model += (
+                pickup_gal[i][d]
+                >= args.tiny_pickup_threshold_gal * (x[i][d] - tiny_pickup[i][d])
+            ), f"tiny_pickup_lower_{i}_{d}"
+            
             model += (
                 x[i][d] >= tiny_pickup[i][d]
             ), f"tiny_pickup_only_if_service_{i}_{d}"
             
             if pd.notna(threshold_gal[i]):
                 model += (
-                    inventory_gal[i][d] <= threshold_gal[i] + max_inventory_gal[i] * x[i][d]
-                ), f"threshold_{i}_{d}"
+                    inventory_gal[i][d] <= threshold_gal[i] + threshold_violation[i][d]
+                ), f"soft_threshold_{i}_{d}"
 
             if d < days[-1]:
                 model += (
@@ -465,10 +522,20 @@ def main() -> None:
             model += (
                 lpSum(pickup_gal_truck[i][k][d] for k in trucks) == pickup_gal[i][d]
             ), f"truck_pickup_balance_{i}_{d}"
-
+    
     for k in trucks:
         for d in days:
             model += lpSum(z[k][s][d] for s in streams) <= 1, f"one_stream_{k}_{d}"
+    # Symmetry breaking:
+    # trucks are operationally interchangeable in many cases, so force a consistent ordering
+    # to reduce equivalent branch-and-bound search
+    for d in days:
+       for t in range(len(trucks) - 1):
+          model += (
+            lpSum(z[trucks[t]][s][d] for s in streams)
+            >=
+            lpSum(z[trucks[t + 1]][s][d] for s in streams)
+        ), f"sym_use_{d}_{t}"
 
     for i in bins:
         s_i = bin_stream[i]
@@ -517,11 +584,11 @@ def main() -> None:
             )
 
             model += (
-                service_and_travel + dump_minutes <= args.truck_work_min + overtime_min[k][d]
+                service_and_travel + dump_minutes <= effective_truck_work_min + overtime_min[k][d]
             ), f"workload_{k}_{d}"
 
     solver = PULP_CBC_CMD(
-        msg=False,
+        msg=True,
         timeLimit=args.cbc_time_limit_sec,
         gapRel=args.cbc_gap_rel,
     )
@@ -532,14 +599,14 @@ def main() -> None:
     print(f"[STATUS] {status}")
     print(f"[OBJECTIVE] {objective_value:.3f}")
 
-    if status not in {"Optimal", "Not Solved", "Undefined", "Integer Feasible"}:
-        print("Model did not find a usable feasible solution. Try increasing resources, overtime, or solver time.")
+    if status not in {"Optimal", "Integer Feasible"}:
+        print("Model did not find a usable integer-feasible solution. Outputs will not be trusted.")
         return
 
     schedule_rows = []
     for i in bins:
         for d in days:
-            if safe_value(x[i][d]) > 0.5:
+            if safe_value(x[i][d]) > 0.5 and safe_value(pickup_gal[i][d]) > 1e-6:
                 truck = None
                 for k in trucks:
                     if safe_value(y[i][k][d]) > 0.5:
@@ -594,6 +661,7 @@ def main() -> None:
                     "truck": k,
                     "assigned_stream": chosen_stream,
                     "extra_dumps": chosen_extra_dumps,
+                    "resource_model": resource_model,
                 }
             )
 
@@ -628,8 +696,9 @@ def main() -> None:
                     "minutes_used_without_dumps": round(total_min, 2),
                     "minutes_used_total": round(total_min + args.dump_turnaround_min * extra_dump_count, 2),
                     "overtime_min": round(safe_value(overtime_min[k][d]), 2),
-                    "minutes_capacity_regular": args.truck_work-min if False else args.truck_work_min,
-                    "minutes_capacity_with_overtime": round(args.truck_work_min + safe_value(overtime_min[k][d]), 2),
+                    "minutes_capacity_regular": effective_truck_work_min,
+                    "minutes_capacity_with_overtime": round(effective_truck_work_min + safe_value(overtime_min[k][d]), 2),
+                    "resource_model": resource_model,
                 }
             )
 
@@ -666,7 +735,12 @@ def main() -> None:
             "horizon_days": args.horizon_days,
             "num_bins_in_instance": len(bins),
             "num_trucks": args.num_trucks,
-            "truck_work_min": args.truck_work_min,
+            "truck_work_min_input": args.truck_work_min,
+            "effective_truck_work_min": effective_truck_work_min,
+            "resource_model": resource_model,
+            "normal_lift_trucks": NORMAL_LIFT_TRUCKS,
+            "backup_nonlift_trucks": BACKUP_NONLIFT_TRUCKS,
+            "use_observed_shift_span": bool(args.use_observed_shift_span),
             "total_pickups": round(total_pickups, 2),
             "total_extra_dumps": round(total_extra_dumps, 2),
             "total_overtime_min": round(total_overtime, 2),
@@ -681,6 +755,18 @@ def main() -> None:
     truck_stream_df = pd.DataFrame(truck_stream_rows)
     load_df = pd.DataFrame(load_rows)
     inventory_df = pd.DataFrame(inventory_rows)
+
+    # Accept only usable integer-feasible solutions
+    if status not in {"Optimal", "Integer Feasible"}:
+        print(f"[ERROR] Solver status = {status}. No usable integer-feasible solution found; files will not be written.")
+        return
+
+    # Reject any schedule that contains serviced bins without truck assignments
+    if not schedule_df.empty and schedule_df["truck"].isna().any():
+        missing = schedule_df[schedule_df["truck"].isna()][["Serial", "service_day", "stream"]]
+        print("[ERROR] Schedule contains serviced bins without truck assignments:")
+        print(missing.head(20).to_string(index=False))
+        return
 
     schedule_fp = paths["processed"] / "small_instance_service_schedule.csv"
     truck_stream_fp = paths["processed"] / "small_instance_truck_streams.csv"
