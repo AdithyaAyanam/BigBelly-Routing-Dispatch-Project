@@ -236,7 +236,7 @@ def update_state_after_day(
             next_fill = 0.0
             next_dsl = 0.0
         else:
-            next_fill = min(cap * 1.25, fill + growth)
+            next_fill = min(cap * 1.50, fill + growth)
             next_dsl = dsl + 1.0
 
         new_fill.append(next_fill)
@@ -259,6 +259,11 @@ def main() -> None:
     parser.add_argument("--require-routable", action="store_true")
     parser.add_argument("--max-bins", type=int, default=None)
     parser.add_argument("--horizon-days", type=int, default=7)
+    parser.add_argument(
+    "--use-observed-shift-span",
+    action="store_true",
+    help="Use expanded effective truck-day span based on observed staggered driver shifts",
+    )
     args = parser.parse_args()
 
     root = repo_root()
@@ -299,14 +304,18 @@ def main() -> None:
         # Run weekly heuristic
         cmd_plan = [
             py_exec,
-            "scripts/7day_rolling_horizon.py",
+            "scripts/solve_7day_schedule.py",
             "--input", str(temp_projection_fp),
             "--num-trucks", str(args.num_trucks),
             "--truck-work-min", str(args.truck_work_min),
             "--max-overtime-min", str(args.max_overtime_min),
             "--tiny-pickup-threshold-gal", str(args.tiny_pickup_threshold_gal),
             "--horizon-days", str(args.horizon_days),
+             "--cbc-time-limit-sec", "600",
+             "--cbc-gap-rel", "0.10",
         ]
+        if args.use_observed_shift_span:
+            cmd_plan.append("--use-observed-shift-span")
         if args.max_bins is not None:
             cmd_plan.extend(["--max-bins", str(args.max_bins)])
         if args.require_routable:
@@ -318,11 +327,12 @@ def main() -> None:
         day0_schedule, day0_trucks = overwrite_day0_schedule_and_trucks(processed)
 
         # Run routing on day 0 schedule only
+        route_work_min = 750.0 if args.use_observed_shift_span else args.truck_work_min
         cmd_route = [
             py_exec,
             "scripts/solve_daily_routing.py",
             "--projection-input", str(temp_projection_fp),
-            "--truck-work-min", str(args.truck_work_min),
+            "--truck-work-min", str(route_work_min),
         ]
         run_subprocess(cmd_route, cwd=root)
 
