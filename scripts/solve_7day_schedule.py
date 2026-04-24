@@ -112,7 +112,14 @@ FLEET_DAY_SPAN_MIN = FLEET_DAY_END_MIN - FLEET_DAY_START_MIN   # 750 min
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
-
+def load_stop_lookup_serials(root: Path) -> set[str]:
+    fp = root / "data" / "processed" / "bin_stop_lookup.csv"
+    if not fp.exists():
+        raise FileNotFoundError(f"Missing file: {fp}")
+    df_lookup = pd.read_csv(fp)
+    if "Serial" not in df_lookup.columns:
+        raise KeyError("bin_stop_lookup.csv missing 'Serial'")
+    return set(df_lookup["Serial"].astype(str).str.strip())
 def ensure_dirs(root: Path) -> dict[str, Path]:
     data_dir = root / "data"
     processed_dir = data_dir / "processed"
@@ -328,10 +335,19 @@ def main() -> None:
     df["must_service_within_horizon"] = df["must_service_within_horizon"].fillna(False).astype(bool)
 
     if args.require_routable:
-        routable_mask = is_routable_for_routing(df)
-        df = df[routable_mask].copy()
+        stop_lookup_serials = load_stop_lookup_serials(root)
+
+        df["Serial"] = df["Serial"].astype(str).str.strip()
+        before = df["Serial"].nunique()
+
+        df = df[df["Serial"].isin(stop_lookup_serials)].copy()
+
+        after = df["Serial"].nunique()
+
+        print(f"[INFO] require_routable: {after}/{before} bins retained (aligned with routing)")
+    
         if df.empty:
-            raise ValueError("No routable bins remain after applying --require-routable filter.")
+            raise ValueError("No routable bins remain after applying --require-routable filter.Increase routing coverage.")
 
     instance = choose_instance(
         df=df,
