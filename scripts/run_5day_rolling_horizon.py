@@ -140,6 +140,38 @@ def load_base_projection(processed: Path, input_path: str | None) -> pd.DataFram
     return df
 
 
+def filter_to_routable_bins(base_df: pd.DataFrame, processed: Path) -> pd.DataFrame:
+    lookup_fp = processed / "bin_stop_lookup.csv"
+
+    if not lookup_fp.exists():
+        raise FileNotFoundError(
+            f"Missing {lookup_fp}. Run scripts/build_travel_matrix.py first."
+        )
+
+    lookup_df = pd.read_csv(lookup_fp)
+
+    if "Serial" not in lookup_df.columns:
+        raise KeyError("bin_stop_lookup.csv must contain a 'Serial' column.")
+
+    lookup_df["Serial"] = lookup_df["Serial"].astype(str).str.strip()
+    valid_serials = set(lookup_df["Serial"])
+
+    before = len(base_df)
+
+    base_df = base_df.copy()
+    base_df["Serial"] = base_df["Serial"].astype(str).str.strip()
+    base_df = base_df[base_df["Serial"].isin(valid_serials)].copy()
+
+    after = len(base_df)
+
+    print(f"[INFO] Routable-bin filter applied: kept {after} of {before} bins.")
+    print(f"[INFO] Removed {before - after} bins missing from bin_stop_lookup.csv.")
+
+    if base_df.empty:
+        raise ValueError("After routable-bin filtering, no bins remain.")
+
+    return base_df
+
 def initialize_state(base_df: pd.DataFrame) -> pd.DataFrame:
     state = base_df.copy()
     state["fill_gal"] = state["bin_capacity_gal"] * state["current_fill_pct_est"] / 100.0
@@ -272,6 +304,11 @@ def main() -> None:
     outdir = paths["outdir"]
 
     base_df = load_base_projection(processed, args.projection_input)
+
+    # Critical fix: only plan over routable bins
+    if args.require_routable:
+        base_df = filter_to_routable_bins(base_df, processed)
+
     state_df = initialize_state(base_df)
 
     all_state_rows = []
