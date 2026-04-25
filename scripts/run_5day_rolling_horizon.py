@@ -419,7 +419,27 @@ def main() -> None:
                 "route_minutes_today": round(route_minutes_today, 2),
                 "overtime_today": round(overtime_today, 2),
                 "overflow_bins_start_of_day": overflow_today,
-                "planner_status": planning_summary["status"].iloc[0] if not planning_summary.empty and "status" in planning_summary.columns else None,
+                # Planner diagnostics
+                "planner_status": (
+                    planning_summary["status"].iloc[0]
+                    if not planning_summary.empty and "status" in planning_summary.columns
+                    else None
+                ),
+                "planner_objective": (
+                    float(planning_summary["objective_value"].iloc[0])
+                    if not planning_summary.empty and "objective_value" in planning_summary.columns
+                    else None
+                ),
+                "num_bins_in_instance": (
+                    int(planning_summary["num_bins_in_instance"].iloc[0])
+                    if not planning_summary.empty and "num_bins_in_instance" in planning_summary.columns
+                    else None
+                ),
+                "total_extra_dumps_today": (
+                    float(load_check["extra_dumps"].sum())
+                    if not load_check.empty and "extra_dumps" in load_check.columns
+                    else 0.0
+                ),
             }
         )
 
@@ -443,7 +463,7 @@ def main() -> None:
         "total_route_minutes": round(float(day_metrics_df["route_minutes_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
         "total_overtime": round(float(day_metrics_df["overtime_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
         "avg_overflow_bins_start_of_day": round(float(day_metrics_df["overflow_bins_start_of_day"].mean()), 2) if not day_metrics_df.empty else 0.0,
-        "planner_type": "rolling_horizon_greedy_heuristic_outer_loop",
+        "planner_type": "rolling_horizon_reoptimization_outer_loop_with_MIP_subproblems",
     }])
 
     state_hist_df.to_csv(outdir / "rolling_day_state_history.csv", index=False)
