@@ -197,10 +197,25 @@ def choose_instance(
     required["service_deadline"] = required["service_deadline"].astype(int)
 
     if max_bins is None:
-        return required.sort_values(
-            ["service_deadline", "days_since_last_service", "Serial"],
-            ascending=[True, False, True],
-        ).reset_index(drop=True)
+    # Use the full eligible bin roster. Required bins are sorted first so
+    # urgent 7-day hygiene/deadline bins remain visible, but optional bins
+    # stay in the model and can be selected when needed to satisfy pickup
+    # targets or avoid threshold/overflow penalties.
+        optional_sorted = optional.sort_values(
+            ["days_since_last_service", "Serial"],
+            ascending=[False, True],
+        )
+
+        return pd.concat(
+            [
+                required.sort_values(
+                    ["service_deadline", "days_since_last_service", "Serial"],
+                    ascending=[True, False, True],
+                ),
+                optional_sorted,
+            ],
+            ignore_index=True,
+        ).drop_duplicates(subset=["Serial"]).reset_index(drop=True)
 
     picks = []
     per_deadline = max(1, max_bins // max(1, horizon_days))
@@ -268,7 +283,20 @@ def main() -> None:
     parser.add_argument("--overtime-penalty-per-min", type=float, default=0.02)
     parser.add_argument("--cbc-time-limit-sec", type=int, default=180)
     parser.add_argument("--cbc-gap-rel", type=float, default=0.05)
-    
+    parser.add_argument(
+        "--min-weekly-pickups",
+        type=int,
+        default=None,
+        help="Optional lower bound on total pickups over the planning horizon",
+    )
+
+    parser.add_argument(
+        "--max-weekly-pickups",
+        type=int,
+        default=None,
+        help="Optional upper bound on total pickups over the planning horizon",
+    )
+        
     parser.add_argument("--overflow-penalty", type=float, default=5.0, help="Penalty per overflow bin-day")
     parser.add_argument("--tiny-pickup-threshold-gal", type=float, default=5.0, help="Threshold for tiny pickups")
     parser.add_argument("--tiny-pickup-penalty", type=float, default=0.25, help="Penalty for scheduling a tiny pickup")
@@ -279,6 +307,20 @@ def main() -> None:
         action="store_true",
         help="If set, keep only bins with usable routing coordinates for downstream routing consistency",
     )
+    parser.add_argument(
+        "--min-day0-pickups",
+        type=int,
+        default=None,
+        help="Optional lower bound on pickups executed on Day 0 of the planning horizon",
+    )
+
+    parser.add_argument(
+        "--max-day0-pickups",
+        type=int,
+        default=None,
+        help="Optional upper bound on pickups executed on Day 0 of the planning horizon",
+    )
+
     args = parser.parse_args()
 
     root = repo_root()
@@ -451,15 +493,42 @@ def main() -> None:
     epsilon = 0.001
     dump_penalty = 0.01
 
+    total_pickups_expr = lpSum(x[i][d] for i in bins for d in days)
+    day0_pickups_expr = lpSum(x[i][0] for i in bins)
+
     model += (
-        lpSum(x[i][d] for i in bins for d in days)
+        total_pickups_expr
         + epsilon * lpSum((days[-1] - d) * x[i][d] for i in bins for d in days)
         + dump_penalty * lpSum(extra_dumps[k][s][d] for k in trucks for s in streams for d in days)
         + args.overtime_penalty_per_min * lpSum(overtime_min[k][d] for k in trucks for d in days)
         + args.overflow_penalty * lpSum(overflow_flag[i][d] for i in bins for d in days)
-        + args.tiny_pickup_penalty * lpSum(tiny_pickup[i][d] for i in bins for d in days)
         + 0.5 * lpSum(threshold_violation[i][d] for i in bins for d in days)
     )
+
+    if args.min_weekly_pickups is not None:
+        model += total_pickups_expr >= args.min_weekly_pickups, "min_weekly_pickups"
+
+    if args.max_weekly_pickups is not None:
+        model += total_pickups_expr <= args.max_weekly_pickups, "max_weekly_pickups"
+
+    if args.min_day0_pickups is not None:
+        model += day0_pickups_expr >= args.min_day0_pickups, "min_day0_pickups"
+
+    if args.max_day0_pickups is not None:
+        model += day0_pickups_expr <= args.max_day0_pickups, "max_day0_pickups"
+
+    if (
+        args.min_day0_pickups is not None
+        and args.max_day0_pickups is not None
+        and args.min_day0_pickups > args.max_day0_pickups
+    ):
+        raise ValueError("--min-day0-pickups cannot exceed --max-day0-pickups")
+    if (
+        args.min_weekly_pickups is not None
+        and args.max_weekly_pickups is not None
+        and args.min_weekly_pickups > args.max_weekly_pickups
+    ):
+        raise ValueError("--min-weekly-pickups cannot exceed --max-weekly-pickups")
 
     for i in bins:
         model += inventory_gal[i][0] == current_fill_gal[i], f"initial_inventory_{i}"
@@ -758,6 +827,8 @@ def main() -> None:
             "backup_nonlift_trucks": BACKUP_NONLIFT_TRUCKS,
             "use_observed_shift_span": bool(args.use_observed_shift_span),
             "total_pickups": round(total_pickups, 2),
+            "min_weekly_pickups": args.min_weekly_pickups,
+            "max_weekly_pickups": args.max_weekly_pickups,
             "total_extra_dumps": round(total_extra_dumps, 2),
             "total_overtime_min": round(total_overtime, 2),
             "overflow_bin_days": int(overflow_bin_days),

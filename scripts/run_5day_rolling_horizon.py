@@ -292,9 +292,48 @@ def main() -> None:
     parser.add_argument("--max-bins", type=int, default=None)
     parser.add_argument("--horizon-days", type=int, default=7)
     parser.add_argument(
+        "--min-weekly-pickups",
+        type=int,
+        default=None,
+        help="Optional lower bound passed to the weekly planning model",
+    )
+
+    parser.add_argument(
+        "--max-weekly-pickups",
+        type=int,
+        default=None,
+        help="Optional upper bound passed to the weekly planning model",
+    )
+    parser.add_argument(
     "--use-observed-shift-span",
     action="store_true",
     help="Use expanded effective truck-day span based on observed staggered driver shifts",
+    )
+    parser.add_argument(
+        "--min-day0-pickups",
+        type=int,
+        default=None,
+        help="Optional lower bound passed to the weekly planner for executed Day 0 pickups",
+    )
+
+    parser.add_argument(
+        "--max-day0-pickups",
+        type=int,
+        default=None,
+        help="Optional upper bound passed to the weekly planner for executed Day 0 pickups",
+    )
+    parser.add_argument(
+        "--cbc-time-limit-sec",
+        type=int,
+        default=600,
+        help="CBC solver time limit in seconds passed to the weekly planning model",
+    )
+
+    parser.add_argument(
+        "--cbc-gap-rel",
+        type=float,
+        default=0.10,
+        help="CBC relative MIP gap passed to the weekly planning model",
     )
     args = parser.parse_args()
 
@@ -348,16 +387,30 @@ def main() -> None:
             "--max-overtime-min", str(args.max_overtime_min),
             "--tiny-pickup-threshold-gal", str(args.tiny_pickup_threshold_gal),
             "--horizon-days", str(args.horizon_days),
-             "--cbc-time-limit-sec", "600",
-             "--cbc-gap-rel", "0.10",
+            "--cbc-time-limit-sec", str(args.cbc_time_limit_sec),
+            "--cbc-gap-rel", str(args.cbc_gap_rel),
         ]
         if args.use_observed_shift_span:
             cmd_plan.append("--use-observed-shift-span")
+
         if args.max_bins is not None:
             cmd_plan.extend(["--max-bins", str(args.max_bins)])
+
+        if args.min_weekly_pickups is not None:
+            cmd_plan.extend(["--min-weekly-pickups", str(args.min_weekly_pickups)])
+
+        if args.max_weekly_pickups is not None:
+            cmd_plan.extend(["--max-weekly-pickups", str(args.max_weekly_pickups)])
+
+        if args.min_day0_pickups is not None:
+            cmd_plan.extend(["--min-day0-pickups", str(args.min_day0_pickups)])
+
+        if args.max_day0_pickups is not None:
+            cmd_plan.extend(["--max-day0-pickups", str(args.max_day0_pickups)])
+
         if args.require_routable:
             cmd_plan.append("--require-routable")
-
+        
         run_subprocess(cmd_plan, cwd=root)
 
         # Keep only day 0 decisions
