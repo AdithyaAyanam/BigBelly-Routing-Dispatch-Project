@@ -24,6 +24,8 @@ This version reflects Professor Yano's feedback:
 6. Allow overtime at a penalty cost.
 7. Filter to bins that are routable when routing consistency is required.
 8. Support optional weekly pickup bounds for sensitivity/compliance runs.
+9. Support hard overflow-bin-day caps for zero-overflow feasibility testing.
+10. Support tunable dump-cycle penalty.
 
 Inputs
 ------
@@ -258,6 +260,13 @@ def main() -> None:
     parser.add_argument("--dump-turnaround-min", type=float, default=17.0)
     parser.add_argument("--max-extra-dumps", type=int, default=8)
 
+    parser.add_argument(
+        "--dump-penalty",
+        type=float,
+        default=0.01,
+        help="Penalty per extra dump cycle.",
+    )
+
     parser.add_argument("--max-overtime-min", type=float, default=180.0)
     parser.add_argument("--overtime-penalty-per-min", type=float, default=0.02)
 
@@ -296,6 +305,14 @@ def main() -> None:
         default=5.0,
         help="Penalty per overflow bin-day.",
     )
+
+    parser.add_argument(
+        "--max-overflow-bin-days",
+        type=int,
+        default=None,
+        help="Optional hard upper bound on total overflow bin-days.",
+    )
+
     parser.add_argument(
         "--tiny-pickup-threshold-gal",
         type=float,
@@ -334,6 +351,9 @@ def main() -> None:
         and args.min_weekly_pickups > args.max_weekly_pickups
     ):
         raise ValueError("--min-weekly-pickups cannot exceed --max-weekly-pickups")
+
+    if args.max_overflow_bin_days is not None and args.max_overflow_bin_days < 0:
+        raise ValueError("--max-overflow-bin-days cannot be negative")
 
     root = repo_root()
     paths = ensure_dirs(root)
@@ -525,7 +545,7 @@ def main() -> None:
     )
 
     epsilon = 0.001
-    dump_penalty = 0.01
+    dump_penalty = args.dump_penalty
 
     total_pickups_expr = lpSum(x[i][d] for i in bins for d in days)
     day0_pickups_expr = lpSum(x[i][0] for i in bins)
@@ -572,6 +592,12 @@ def main() -> None:
 
     if args.max_day0_pickups is not None:
         model += day0_pickups_expr <= args.max_day0_pickups, "max_day0_pickups"
+
+    if args.max_overflow_bin_days is not None:
+        model += (
+            lpSum(overflow_flag[i][d] for i in bins for d in days)
+            <= args.max_overflow_bin_days
+        ), "max_overflow_bin_days"
 
     for i in bins:
         model += inventory_gal[i][0] == current_fill_gal[i], f"initial_inventory_{i}"
@@ -894,6 +920,11 @@ def main() -> None:
                         safe_value(post_service_inventory_gal[i][d]),
                         2,
                     ),
+                    "overflow_flag": int(round(safe_value(overflow_flag[i][d]))),
+                    "threshold_violation_gal": round(
+                        safe_value(threshold_violation[i][d]),
+                        2,
+                    ),
                 }
             )
 
@@ -915,6 +946,11 @@ def main() -> None:
         for d in days
         if safe_value(inventory_gal[i][d]) > float(bin_capacity_gal[i]) + 1e-6
     )
+    overflow_flag_days = sum(
+        int(round(safe_value(overflow_flag[i][d])))
+        for i in bins
+        for d in days
+    )
 
     planning_summary_df = pd.DataFrame(
         [
@@ -933,9 +969,15 @@ def main() -> None:
                 "total_pickups": round(total_pickups, 2),
                 "min_weekly_pickups": args.min_weekly_pickups,
                 "max_weekly_pickups": args.max_weekly_pickups,
+                "min_day0_pickups": args.min_day0_pickups,
+                "max_day0_pickups": args.max_day0_pickups,
                 "total_extra_dumps": round(total_extra_dumps, 2),
                 "total_overtime_min": round(total_overtime, 2),
                 "overflow_bin_days": int(overflow_bin_days),
+                "overflow_flag_days": int(overflow_flag_days),
+                "max_overflow_bin_days": args.max_overflow_bin_days,
+                "dump_penalty": args.dump_penalty,
+                "overflow_penalty": args.overflow_penalty,
                 "cbc_time_limit_sec": args.cbc_time_limit_sec,
                 "cbc_gap_rel": args.cbc_gap_rel,
                 "require_routable": bool(args.require_routable),
