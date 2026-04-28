@@ -7,34 +7,23 @@ Purpose
 -------
 Solve a multi-day Bigbelly scheduling instance without geographic zoning.
 
-This version is designed to reflect Professor Yano's feedback:
+This version reflects Professor Yano's feedback:
 1. Do NOT divide campus into fixed truck zones.
 2. Solve a higher-level planning problem over a horizon of about a week.
 3. Allow a bin to be serviced more than once within the horizon.
-4. Use inventory-style state variables that:
-   - represent the fill in each bin each day,
-   - drop to zero when the bin is picked up,
-   - then increase again according to the bin's growth rate.
+4. Use inventory-style state variables:
+   - inventory_gal[i,d] = start-of-day fill,
+   - pickup resets bin inventory after service,
+   - inventory then grows according to daily fill rate.
 5. Enforce realistic truck constraints:
    - one stream per truck per day,
    - mass limit,
    - volume limit,
    - shift-time limit,
    - extra dump cycles when needed.
-6. Allow overtime at a penalty cost so the model remains feasible
-   during difficult demand periods.
-7. Filter to bins that are routable when routing-relevant coordinates exist,
-   so the Phase 1 schedule is consistent with the Phase 2 routing layer.
-
-Core modeling idea
-------------------
-For each bin i and day d:
-- inventory_gal[i,d] = start-of-day fill in gallons
-- if the bin is serviced on day d, that inventory is removed
-- post_service_inventory_gal[i,d] = remaining fill after service
-- next day's inventory = post-service inventory + daily growth
-
-This makes repeated service possible within the same horizon.
+6. Allow overtime at a penalty cost.
+7. Filter to bins that are routable when routing consistency is required.
+8. Support optional weekly pickup bounds for sensitivity/compliance runs.
 
 Inputs
 ------
@@ -43,7 +32,7 @@ Expected input file:
 or:
     data/processed/bin_7day_projection_inputs.csv
 
-Required columns in the input:
+Required columns:
 - Serial
 - stream
 - threshold_pct
@@ -83,18 +72,6 @@ from pulp import (
 )
 
 MAX_FILL_FACTOR = 1.50
-# Observed field operations assumptions from Bigbelly driver conversation:
-# - 3 lift-equipped trucks are normally used
-# - 1 backup truck without a lift exists but is not normally used
-# - drivers work staggered shifts:
-#     4:00 AM - 12:30 PM
-#     6:00 AM - 2:30 PM
-#     8:00 AM - 4:30 PM
-# This implies that a truck may be reused across the day by different drivers.
-# In this implementation, we approximate that operational reality by using
-# an expanded effective truck-day minutes assumption rather than a strict
-# single 480-minute block per truck.
-
 
 NORMAL_LIFT_TRUCKS = 3
 BACKUP_NONLIFT_TRUCKS = 1
@@ -107,24 +84,31 @@ SHIFT_WINDOWS = [
 
 FLEET_DAY_START_MIN = 4 * 60
 FLEET_DAY_END_MIN = 16 * 60 + 30
-FLEET_DAY_SPAN_MIN = FLEET_DAY_END_MIN - FLEET_DAY_START_MIN   # 750 min
+FLEET_DAY_SPAN_MIN = FLEET_DAY_END_MIN - FLEET_DAY_START_MIN  # 750 min
+
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
-def load_stop_lookup_serials(root: Path) -> set[str]:
-    fp = root / "data" / "processed" / "bin_stop_lookup.csv"
-    if not fp.exists():
-        raise FileNotFoundError(f"Missing file: {fp}")
-    df_lookup = pd.read_csv(fp)
-    if "Serial" not in df_lookup.columns:
-        raise KeyError("bin_stop_lookup.csv missing 'Serial'")
-    return set(df_lookup["Serial"].astype(str).str.strip())
+
 def ensure_dirs(root: Path) -> dict[str, Path]:
     data_dir = root / "data"
     processed_dir = data_dir / "processed"
     processed_dir.mkdir(parents=True, exist_ok=True)
     return {"root": root, "processed": processed_dir}
+
+
+def load_stop_lookup_serials(root: Path) -> set[str]:
+    fp = root / "data" / "processed" / "bin_stop_lookup.csv"
+    if not fp.exists():
+        raise FileNotFoundError(f"Missing file: {fp}")
+
+    df_lookup = pd.read_csv(fp)
+
+    if "Serial" not in df_lookup.columns:
+        raise KeyError("bin_stop_lookup.csv missing 'Serial'")
+
+    return set(df_lookup["Serial"].astype(str).str.strip())
 
 
 def canonical_stream(x: object) -> str:
@@ -144,31 +128,19 @@ def canonical_stream(x: object) -> str:
 
 def interval_deadline(days_since_last_service: float, horizon_days: int) -> float:
     remaining = 7 - float(days_since_last_service)
+
     if remaining <= 0:
         return 0.0
+
     if 1 <= remaining <= horizon_days - 1:
         return float(int(remaining))
+
     return np.nan
 
 
 def safe_value(var: object) -> float:
     v = value(var)
     return 0.0 if v is None else float(v)
-
-
-def is_routable_for_routing(df: pd.DataFrame) -> pd.Series:
-    """Return a boolean mask indicating whether each bin has usable routing coordinates."""
-    mask = pd.Series(False, index=df.index)
-
-    if {"Access_Lat", "Access_Lng"}.issubset(df.columns):
-        mask = mask | (pd.to_numeric(df["Access_Lat"], errors="coerce").notna() &
-                       pd.to_numeric(df["Access_Lng"], errors="coerce").notna())
-
-    if {"Lat", "Lng"}.issubset(df.columns):
-        mask = mask | (pd.to_numeric(df["Lat"], errors="coerce").notna() &
-                       pd.to_numeric(df["Lng"], errors="coerce").notna())
-
-    return mask
 
 
 def choose_instance(
@@ -197,25 +169,25 @@ def choose_instance(
     required["service_deadline"] = required["service_deadline"].astype(int)
 
     if max_bins is None:
-    # Use the full eligible bin roster. Required bins are sorted first so
-    # urgent 7-day hygiene/deadline bins remain visible, but optional bins
-    # stay in the model and can be selected when needed to satisfy pickup
-    # targets or avoid threshold/overflow penalties.
         optional_sorted = optional.sort_values(
             ["days_since_last_service", "Serial"],
             ascending=[False, True],
         )
 
-        return pd.concat(
-            [
-                required.sort_values(
-                    ["service_deadline", "days_since_last_service", "Serial"],
-                    ascending=[True, False, True],
-                ),
-                optional_sorted,
-            ],
-            ignore_index=True,
-        ).drop_duplicates(subset=["Serial"]).reset_index(drop=True)
+        return (
+            pd.concat(
+                [
+                    required.sort_values(
+                        ["service_deadline", "days_since_last_service", "Serial"],
+                        ascending=[True, False, True],
+                    ),
+                    optional_sorted,
+                ],
+                ignore_index=True,
+            )
+            .drop_duplicates(subset=["Serial"])
+            .reset_index(drop=True)
+        )
 
     picks = []
     per_deadline = max(1, max_bins // max(1, horizon_days))
@@ -230,7 +202,9 @@ def choose_instance(
     chosen = pd.concat(picks, ignore_index=True).drop_duplicates(subset=["Serial"])
 
     if len(chosen) < max_bins:
-        remaining_required = required[~required["Serial"].isin(chosen["Serial"])].sort_values(
+        remaining_required = required[
+            ~required["Serial"].isin(chosen["Serial"])
+        ].sort_values(
             ["service_deadline", "days_since_last_service", "Serial"],
             ascending=[True, False, True],
         )
@@ -254,12 +228,13 @@ def choose_instance(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Solve a weekly Bigbelly scheduling instance.")
+
     parser.add_argument("--input", type=str, default=None)
     parser.add_argument(
         "--max-bins",
         type=int,
         default=None,
-        help="Optional instance size cap; default keeps all eligible bins",
+        help="Optional instance size cap; default keeps all eligible bins.",
     )
     parser.add_argument("--num-trucks", type=int, default=3)
     parser.add_argument("--horizon-days", type=int, default=7)
@@ -270,65 +245,105 @@ def main() -> None:
     parser.add_argument("--recycling-volume-gal", type=float, default=450.0)
 
     parser.add_argument("--truck-work-min", type=float, default=480.0)
+
     parser.add_argument(
-    "--use-observed-shift-span",
-    action="store_true",
-    help="Approximate staggered driver shifts by using an expanded effective truck-day span",
+        "--use-observed-shift-span",
+        action="store_true",
+        help=(
+            "Sensitivity option only: approximate staggered driver shifts by using "
+            "the observed fleet-day span of 750 minutes instead of the default 480."
+        ),
     )
-    
+
     parser.add_argument("--dump-turnaround-min", type=float, default=17.0)
     parser.add_argument("--max-extra-dumps", type=int, default=8)
 
     parser.add_argument("--max-overtime-min", type=float, default=180.0)
     parser.add_argument("--overtime-penalty-per-min", type=float, default=0.02)
+
     parser.add_argument("--cbc-time-limit-sec", type=int, default=180)
     parser.add_argument("--cbc-gap-rel", type=float, default=0.05)
+
     parser.add_argument(
         "--min-weekly-pickups",
         type=int,
         default=None,
-        help="Optional lower bound on total pickups over the planning horizon",
+        help="Optional lower bound on total pickups over the planning horizon.",
     )
-
     parser.add_argument(
         "--max-weekly-pickups",
         type=int,
         default=None,
-        help="Optional upper bound on total pickups over the planning horizon",
+        help="Optional upper bound on total pickups over the planning horizon.",
     )
-        
-    parser.add_argument("--overflow-penalty", type=float, default=5.0, help="Penalty per overflow bin-day")
-    parser.add_argument("--tiny-pickup-threshold-gal", type=float, default=5.0, help="Threshold for tiny pickups")
-    parser.add_argument("--tiny-pickup-penalty", type=float, default=0.25, help="Penalty for scheduling a tiny pickup")
-    
-    parser.add_argument("--required-only", action="store_true")
-    parser.add_argument(
-        "--require-routable",
-        action="store_true",
-        help="If set, keep only bins with usable routing coordinates for downstream routing consistency",
-    )
+
     parser.add_argument(
         "--min-day0-pickups",
         type=int,
         default=None,
-        help="Optional lower bound on pickups executed on Day 0 of the planning horizon",
+        help="Optional lower bound on pickups executed on Day 0 of the planning horizon.",
     )
-
     parser.add_argument(
         "--max-day0-pickups",
         type=int,
         default=None,
-        help="Optional upper bound on pickups executed on Day 0 of the planning horizon",
+        help="Optional upper bound on pickups executed on Day 0 of the planning horizon.",
+    )
+
+    parser.add_argument(
+        "--overflow-penalty",
+        type=float,
+        default=5.0,
+        help="Penalty per overflow bin-day.",
+    )
+    parser.add_argument(
+        "--tiny-pickup-threshold-gal",
+        type=float,
+        default=5.0,
+        help="Threshold for tiny pickups.",
+    )
+    parser.add_argument(
+        "--tiny-pickup-penalty",
+        type=float,
+        default=0.25,
+        help="Penalty for scheduling a tiny pickup.",
+    )
+
+    parser.add_argument("--required-only", action="store_true")
+    parser.add_argument(
+        "--require-routable",
+        action="store_true",
+        help=(
+            "If set, keep only bins that exist in bin_stop_lookup.csv for downstream "
+            "routing consistency."
+        ),
     )
 
     args = parser.parse_args()
+
+    if (
+        args.min_day0_pickups is not None
+        and args.max_day0_pickups is not None
+        and args.min_day0_pickups > args.max_day0_pickups
+    ):
+        raise ValueError("--min-day0-pickups cannot exceed --max-day0-pickups")
+
+    if (
+        args.min_weekly_pickups is not None
+        and args.max_weekly_pickups is not None
+        and args.min_weekly_pickups > args.max_weekly_pickups
+    ):
+        raise ValueError("--min-weekly-pickups cannot exceed --max-weekly-pickups")
 
     root = repo_root()
     paths = ensure_dirs(root)
 
     if args.num_trucks != NORMAL_LIFT_TRUCKS:
-        print(f"[WARN] Field observation suggests {NORMAL_LIFT_TRUCKS} normal lift trucks, but num_trucks={args.num_trucks}")
-    
+        print(
+            f"[WARN] Field observation suggests {NORMAL_LIFT_TRUCKS} normal lift trucks, "
+            f"but num_trucks={args.num_trucks}"
+        )
+
     if args.input:
         input_fp = Path(args.input)
     else:
@@ -340,7 +355,8 @@ def main() -> None:
             input_fp = csv_fp
         else:
             raise FileNotFoundError(
-                "Missing bin_7day_projection_inputs. Run python scripts/build_projected_fill.py first."
+                "Missing bin_7day_projection_inputs. "
+                "Run python scripts/build_projected_fill.py first."
             )
 
     if input_fp.suffix.lower() == ".csv":
@@ -367,6 +383,7 @@ def main() -> None:
 
     if "service_deadline" not in df.columns:
         df["service_deadline"] = np.nan
+
     if "deadline_interval" not in df.columns:
         df["deadline_interval"] = df["days_since_last_service"].apply(
             lambda x: interval_deadline(x, args.horizon_days)
@@ -374,22 +391,24 @@ def main() -> None:
 
     df["Serial"] = df["Serial"].astype(str).str.strip()
     df["stream"] = df["stream"].apply(canonical_stream)
-    df["must_service_within_horizon"] = df["must_service_within_horizon"].fillna(False).astype(bool)
+    df["must_service_within_horizon"] = (
+        df["must_service_within_horizon"].fillna(False).astype(bool)
+    )
 
     if args.require_routable:
         stop_lookup_serials = load_stop_lookup_serials(root)
 
-        df["Serial"] = df["Serial"].astype(str).str.strip()
         before = df["Serial"].nunique()
-
         df = df[df["Serial"].isin(stop_lookup_serials)].copy()
-
         after = df["Serial"].nunique()
 
         print(f"[INFO] require_routable: {after}/{before} bins retained (aligned with routing)")
-    
+
         if df.empty:
-            raise ValueError("No routable bins remain after applying --require-routable filter.Increase routing coverage.")
+            raise ValueError(
+                "No routable bins remain after applying --require-routable filter. "
+                "Increase routing coverage."
+            )
 
     instance = choose_instance(
         df=df,
@@ -397,11 +416,16 @@ def main() -> None:
         required_only=args.required_only,
         horizon_days=args.horizon_days,
     )
+
     if instance.empty:
         raise ValueError("No bins available for solve after filtering.")
 
     bins = instance["Serial"].astype(str).tolist()
-    streams = [s for s in sorted(instance["stream"].dropna().astype(str).unique().tolist()) if s != "Unknown"]
+    streams = [
+        s
+        for s in sorted(instance["stream"].dropna().astype(str).unique().tolist())
+        if s != "Unknown"
+    ]
     days = list(range(args.horizon_days))
     trucks = [f"T{k + 1}" for k in range(args.num_trucks)]
 
@@ -413,16 +437,11 @@ def main() -> None:
     bin_capacity_gal = dict(zip(instance["Serial"], instance["bin_capacity_gal"]))
     density_lb_per_gal = dict(zip(instance["Serial"], instance["density_lb_per_gal"]))
 
-    # Revised operational resource assumption based on field observation:
-    # 3 lift-equipped trucks are normally used.
-    # Drivers work staggered shifts, so trucks may be reused across the day.
-    # We approximate this by expanding the effective truck-day minutes.
-
     effective_truck_work_min = args.truck_work_min
     resource_model = "single_shift_truck_day"
 
     if args.use_observed_shift_span:
-        effective_truck_work_min = FLEET_DAY_SPAN_MIN   # 750 min from 4:00 AM to 4:30 PM
+        effective_truck_work_min = FLEET_DAY_SPAN_MIN
         resource_model = "observed_shift_span_truck_day"
 
     print(f"[INFO] resource_model = {resource_model}")
@@ -436,13 +455,15 @@ def main() -> None:
 
     current_fill_gal = {
         i: float(bin_capacity_gal[i])
-        * float(instance.loc[instance["Serial"] == i, "current_fill_pct_est"].iloc[0]) / 100.0
+        * float(instance.loc[instance["Serial"] == i, "current_fill_pct_est"].iloc[0])
+        / 100.0
         for i in bins
     }
 
     growth_gal_per_day = {
         i: float(bin_capacity_gal[i])
-        * float(instance.loc[instance["Serial"] == i, "daily_fill_growth_pct"].iloc[0]) / 100.0
+        * float(instance.loc[instance["Serial"] == i, "daily_fill_growth_pct"].iloc[0])
+        / 100.0
         for i in bins
     }
 
@@ -483,12 +504,25 @@ def main() -> None:
     )
 
     inventory_gal = LpVariable.dicts("inventory_gal", (bins, days), lowBound=0)
-    post_service_inventory_gal = LpVariable.dicts("post_service_inventory_gal", (bins, days), lowBound=0)
+    post_service_inventory_gal = LpVariable.dicts(
+        "post_service_inventory_gal",
+        (bins, days),
+        lowBound=0,
+    )
     pickup_gal = LpVariable.dicts("pickup_gal", (bins, days), lowBound=0)
-    pickup_gal_truck = LpVariable.dicts("pickup_gal_truck", (bins, trucks, days), lowBound=0)
+    pickup_gal_truck = LpVariable.dicts(
+        "pickup_gal_truck",
+        (bins, trucks, days),
+        lowBound=0,
+    )
+
     tiny_pickup = LpVariable.dicts("tiny_pickup", (bins, days), cat=LpBinary)
     overflow_flag = LpVariable.dicts("overflow_flag", (bins, days), cat=LpBinary)
-    threshold_violation = LpVariable.dicts("threshold_violation", (bins, days), lowBound=0)
+    threshold_violation = LpVariable.dicts(
+        "threshold_violation",
+        (bins, days),
+        lowBound=0,
+    )
 
     epsilon = 0.001
     dump_penalty = 0.01
@@ -499,10 +533,32 @@ def main() -> None:
     model += (
         total_pickups_expr
         + epsilon * lpSum((days[-1] - d) * x[i][d] for i in bins for d in days)
-        + dump_penalty * lpSum(extra_dumps[k][s][d] for k in trucks for s in streams for d in days)
-        + args.overtime_penalty_per_min * lpSum(overtime_min[k][d] for k in trucks for d in days)
-        + args.overflow_penalty * lpSum(overflow_flag[i][d] for i in bins for d in days)
-        + 0.5 * lpSum(threshold_violation[i][d] for i in bins for d in days)
+        + dump_penalty * lpSum(
+            extra_dumps[k][s][d]
+            for k in trucks
+            for s in streams
+            for d in days
+        )
+        + args.overtime_penalty_per_min * lpSum(
+            overtime_min[k][d]
+            for k in trucks
+            for d in days
+        )
+        + args.overflow_penalty * lpSum(
+            overflow_flag[i][d]
+            for i in bins
+            for d in days
+        )
+        + 0.5 * lpSum(
+            threshold_violation[i][d]
+            for i in bins
+            for d in days
+        )
+        + args.tiny_pickup_penalty * lpSum(
+            tiny_pickup[i][d]
+            for i in bins
+            for d in days
+        )
     )
 
     if args.min_weekly_pickups is not None:
@@ -517,19 +573,6 @@ def main() -> None:
     if args.max_day0_pickups is not None:
         model += day0_pickups_expr <= args.max_day0_pickups, "max_day0_pickups"
 
-    if (
-        args.min_day0_pickups is not None
-        and args.max_day0_pickups is not None
-        and args.min_day0_pickups > args.max_day0_pickups
-    ):
-        raise ValueError("--min-day0-pickups cannot exceed --max-day0-pickups")
-    if (
-        args.min_weekly_pickups is not None
-        and args.max_weekly_pickups is not None
-        and args.min_weekly_pickups > args.max_weekly_pickups
-    ):
-        raise ValueError("--min-weekly-pickups cannot exceed --max-weekly-pickups")
-
     for i in bins:
         model += inventory_gal[i][0] == current_fill_gal[i], f"initial_inventory_{i}"
         model += inventory_gal[i][0] <= max_inventory_gal[i], f"initial_cap_{i}"
@@ -537,48 +580,55 @@ def main() -> None:
         interval_due = deadline_interval[i]
         if pd.notna(interval_due):
             interval_due = int(interval_due)
-            model += lpSum(x[i][d] for d in range(interval_due + 1)) >= 1, f"interval_deadline_{i}"
+            model += (
+                lpSum(x[i][d] for d in range(interval_due + 1)) >= 1
+            ), f"interval_deadline_{i}"
 
         for d in days:
             model += inventory_gal[i][d] <= max_inventory_gal[i], f"inventory_cap_{i}_{d}"
-            model += post_service_inventory_gal[i][d] <= inventory_gal[i][d], f"post_le_inventory_{i}_{d}"
             model += (
-                post_service_inventory_gal[i][d] <= max_inventory_gal[i] * (1 - x[i][d])
+                post_service_inventory_gal[i][d] <= inventory_gal[i][d]
+            ), f"post_le_inventory_{i}_{d}"
+
+            model += (
+                post_service_inventory_gal[i][d]
+                <= max_inventory_gal[i] * (1 - x[i][d])
             ), f"reset_if_pick_{i}_{d}"
+
             model += (
-                post_service_inventory_gal[i][d] >= inventory_gal[i][d] - max_inventory_gal[i] * x[i][d]
+                post_service_inventory_gal[i][d]
+                >= inventory_gal[i][d] - max_inventory_gal[i] * x[i][d]
             ), f"carry_if_no_pick_{i}_{d}"
+
             model += (
-                pickup_gal[i][d] == inventory_gal[i][d] - post_service_inventory_gal[i][d]
+                pickup_gal[i][d]
+                == inventory_gal[i][d] - post_service_inventory_gal[i][d]
             ), f"pickup_def_{i}_{d}"
+
             model += (
                 pickup_gal[i][d] <= max_inventory_gal[i] * x[i][d]
             ), f"pickup_activate_{i}_{d}"
-           
-        
 
-            # Overflow flag:
-            # if inventory exceeds nominal bin capacity, overflow_flag can turn on
             model += (
                 inventory_gal[i][d]
-                <= float(bin_capacity_gal[i]) + (max_inventory_gal[i] - float(bin_capacity_gal[i])) * overflow_flag[i][d]
+                <= float(bin_capacity_gal[i])
+                + (max_inventory_gal[i] - float(bin_capacity_gal[i]))
+                * overflow_flag[i][d]
             ), f"overflow_flag_link_{i}_{d}"
 
-            # Tiny-pickup flag:
-            # if pickup is tiny, tiny_pickup can turn on and be penalized in objective
             model += (
                 pickup_gal[i][d]
-                <= args.tiny_pickup_threshold_gal + max_inventory_gal[i] * (1 - tiny_pickup[i][d])
+                <= args.tiny_pickup_threshold_gal
+                + max_inventory_gal[i] * (1 - tiny_pickup[i][d])
             ), f"tiny_pickup_upper_{i}_{d}"
+
             model += (
                 pickup_gal[i][d]
                 >= args.tiny_pickup_threshold_gal * (x[i][d] - tiny_pickup[i][d])
             ), f"tiny_pickup_lower_{i}_{d}"
-            
-            model += (
-                x[i][d] >= tiny_pickup[i][d]
-            ), f"tiny_pickup_only_if_service_{i}_{d}"
-            
+
+            model += x[i][d] >= tiny_pickup[i][d], f"tiny_pickup_only_if_service_{i}_{d}"
+
             if pd.notna(threshold_gal[i]):
                 model += (
                     inventory_gal[i][d] <= threshold_gal[i] + threshold_violation[i][d]
@@ -586,41 +636,46 @@ def main() -> None:
 
             if d < days[-1]:
                 model += (
-                    inventory_gal[i][d + 1] == post_service_inventory_gal[i][d] + growth_gal_per_day[i]
+                    inventory_gal[i][d + 1]
+                    == post_service_inventory_gal[i][d] + growth_gal_per_day[i]
                 ), f"inventory_flow_{i}_{d}"
 
     for i in bins:
         for d in days:
-            model += lpSum(y[i][k][d] for k in trucks) == x[i][d], f"truck_assign_{i}_{d}"
+            model += (
+                lpSum(y[i][k][d] for k in trucks) == x[i][d]
+            ), f"truck_assign_{i}_{d}"
 
             for k in trucks:
                 model += (
                     pickup_gal_truck[i][k][d] <= pickup_gal[i][d]
                 ), f"truck_pickup_le_total_{i}_{k}_{d}"
+
                 model += (
                     pickup_gal_truck[i][k][d] <= max_inventory_gal[i] * y[i][k][d]
                 ), f"truck_pickup_activate_{i}_{k}_{d}"
+
                 model += (
-                    pickup_gal_truck[i][k][d] >= pickup_gal[i][d] - max_inventory_gal[i] * (1 - y[i][k][d])
+                    pickup_gal_truck[i][k][d]
+                    >= pickup_gal[i][d] - max_inventory_gal[i] * (1 - y[i][k][d])
                 ), f"truck_pickup_lower_{i}_{k}_{d}"
 
             model += (
                 lpSum(pickup_gal_truck[i][k][d] for k in trucks) == pickup_gal[i][d]
             ), f"truck_pickup_balance_{i}_{d}"
-    
+
     for k in trucks:
         for d in days:
-            model += lpSum(z[k][s][d] for s in streams) <= 1, f"one_stream_{k}_{d}"
-    # Symmetry breaking:
-    # trucks are operationally interchangeable in many cases, so force a consistent ordering
-    # to reduce equivalent branch-and-bound search
+            model += (
+                lpSum(z[k][s][d] for s in streams) <= 1
+            ), f"one_stream_{k}_{d}"
+
     for d in days:
-       for t in range(len(trucks) - 1):
-          model += (
-            lpSum(z[trucks[t]][s][d] for s in streams)
-            >=
-            lpSum(z[trucks[t + 1]][s][d] for s in streams)
-        ), f"sym_use_{d}_{t}"
+        for t in range(len(trucks) - 1):
+            model += (
+                lpSum(z[trucks[t]][s][d] for s in streams)
+                >= lpSum(z[trucks[t + 1]][s][d] for s in streams)
+            ), f"sym_use_{d}_{t}"
 
     for i in bins:
         s_i = bin_stream[i]
@@ -639,6 +694,7 @@ def main() -> None:
                     for i in bins
                     if bin_stream[i] == s
                 )
+
                 assigned_lb = lpSum(
                     density_lb_per_gal[i] * pickup_gal_truck[i][k][d]
                     for i in bins
@@ -646,11 +702,13 @@ def main() -> None:
                 )
 
                 model += (
-                    assigned_gal <= stream_volume_cap[s] * (z[k][s][d] + extra_dumps[k][s][d])
+                    assigned_gal
+                    <= stream_volume_cap[s] * (z[k][s][d] + extra_dumps[k][s][d])
                 ), f"volcap_{k}_{s}_{d}"
 
                 model += (
-                    assigned_lb <= args.truck_mass_lb * (z[k][s][d] + extra_dumps[k][s][d])
+                    assigned_lb
+                    <= args.truck_mass_lb * (z[k][s][d] + extra_dumps[k][s][d])
                 ), f"masscap_{k}_{s}_{d}"
 
                 model += (
@@ -665,11 +723,13 @@ def main() -> None:
             )
 
             dump_minutes = args.dump_turnaround_min * lpSum(
-                extra_dumps[k][s][d] for s in streams
+                extra_dumps[k][s][d]
+                for s in streams
             )
 
             model += (
-                service_and_travel + dump_minutes <= effective_truck_work_min + overtime_min[k][d]
+                service_and_travel + dump_minutes
+                <= effective_truck_work_min + overtime_min[k][d]
             ), f"workload_{k}_{d}"
 
     solver = PULP_CBC_CMD(
@@ -681,6 +741,7 @@ def main() -> None:
 
     status = LpStatus[model.status]
     objective_value = safe_value(model.objective)
+
     print(f"[STATUS] {status}")
     print(f"[OBJECTIVE] {objective_value:.3f}")
 
@@ -689,16 +750,20 @@ def main() -> None:
         return
 
     schedule_rows = []
+
     for i in bins:
         for d in days:
             if safe_value(x[i][d]) > 0.5 and safe_value(pickup_gal[i][d]) > 1e-6:
                 truck = None
+
                 for k in trucks:
                     if safe_value(y[i][k][d]) > 0.5:
                         truck = k
                         break
 
-                fill_pct_before = 100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i])
+                fill_pct_before = (
+                    100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i])
+                )
 
                 schedule_rows.append(
                     {
@@ -709,8 +774,15 @@ def main() -> None:
                         "inventory_gal_before_service": round(safe_value(inventory_gal[i][d]), 2),
                         "inventory_pct_before_service": round(fill_pct_before, 2),
                         "pickup_gal": round(safe_value(pickup_gal[i][d]), 2),
-                        "pickup_lb": round(safe_value(pickup_gal[i][d]) * density_lb_per_gal[i], 2),
-                        "interval_deadline": None if pd.isna(deadline_interval[i]) else int(deadline_interval[i]),
+                        "pickup_lb": round(
+                            safe_value(pickup_gal[i][d]) * density_lb_per_gal[i],
+                            2,
+                        ),
+                        "interval_deadline": (
+                            None
+                            if pd.isna(deadline_interval[i])
+                            else int(deadline_interval[i])
+                        ),
                     }
                 )
 
@@ -730,10 +802,12 @@ def main() -> None:
         )
 
     truck_stream_rows = []
+
     for d in days:
         for k in trucks:
             chosen_stream = None
             chosen_extra_dumps = 0
+
             for s in streams:
                 if safe_value(z[k][s][d]) > 0.5:
                     chosen_stream = s
@@ -751,11 +825,18 @@ def main() -> None:
             )
 
     load_rows = []
+
     for d in days:
         for k in trucks:
             total_gal = sum(safe_value(pickup_gal_truck[i][k][d]) for i in bins)
-            total_lb = sum(density_lb_per_gal[i] * safe_value(pickup_gal_truck[i][k][d]) for i in bins)
-            total_min = sum((service_min[i] + travel_min[i]) * safe_value(y[i][k][d]) for i in bins)
+            total_lb = sum(
+                density_lb_per_gal[i] * safe_value(pickup_gal_truck[i][k][d])
+                for i in bins
+            )
+            total_min = sum(
+                (service_min[i] + travel_min[i]) * safe_value(y[i][k][d])
+                for i in bins
+            )
 
             assigned_stream = None
             extra_dump_count = 0
@@ -779,15 +860,22 @@ def main() -> None:
                     "pickup_lb_capacity_effective": args.truck_mass_lb * (1 + extra_dump_count),
                     "extra_dumps": extra_dump_count,
                     "minutes_used_without_dumps": round(total_min, 2),
-                    "minutes_used_total": round(total_min + args.dump_turnaround_min * extra_dump_count, 2),
+                    "minutes_used_total": round(
+                        total_min + args.dump_turnaround_min * extra_dump_count,
+                        2,
+                    ),
                     "overtime_min": round(safe_value(overtime_min[k][d]), 2),
                     "minutes_capacity_regular": effective_truck_work_min,
-                    "minutes_capacity_with_overtime": round(effective_truck_work_min + safe_value(overtime_min[k][d]), 2),
+                    "minutes_capacity_with_overtime": round(
+                        effective_truck_work_min + safe_value(overtime_min[k][d]),
+                        2,
+                    ),
                     "resource_model": resource_model,
                 }
             )
 
     inventory_rows = []
+
     for i in bins:
         for d in days:
             inventory_rows.append(
@@ -797,58 +885,72 @@ def main() -> None:
                     "day": d,
                     "inventory_gal_start": round(safe_value(inventory_gal[i][d]), 2),
                     "inventory_pct_start": round(
-                        100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i]), 2
+                        100.0 * safe_value(inventory_gal[i][d]) / float(bin_capacity_gal[i]),
+                        2,
                     ),
                     "pickup_flag": int(round(safe_value(x[i][d]))),
                     "pickup_gal": round(safe_value(pickup_gal[i][d]), 2),
-                    "inventory_gal_after_service": round(safe_value(post_service_inventory_gal[i][d]), 2),
+                    "inventory_gal_after_service": round(
+                        safe_value(post_service_inventory_gal[i][d]),
+                        2,
+                    ),
                 }
             )
 
     total_pickups = sum(safe_value(x[i][d]) for i in bins for d in days)
-    total_extra_dumps = sum(safe_value(extra_dumps[k][s][d]) for k in trucks for s in streams for d in days)
-    total_overtime = sum(safe_value(overtime_min[k][d]) for k in trucks for d in days)
+    total_extra_dumps = sum(
+        safe_value(extra_dumps[k][s][d])
+        for k in trucks
+        for s in streams
+        for d in days
+    )
+    total_overtime = sum(
+        safe_value(overtime_min[k][d])
+        for k in trucks
+        for d in days
+    )
     overflow_bin_days = sum(
-        1 for i in bins for d in days
+        1
+        for i in bins
+        for d in days
         if safe_value(inventory_gal[i][d]) > float(bin_capacity_gal[i]) + 1e-6
     )
 
-    planning_summary_df = pd.DataFrame([
-        {
-            "status": status,
-            "objective_value": round(objective_value, 3),
-            "horizon_days": args.horizon_days,
-            "num_bins_in_instance": len(bins),
-            "num_trucks": args.num_trucks,
-            "truck_work_min_input": args.truck_work_min,
-            "effective_truck_work_min": effective_truck_work_min,
-            "resource_model": resource_model,
-            "normal_lift_trucks": NORMAL_LIFT_TRUCKS,
-            "backup_nonlift_trucks": BACKUP_NONLIFT_TRUCKS,
-            "use_observed_shift_span": bool(args.use_observed_shift_span),
-            "total_pickups": round(total_pickups, 2),
-            "min_weekly_pickups": args.min_weekly_pickups,
-            "max_weekly_pickups": args.max_weekly_pickups,
-            "total_extra_dumps": round(total_extra_dumps, 2),
-            "total_overtime_min": round(total_overtime, 2),
-            "overflow_bin_days": int(overflow_bin_days),
-            "cbc_time_limit_sec": args.cbc_time_limit_sec,
-            "cbc_gap_rel": args.cbc_gap_rel,
-            "require_routable": bool(args.require_routable),
-        }
-    ])
+    planning_summary_df = pd.DataFrame(
+        [
+            {
+                "status": status,
+                "objective_value": round(objective_value, 3),
+                "horizon_days": args.horizon_days,
+                "num_bins_in_instance": len(bins),
+                "num_trucks": args.num_trucks,
+                "truck_work_min_input": args.truck_work_min,
+                "effective_truck_work_min": effective_truck_work_min,
+                "resource_model": resource_model,
+                "normal_lift_trucks": NORMAL_LIFT_TRUCKS,
+                "backup_nonlift_trucks": BACKUP_NONLIFT_TRUCKS,
+                "use_observed_shift_span": bool(args.use_observed_shift_span),
+                "total_pickups": round(total_pickups, 2),
+                "min_weekly_pickups": args.min_weekly_pickups,
+                "max_weekly_pickups": args.max_weekly_pickups,
+                "total_extra_dumps": round(total_extra_dumps, 2),
+                "total_overtime_min": round(total_overtime, 2),
+                "overflow_bin_days": int(overflow_bin_days),
+                "cbc_time_limit_sec": args.cbc_time_limit_sec,
+                "cbc_gap_rel": args.cbc_gap_rel,
+                "require_routable": bool(args.require_routable),
+            }
+        ]
+    )
 
-    schedule_df = pd.DataFrame(schedule_rows).sort_values(["service_day", "Serial"], na_position="last")
+    schedule_df = pd.DataFrame(schedule_rows).sort_values(
+        ["service_day", "Serial"],
+        na_position="last",
+    )
     truck_stream_df = pd.DataFrame(truck_stream_rows)
     load_df = pd.DataFrame(load_rows)
     inventory_df = pd.DataFrame(inventory_rows)
 
-    # Accept only usable integer-feasible solutions
-    if status not in {"Optimal", "Integer Feasible"}:
-        print(f"[ERROR] Solver status = {status}. No usable integer-feasible solution found; files will not be written.")
-        return
-
-    # Reject any schedule that contains serviced bins without truck assignments
     if not schedule_df.empty and schedule_df["truck"].isna().any():
         missing = schedule_df[schedule_df["truck"].isna()][["Serial", "service_day", "stream"]]
         print("[ERROR] Schedule contains serviced bins without truck assignments:")

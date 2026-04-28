@@ -105,8 +105,10 @@ def read_projection(paths: dict[str, Path], input_path: str | None = None) -> pd
         fp = paths["processed"] / "bin_7day_projection_inputs.parquet"
         if not fp.exists():
             fp = paths["processed"] / "bin_7day_projection_inputs.csv"
+
     if not fp.exists():
         raise FileNotFoundError("Could not find bin_7day_projection_inputs.")
+
     return pd.read_csv(fp) if fp.suffix.lower() == ".csv" else pd.read_parquet(fp)
 
 
@@ -119,14 +121,18 @@ def load_matrix(wide_fp: Path) -> pd.DataFrame:
 
 def stop_map_from_nodes(nodes_df: pd.DataFrame) -> dict[str, int]:
     out: dict[str, int] = {}
+
     for row in nodes_df.itertuples(index=False):
         stop_id = normalize_stop_id(getattr(row, "Stop_ID", None))
         if str(row.node_type).strip().lower() == "stop" and stop_id is not None:
             out[stop_id] = int(row.node_id)
+
     return out
 
 
 def effective_volume_cap(stream: str, base_caps: dict[str, float]) -> float:
+    if stream not in base_caps:
+        raise KeyError(f"No volume capacity configured for stream={stream!r}")
     return float(base_caps[stream])
 
 
@@ -139,9 +145,15 @@ def solve_ortools_vrp(
     vehicle_lb_caps: list[int],
     vehicle_time_caps: list[int],
     depot_index: int = 0,
-) -> dict[str, Any]:
+    routing_time_limit_sec: int = 90,
+) -> dict[str, Any] | None:
     num_vehicles = len(vehicle_gal_caps)
-    manager = pywrapcp.RoutingIndexManager(len(matrix_minutes), num_vehicles, depot_index)
+
+    manager = pywrapcp.RoutingIndexManager(
+        len(matrix_minutes),
+        num_vehicles,
+        depot_index,
+    )
     routing = pywrapcp.RoutingModel(manager)
 
     def time_callback(from_index: int, to_index: int) -> int:
@@ -183,6 +195,7 @@ def solve_ortools_vrp(
         True,
         "Time",
     )
+
     time_dim = routing.GetDimensionOrDie("Time")
     for vehicle_id, cap in enumerate(vehicle_time_caps):
         routing.solver().Add(time_dim.CumulVar(routing.End(vehicle_id)) <= cap)
@@ -190,24 +203,28 @@ def solve_ortools_vrp(
     search = pywrapcp.DefaultRoutingSearchParameters()
     search.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     search.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
-    search.time_limit.seconds = 20
+    search.time_limit.seconds = int(routing_time_limit_sec)
 
     solution = routing.SolveWithParameters(search)
+
     if solution is None:
-       return None
+        return None
 
     routes: list[list[int]] = []
     route_minutes: list[int] = []
 
     for v in range(num_vehicles):
         idx = routing.Start(v)
-        route_nodes = []
+        route_nodes: list[int] = []
+
         while not routing.IsEnd(idx):
             node = manager.IndexToNode(idx)
             route_nodes.append(node)
             idx = solution.Value(routing.NextVar(idx))
+
         route_nodes.append(manager.IndexToNode(idx))
         routes.append(route_nodes)
+
         end_time = solution.Value(time_dim.CumulVar(routing.End(v)))
         route_minutes.append(int(end_time))
 
@@ -215,6 +232,7 @@ def solve_ortools_vrp(
         "routes": routes,
         "route_minutes": route_minutes,
     }
+
 
 def solve_with_stop_dropping(
     stop_agg: pd.DataFrame,
@@ -224,7 +242,15 @@ def solve_with_stop_dropping(
     vehicle_lb_caps: list[int],
     vehicle_time_caps: list[int],
     min_stops_to_keep: int = 3,
-):
+    routing_time_limit_sec: int = 90,
+) -> tuple[
+    dict[str, Any] | None,
+    list[str],
+    list[str],
+    list[int],
+    list[int],
+    list[int],
+]:
     """
     Retry VRP by dropping the smallest-demand stop until feasible.
 
@@ -245,9 +271,9 @@ def solve_with_stop_dropping(
 
         old_to_new = {old: new for new, old in enumerate(kept_local_nodes)}
 
-        submatrix = []
+        submatrix: list[list[int]] = []
         for old_i in kept_local_nodes:
-            row = []
+            row: list[int] = []
             for old_j in kept_local_nodes:
                 row.append(matrix_minutes_full[old_i][old_j])
             submatrix.append(row)
@@ -259,6 +285,7 @@ def solve_with_stop_dropping(
         for _, r in working.iterrows():
             old_ln = stop_to_local[str(r.Stop_ID)]
             new_ln = old_to_new[old_ln]
+
             service_minutes[new_ln] = int(round(float(r.stop_service_min)))
             gallon_demands[new_ln] = int(round(float(r.stop_pickup_gal)))
             pound_demands[new_ln] = int(round(float(r.stop_pickup_lb)))
@@ -272,6 +299,7 @@ def solve_with_stop_dropping(
             vehicle_lb_caps=vehicle_lb_caps,
             vehicle_time_caps=vehicle_time_caps,
             depot_index=0,
+            routing_time_limit_sec=routing_time_limit_sec,
         )
 
         if result is not None:
@@ -296,20 +324,52 @@ def solve_with_stop_dropping(
 
     return None, [], dropped_stop_ids, [], [], []
 
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Solve daily Bigbelly routing from Phase 1 schedule.")
+    parser = argparse.ArgumentParser(
+        description="Solve daily Bigbelly routing from Phase 1 schedule."
+    )
+
     parser.add_argument("--projection-input", type=str, default=None)
     parser.add_argument("--schedule", type=str, default=None)
     parser.add_argument("--truck-streams", type=str, default=None)
     parser.add_argument("--routing-nodes", type=str, default=None)
     parser.add_argument("--bin-stop-lookup", type=str, default=None)
     parser.add_argument("--travel-matrix", type=str, default=None)
+
     parser.add_argument("--truck-mass-lb", type=float, default=1300.0)
     parser.add_argument("--waste-volume-gal", type=float, default=500.0)
     parser.add_argument("--compost-volume-gal", type=float, default=500.0)
     parser.add_argument("--recycling-volume-gal", type=float, default=450.0)
-    parser.add_argument("--truck-work-min", type=float, default=750.0)
+
+    # Professor-compliant default: conservative 480-minute single-shift truck-day.
+    parser.add_argument("--truck-work-min", type=float, default=480.0)
+
     parser.add_argument("--depot-node", type=int, default=0)
+
+    parser.add_argument(
+        "--routing-time-limit-sec",
+        type=int,
+        default=90,
+        help="OR-Tools routing time limit per stream-day in seconds.",
+    )
+
+    parser.add_argument(
+        "--min-stops-to-keep",
+        type=int,
+        default=3,
+        help="Minimum number of stops to keep during fallback stop-dropping.",
+    )
+
+    parser.add_argument(
+        "--allow-skipped-streams",
+        action="store_true",
+        help=(
+            "Allow incomplete outputs if a stream-day cannot be routed. "
+            "Do not use this flag for final report runs."
+        ),
+    )
+
     args = parser.parse_args()
 
     root = repo_root()
@@ -320,13 +380,31 @@ def main() -> None:
     projection["Serial"] = projection["Serial"].astype(str).str.strip()
     projection["stream"] = projection["stream"].apply(canonical_stream)
 
-    schedule_fp = Path(args.schedule) if args.schedule else paths["processed"] / "small_instance_service_schedule.csv"
-    truck_stream_fp = (
-        Path(args.truck_streams) if args.truck_streams else paths["processed"] / "small_instance_truck_streams.csv"
+    schedule_fp = (
+        Path(args.schedule)
+        if args.schedule
+        else paths["processed"] / "small_instance_service_schedule.csv"
     )
-    routing_nodes_fp = Path(args.routing_nodes) if args.routing_nodes else paths["processed"] / "routing_nodes.csv"
-    bin_stop_lookup_fp = Path(args.bin_stop_lookup) if args.bin_stop_lookup else paths["processed"] / "bin_stop_lookup.csv"
-    travel_matrix_fp = Path(args.travel_matrix) if args.travel_matrix else paths["processed"] / "travel_matrix_wide.csv"
+    truck_stream_fp = (
+        Path(args.truck_streams)
+        if args.truck_streams
+        else paths["processed"] / "small_instance_truck_streams.csv"
+    )
+    routing_nodes_fp = (
+        Path(args.routing_nodes)
+        if args.routing_nodes
+        else paths["processed"] / "routing_nodes.csv"
+    )
+    bin_stop_lookup_fp = (
+        Path(args.bin_stop_lookup)
+        if args.bin_stop_lookup
+        else paths["processed"] / "bin_stop_lookup.csv"
+    )
+    travel_matrix_fp = (
+        Path(args.travel_matrix)
+        if args.travel_matrix
+        else paths["processed"] / "travel_matrix_wide.csv"
+    )
 
     if not schedule_fp.exists():
         raise FileNotFoundError("Could not find small_instance_service_schedule.csv")
@@ -353,6 +431,7 @@ def main() -> None:
 
     if schedule.empty:
         raise ValueError("No day-0 service assignments found for routing.")
+
     schedule["Serial"] = schedule["Serial"].astype(str).str.strip()
     schedule["stream"] = schedule["stream"].apply(canonical_stream)
     schedule["service_day"] = schedule["service_day"].astype(int)
@@ -364,23 +443,36 @@ def main() -> None:
         lambda x: canonical_stream(x) if pd.notna(x) else x
     )
     truck_streams["day"] = pd.to_numeric(truck_streams["day"], errors="coerce").astype("Int64")
-    truck_streams["extra_dumps"] = pd.to_numeric(truck_streams["extra_dumps"], errors="coerce").fillna(0).astype(int)
+    truck_streams["extra_dumps"] = (
+        pd.to_numeric(truck_streams["extra_dumps"], errors="coerce")
+        .fillna(0)
+        .astype(int)
+    )
 
     bin_stop_lookup = bin_stop_lookup.copy()
     bin_stop_lookup["Serial"] = bin_stop_lookup["Serial"].astype(str).str.strip()
     bin_stop_lookup["Stop_ID"] = bin_stop_lookup["Stop_ID"].apply(normalize_stop_id)
 
-    projection_small = projection[[
-        "Serial",
-        "avg_service_min",
-        "density_lb_per_gal",
-        "stream",
-        "Description",
-    ]].drop_duplicates(subset=["Serial"]).copy()
+    projection_small = projection[
+        [
+            "Serial",
+            "avg_service_min",
+            "density_lb_per_gal",
+            "stream",
+            "Description",
+        ]
+    ].drop_duplicates(subset=["Serial"]).copy()
 
     enriched = schedule.merge(projection_small, on=["Serial", "stream"], how="left")
-    enriched["avg_service_min"] = pd.to_numeric(enriched["avg_service_min"], errors="coerce").fillna(4.0)
-    enriched["density_lb_per_gal"] = pd.to_numeric(enriched["density_lb_per_gal"], errors="coerce").fillna(1.0)
+    enriched["avg_service_min"] = (
+        pd.to_numeric(enriched["avg_service_min"], errors="coerce")
+        .fillna(4.0)
+    )
+    enriched["density_lb_per_gal"] = (
+        pd.to_numeric(enriched["density_lb_per_gal"], errors="coerce")
+        .fillna(1.0)
+    )
+
     if "Description" not in enriched.columns:
         enriched["Description"] = enriched["Serial"]
     else:
@@ -393,7 +485,10 @@ def main() -> None:
     enriched["Stop_ID"] = enriched["Stop_ID"].apply(normalize_stop_id)
 
     missing_stops = sorted(
-        enriched.loc[enriched["Stop_ID"].isna(), "Serial"].astype(str).unique().tolist()
+        enriched.loc[enriched["Stop_ID"].isna(), "Serial"]
+        .astype(str)
+        .unique()
+        .tolist()
     )
     if missing_stops:
         raise KeyError(
@@ -401,7 +496,10 @@ def main() -> None:
         )
 
     missing_node_stops = sorted(
-        enriched.loc[~enriched["Stop_ID"].astype(str).isin(stop_to_node.keys()), "Stop_ID"]
+        enriched.loc[
+            ~enriched["Stop_ID"].astype(str).isin(stop_to_node.keys()),
+            "Stop_ID",
+        ]
         .astype(str)
         .unique()
         .tolist()
@@ -420,12 +518,16 @@ def main() -> None:
     route_plan_rows: list[dict[str, Any]] = []
     route_stop_rows: list[dict[str, Any]] = []
     route_summary_rows: list[dict[str, Any]] = []
+    failed_stream_days: list[dict[str, Any]] = []
 
     grouped = enriched.groupby(["service_day", "stream"], dropna=False)
+
     for (day, stream), grp in grouped:
         grp = grp.sort_values(["truck", "Serial"]).reset_index(drop=True)
+
         active = truck_streams[
-            (truck_streams["day"] == int(day)) & (truck_streams["assigned_stream"] == stream)
+            (truck_streams["day"] == int(day))
+            & (truck_streams["assigned_stream"] == stream)
         ].copy()
         active = active.sort_values("truck").reset_index(drop=True)
 
@@ -441,13 +543,16 @@ def main() -> None:
 
         trucks = active["truck"].astype(str).tolist()
 
-        local_nodes = [{
-            "local_node": 0,
-            "global_node": int(args.depot_node),
-            "Stop_ID": None,
-            "Serial": None,
-            "label": "DEPOT",
-        }]
+        local_nodes = [
+            {
+                "local_node": 0,
+                "global_node": int(args.depot_node),
+                "Stop_ID": None,
+                "Serial": None,
+                "label": "DEPOT",
+            }
+        ]
+
         stop_rows = grp[["Stop_ID", "Description"]].drop_duplicates(subset=["Stop_ID"]).copy()
 
         for _, r in stop_rows.iterrows():
@@ -460,9 +565,12 @@ def main() -> None:
                     "label": str(r.Description),
                 }
             )
+
         local_nodes_df = pd.DataFrame(local_nodes)
 
-        local_to_global = dict(zip(local_nodes_df["local_node"], local_nodes_df["global_node"]))
+        local_to_global = dict(
+            zip(local_nodes_df["local_node"], local_nodes_df["global_node"])
+        )
         stop_to_local = {
             row.Stop_ID: int(row.local_node)
             for row in local_nodes_df.itertuples(index=False)
@@ -470,9 +578,10 @@ def main() -> None:
         }
 
         local_ids = local_nodes_df["local_node"].tolist()
-        matrix_minutes = []
+
+        matrix_minutes: list[list[int]] = []
         for i in local_ids:
-            row = []
+            row: list[int] = []
             gi = local_to_global[i]
             for j in local_ids:
                 gj = local_to_global[j]
@@ -492,6 +601,7 @@ def main() -> None:
         service_minutes = [0] * len(local_ids)
         gallon_demands = [0] * len(local_ids)
         pound_demands = [0] * len(local_ids)
+
         stop_lookup: dict[int, str] = {}
         label_lookup: dict[int, str] = {0: "DEPOT"}
 
@@ -511,13 +621,15 @@ def main() -> None:
         total_gal = sum(gallon_demands)
         total_lb = sum(pound_demands)
         total_service_min = sum(service_minutes)
+
         num_trucks = len(trucks)
         base_vol_cap = effective_volume_cap(stream, stream_volume_cap)
 
-        vehicle_gal_caps = []
-        vehicle_lb_caps = []
-        vehicle_time_caps = []
-        truck_extra_dumps = {}
+        vehicle_gal_caps: list[int] = []
+        vehicle_lb_caps: list[int] = []
+        vehicle_time_caps: list[int] = []
+        truck_extra_dumps: dict[str, int] = {}
+
         for row in active.itertuples(index=False):
             extra = int(row.extra_dumps)
             truck_extra_dumps[str(row.truck)] = extra
@@ -530,24 +642,10 @@ def main() -> None:
 
         use_single_truck_route = False
         if num_trucks == 1:
-            nonbinding_capacity = (total_gal <= base_vol_cap) and (total_lb <= args.truck_mass_lb)
+            nonbinding_capacity = (total_gal <= base_vol_cap) and (
+                total_lb <= args.truck_mass_lb
+            )
             use_single_truck_route = nonbinding_capacity
-
-        route_summary_rows.append(
-            {
-                "day": int(day),
-                "stream": stream,
-                "scheduled_bins": int(len(grp)),
-                "scheduled_stops": int(len(stop_rows)),
-                "active_trucks": int(num_trucks),
-                "selected_mode": "SingleTruckRoute" if use_single_truck_route and num_trucks == 1 else "VRP",
-                "total_pickup_gal": int(total_gal),
-                "total_pickup_lb": int(total_lb),
-                "total_service_min_only": int(total_service_min),
-                "total_effective_volume_cap": int(total_effective_gal_cap),
-                "total_effective_mass_cap": int(total_effective_lb_cap),
-            }
-        )
 
         result, kept_stop_ids, dropped_stop_ids, service_minutes, gallon_demands, pound_demands = solve_with_stop_dropping(
             stop_agg=stop_agg,
@@ -556,14 +654,37 @@ def main() -> None:
             vehicle_gal_caps=vehicle_gal_caps,
             vehicle_lb_caps=vehicle_lb_caps,
             vehicle_time_caps=vehicle_time_caps,
+            min_stops_to_keep=args.min_stops_to_keep,
+            routing_time_limit_sec=args.routing_time_limit_sec,
         )
 
         if result is None:
-            print(
-                f"[WARN] Could not find feasible routing solution for day={day}, stream={stream}. "
-                "Skipping this stream-day."
+            msg = (
+                f"Routing failed for day={day}, stream={stream}. "
+                "No feasible route was found even after low-demand stop-dropping. "
+                "Do not use this run as a final routed result."
             )
-            continue
+
+            failed_stream_days.append(
+                {
+                    "day": int(day),
+                    "stream": stream,
+                    "scheduled_bins": int(len(grp)),
+                    "scheduled_stops": int(len(stop_rows)),
+                    "total_pickup_gal": int(total_gal),
+                    "total_pickup_lb": int(total_lb),
+                    "total_service_min_only": int(total_service_min),
+                    "total_effective_volume_cap": int(total_effective_gal_cap),
+                    "total_effective_mass_cap": int(total_effective_lb_cap),
+                    "reason": msg,
+                }
+            )
+
+            if args.allow_skipped_streams:
+                print(f"[WARN] {msg} Skipping this stream-day.")
+                continue
+
+            raise RuntimeError(msg)
 
         if dropped_stop_ids:
             print(
@@ -572,21 +693,47 @@ def main() -> None:
                 + (" ..." if len(dropped_stop_ids) > 10 else "")
             )
 
+        route_summary_rows.append(
+            {
+                "day": int(day),
+                "stream": stream,
+                "scheduled_bins": int(len(grp)),
+                "scheduled_stops": int(len(stop_rows)),
+                "routed_stops": int(len(kept_stop_ids)),
+                "dropped_stops": int(len(dropped_stop_ids)),
+                "active_trucks": int(num_trucks),
+                "selected_mode": (
+                    "SingleTruckRoute"
+                    if use_single_truck_route and num_trucks == 1
+                    else "VRP"
+                ),
+                "total_pickup_gal": int(total_gal),
+                "total_pickup_lb": int(total_lb),
+                "total_service_min_only": int(total_service_min),
+                "total_effective_volume_cap": int(total_effective_gal_cap),
+                "total_effective_mass_cap": int(total_effective_lb_cap),
+            }
+        )
+
         kept_local_nodes_original = result.get(
             "kept_local_nodes_original",
-            list(range(len(matrix_minutes)))
+            list(range(len(matrix_minutes))),
         )
 
         for vehicle_idx, route in enumerate(result["routes"]):
             truck = trucks[vehicle_idx]
-
             original_route = [kept_local_nodes_original[n] for n in route]
 
             route_node_count = sum(1 for n in original_route if n != 0)
             route_gal = sum(gallon_demands[n] for n in route)
             route_lb = sum(pound_demands[n] for n in route)
             route_min = result["route_minutes"][vehicle_idx]
-            mode = "SingleTruckRoute" if use_single_truck_route and num_trucks == 1 else "VRP"
+
+            mode = (
+                "SingleTruckRoute"
+                if use_single_truck_route and num_trucks == 1
+                else "VRP"
+            )
 
             if route_node_count == 0:
                 continue
@@ -608,10 +755,12 @@ def main() -> None:
             )
 
             stop_order = 0
+
             for reduced_node, original_node in zip(route, original_route):
                 stop_order += 1
                 stop_id = stop_lookup.get(original_node)
                 serials_here = stop_bins_map.get(stop_id, None) if stop_id is not None else None
+
                 route_stop_rows.append(
                     {
                         "day": int(day),
@@ -633,18 +782,26 @@ def main() -> None:
     route_plan_df = pd.DataFrame(route_plan_rows)
     route_stops_df = pd.DataFrame(route_stop_rows)
     route_summary_df = pd.DataFrame(route_summary_rows)
+    failed_df = pd.DataFrame(failed_stream_days)
 
     plan_fp = paths["processed"] / "daily_route_plan.csv"
     stops_fp = paths["processed"] / "daily_route_stops.csv"
     summary_fp = paths["processed"] / "daily_route_summary.csv"
+    failed_fp = paths["processed"] / "daily_route_failures.csv"
 
     route_plan_df.to_csv(plan_fp, index=False)
     route_stops_df.to_csv(stops_fp, index=False)
     route_summary_df.to_csv(summary_fp, index=False)
 
+    if not failed_df.empty:
+        failed_df.to_csv(failed_fp, index=False)
+
     print(f"[OK] Wrote: {plan_fp}")
     print(f"[OK] Wrote: {stops_fp}")
     print(f"[OK] Wrote: {summary_fp}")
+
+    if not failed_df.empty:
+        print(f"[WARN] Wrote routing failures to: {failed_fp}")
 
     if not route_plan_df.empty:
         print("\nRoute plan preview:")

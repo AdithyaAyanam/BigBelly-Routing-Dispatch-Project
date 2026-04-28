@@ -8,7 +8,7 @@ Run a 5-day rolling-horizon experiment for the Bigbelly project.
 For each weekday:
 1. Start from the current bin state table.
 2. Write a temporary projection input for that day.
-3. Run the 7-day heuristic planner.
+3. Run the 7-day planning model.
 4. Keep only service_day == 0 assignments.
 5. Run daily routing on those assignments.
 6. Update fill state and days-since-last-service.
@@ -27,7 +27,6 @@ Writes combined outputs under data/processed/rolling_horizon_5day/:
 """
 
 import argparse
-import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -80,10 +79,13 @@ def ensure_dirs(root: Path) -> dict[str, Path]:
 
 def interval_deadline(days_since_last_service: float, horizon_days: int) -> float:
     remaining = 7 - float(days_since_last_service)
+
     if remaining <= 0:
         return 0.0
+
     if 1 <= remaining <= horizon_days - 1:
         return float(int(remaining))
+
     return np.nan
 
 
@@ -93,6 +95,7 @@ def load_base_projection(processed: Path, input_path: str | None) -> pd.DataFram
     else:
         parquet_fp = processed / "bin_7day_projection_inputs.parquet"
         csv_fp = processed / "bin_7day_projection_inputs.csv"
+
         if parquet_fp.exists():
             fp = parquet_fp
         elif csv_fp.exists():
@@ -120,6 +123,7 @@ def load_base_projection(processed: Path, input_path: str | None) -> pd.DataFram
         "avg_travel_proxy_min",
         "must_service_within_horizon",
     ]
+
     missing = [c for c in required_cols if c not in df.columns]
     if missing:
         raise KeyError(f"Input file missing columns: {missing}")
@@ -127,15 +131,32 @@ def load_base_projection(processed: Path, input_path: str | None) -> pd.DataFram
     df = df.copy()
     df["Serial"] = df["Serial"].astype(str).str.strip()
     df["stream"] = df["stream"].apply(canonical_stream)
-    df["days_since_last_service"] = pd.to_numeric(df["days_since_last_service"], errors="coerce").fillna(0.0)
-    df["current_fill_pct_est"] = pd.to_numeric(df["current_fill_pct_est"], errors="coerce").fillna(0.0)
-    df["daily_fill_growth_pct"] = pd.to_numeric(df["daily_fill_growth_pct"], errors="coerce").fillna(0.0)
-    df["bin_capacity_gal"] = pd.to_numeric(df["bin_capacity_gal"], errors="coerce").fillna(0.0)
+
+    df["days_since_last_service"] = pd.to_numeric(
+        df["days_since_last_service"], errors="coerce"
+    ).fillna(0.0)
+    df["current_fill_pct_est"] = pd.to_numeric(
+        df["current_fill_pct_est"], errors="coerce"
+    ).fillna(0.0)
+    df["daily_fill_growth_pct"] = pd.to_numeric(
+        df["daily_fill_growth_pct"], errors="coerce"
+    ).fillna(0.0)
+    df["bin_capacity_gal"] = pd.to_numeric(
+        df["bin_capacity_gal"], errors="coerce"
+    ).fillna(0.0)
     df["threshold_pct"] = pd.to_numeric(df["threshold_pct"], errors="coerce")
-    df["density_lb_per_gal"] = pd.to_numeric(df["density_lb_per_gal"], errors="coerce").fillna(1.0)
-    df["avg_service_min"] = pd.to_numeric(df["avg_service_min"], errors="coerce").fillna(4.0)
-    df["avg_travel_proxy_min"] = pd.to_numeric(df["avg_travel_proxy_min"], errors="coerce").fillna(3.0)
-    df["must_service_within_horizon"] = df["must_service_within_horizon"].fillna(False).astype(bool)
+    df["density_lb_per_gal"] = pd.to_numeric(
+        df["density_lb_per_gal"], errors="coerce"
+    ).fillna(1.0)
+    df["avg_service_min"] = pd.to_numeric(
+        df["avg_service_min"], errors="coerce"
+    ).fillna(4.0)
+    df["avg_travel_proxy_min"] = pd.to_numeric(
+        df["avg_travel_proxy_min"], errors="coerce"
+    ).fillna(3.0)
+    df["must_service_within_horizon"] = (
+        df["must_service_within_horizon"].fillna(False).astype(bool)
+    )
 
     return df
 
@@ -172,10 +193,15 @@ def filter_to_routable_bins(base_df: pd.DataFrame, processed: Path) -> pd.DataFr
 
     return base_df
 
+
 def initialize_state(base_df: pd.DataFrame) -> pd.DataFrame:
     state = base_df.copy()
-    state["fill_gal"] = state["bin_capacity_gal"] * state["current_fill_pct_est"] / 100.0
-    state["growth_gal_per_day"] = state["bin_capacity_gal"] * state["daily_fill_growth_pct"] / 100.0
+    state["fill_gal"] = (
+        state["bin_capacity_gal"] * state["current_fill_pct_est"] / 100.0
+    )
+    state["growth_gal_per_day"] = (
+        state["bin_capacity_gal"] * state["daily_fill_growth_pct"] / 100.0
+    )
     return state
 
 
@@ -197,13 +223,16 @@ def rebuild_projection_from_state(state_df: pd.DataFrame, horizon_days: int) -> 
     )
     out["deadline_interval"] = out["service_deadline"]
 
-    keep_cols = list(dict.fromkeys(list(state_df.columns) + ["service_deadline", "deadline_interval"]))
+    keep_cols = list(
+        dict.fromkeys(list(state_df.columns) + ["service_deadline", "deadline_interval"])
+    )
     return out[keep_cols].copy()
 
 
 def run_subprocess(cmd: list[str], cwd: Path) -> None:
     result = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True)
     print(result.stdout)
+
     if result.returncode != 0:
         print(result.stderr)
         raise RuntimeError(f"Command failed: {' '.join(cmd)}")
@@ -250,6 +279,7 @@ def update_state_after_day(
     day0_schedule: pd.DataFrame,
 ) -> pd.DataFrame:
     served_serials = set()
+
     if not day0_schedule.empty:
         served_serials = set(day0_schedule["Serial"].astype(str).str.strip().tolist())
 
@@ -282,6 +312,7 @@ def update_state_after_day(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run 5-day rolling-horizon experiment.")
+
     parser.add_argument("--projection-input", type=str, default=None)
     parser.add_argument("--num-days", type=int, default=5)
     parser.add_argument("--num-trucks", type=int, default=3)
@@ -291,50 +322,59 @@ def main() -> None:
     parser.add_argument("--require-routable", action="store_true")
     parser.add_argument("--max-bins", type=int, default=None)
     parser.add_argument("--horizon-days", type=int, default=7)
+
     parser.add_argument(
         "--min-weekly-pickups",
         type=int,
         default=None,
-        help="Optional lower bound passed to the weekly planning model",
+        help="Optional lower bound passed to the weekly planning model.",
     )
-
     parser.add_argument(
         "--max-weekly-pickups",
         type=int,
         default=None,
-        help="Optional upper bound passed to the weekly planning model",
+        help="Optional upper bound passed to the weekly planning model.",
     )
+
     parser.add_argument(
-    "--use-observed-shift-span",
-    action="store_true",
-    help="Use expanded effective truck-day span based on observed staggered driver shifts",
+        "--use-observed-shift-span",
+        action="store_true",
+        help="Use expanded effective truck-day span based on observed staggered driver shifts.",
     )
+
     parser.add_argument(
         "--min-day0-pickups",
         type=int,
         default=None,
-        help="Optional lower bound passed to the weekly planner for executed Day 0 pickups",
+        help="Optional lower bound passed to the weekly planner for executed Day 0 pickups.",
     )
-
     parser.add_argument(
         "--max-day0-pickups",
         type=int,
         default=None,
-        help="Optional upper bound passed to the weekly planner for executed Day 0 pickups",
+        help="Optional upper bound passed to the weekly planner for executed Day 0 pickups.",
     )
+
     parser.add_argument(
         "--cbc-time-limit-sec",
         type=int,
         default=600,
-        help="CBC solver time limit in seconds passed to the weekly planning model",
+        help="CBC solver time limit in seconds passed to the weekly planning model.",
     )
-
     parser.add_argument(
         "--cbc-gap-rel",
         type=float,
         default=0.10,
-        help="CBC relative MIP gap passed to the weekly planning model",
+        help="CBC relative MIP gap passed to the weekly planning model.",
     )
+
+    parser.add_argument(
+        "--routing-time-limit-sec",
+        type=int,
+        default=90,
+        help="OR-Tools routing time limit per stream-day passed to solve_daily_routing.py.",
+    )
+
     args = parser.parse_args()
 
     root = repo_root()
@@ -344,7 +384,6 @@ def main() -> None:
 
     base_df = load_base_projection(processed, args.projection_input)
 
-    # Critical fix: only plan over routable bins
     if args.require_routable:
         base_df = filter_to_routable_bins(base_df, processed)
 
@@ -362,7 +401,6 @@ def main() -> None:
     for rolling_day in range(args.num_days):
         print(f"\n========== ROLLING DAY {rolling_day + 1} / {args.num_days} ==========")
 
-        # Snapshot state before planning
         snap = state_df.copy()
         snap["rolling_day"] = rolling_day + 1
         snap["fill_pct_start"] = np.where(
@@ -372,12 +410,10 @@ def main() -> None:
         )
         all_state_rows.extend(snap.to_dict(orient="records"))
 
-        # Build fresh projection input for this day
         projection_df = rebuild_projection_from_state(state_df, args.horizon_days)
         temp_projection_fp = processed / "rolling_temp_projection_input.csv"
         projection_df.to_csv(temp_projection_fp, index=False)
 
-        # Run weekly heuristic
         cmd_plan = [
             py_exec,
             "scripts/solve_7day_schedule.py",
@@ -390,6 +426,7 @@ def main() -> None:
             "--cbc-time-limit-sec", str(args.cbc_time_limit_sec),
             "--cbc-gap-rel", str(args.cbc_gap_rel),
         ]
+
         if args.use_observed_shift_span:
             cmd_plan.append("--use-observed-shift-span")
 
@@ -410,23 +447,23 @@ def main() -> None:
 
         if args.require_routable:
             cmd_plan.append("--require-routable")
-        
+
         run_subprocess(cmd_plan, cwd=root)
 
-        # Keep only day 0 decisions
         day0_schedule, day0_trucks = overwrite_day0_schedule_and_trucks(processed)
 
-        # Run routing on day 0 schedule only
         route_work_min = 750.0 if args.use_observed_shift_span else args.truck_work_min
+
         cmd_route = [
             py_exec,
             "scripts/solve_daily_routing.py",
             "--projection-input", str(temp_projection_fp),
             "--truck-work-min", str(route_work_min),
+            "--routing-time-limit-sec", str(args.routing_time_limit_sec),
         ]
+
         run_subprocess(cmd_route, cwd=root)
 
-        # Read outputs
         route_plan = read_optional_csv(processed / "daily_route_plan.csv")
         route_stops = read_optional_csv(processed / "daily_route_stops.csv")
         route_summary = read_optional_csv(processed / "daily_route_summary.csv")
@@ -454,11 +491,23 @@ def main() -> None:
             all_route_summary_rows.extend(route_summary.to_dict(orient="records"))
 
         pickups_today = len(day0_schedule) if not day0_schedule.empty else 0
-        pickup_gal_today = float(day0_schedule["pickup_gal"].sum()) if not day0_schedule.empty else 0.0
-        pickup_lb_today = float(day0_schedule["pickup_lb"].sum()) if not day0_schedule.empty else 0.0
+        pickup_gal_today = (
+            float(day0_schedule["pickup_gal"].sum()) if not day0_schedule.empty else 0.0
+        )
+        pickup_lb_today = (
+            float(day0_schedule["pickup_lb"].sum()) if not day0_schedule.empty else 0.0
+        )
         routes_today = int(len(route_plan)) if not route_plan.empty else 0
-        route_minutes_today = float(route_plan["route_minutes"].sum()) if not route_plan.empty else 0.0
-        overtime_today = float(load_check["overtime_min"].sum()) if not load_check.empty else 0.0
+        route_minutes_today = (
+            float(route_plan["route_minutes"].sum())
+            if not route_plan.empty and "route_minutes" in route_plan.columns
+            else 0.0
+        )
+        overtime_today = (
+            float(load_check["overtime_min"].sum())
+            if not load_check.empty and "overtime_min" in load_check.columns
+            else 0.0
+        )
 
         overflow_today = int((state_df["fill_gal"] > state_df["bin_capacity_gal"]).sum())
 
@@ -472,7 +521,6 @@ def main() -> None:
                 "route_minutes_today": round(route_minutes_today, 2),
                 "overtime_today": round(overtime_today, 2),
                 "overflow_bins_start_of_day": overflow_today,
-                # Planner diagnostics
                 "planner_status": (
                     planning_summary["status"].iloc[0]
                     if not planning_summary.empty and "status" in planning_summary.columns
@@ -496,10 +544,8 @@ def main() -> None:
             }
         )
 
-        # Update state for next rolling day
         state_df = update_state_after_day(state_df, day0_schedule)
 
-    # Write combined outputs
     state_hist_df = pd.DataFrame(all_state_rows)
     rolling_sched_df = pd.DataFrame(all_schedule_rows)
     rolling_route_plan_df = pd.DataFrame(all_route_plan_rows)
@@ -507,17 +553,58 @@ def main() -> None:
     rolling_route_summary_df = pd.DataFrame(all_route_summary_rows)
     day_metrics_df = pd.DataFrame(day_metrics_rows)
 
-    overall_summary = pd.DataFrame([{
-        "num_days": args.num_days,
-        "total_pickups": int(day_metrics_df["pickups_today"].sum()) if not day_metrics_df.empty else 0,
-        "total_pickup_gal": round(float(day_metrics_df["pickup_gal_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
-        "total_pickup_lb": round(float(day_metrics_df["pickup_lb_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
-        "total_routes": int(day_metrics_df["routes_today"].sum()) if not day_metrics_df.empty else 0,
-        "total_route_minutes": round(float(day_metrics_df["route_minutes_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
-        "total_overtime": round(float(day_metrics_df["overtime_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
-        "avg_overflow_bins_start_of_day": round(float(day_metrics_df["overflow_bins_start_of_day"].mean()), 2) if not day_metrics_df.empty else 0.0,
-        "planner_type": "rolling_horizon_reoptimization_outer_loop_with_MIP_subproblems",
-    }])
+    overall_summary = pd.DataFrame(
+        [
+            {
+                "num_days": args.num_days,
+                "total_pickups": (
+                    int(day_metrics_df["pickups_today"].sum())
+                    if not day_metrics_df.empty
+                    else 0
+                ),
+                "total_pickup_gal": (
+                    round(float(day_metrics_df["pickup_gal_today"].sum()), 2)
+                    if not day_metrics_df.empty
+                    else 0.0
+                ),
+                "total_pickup_lb": (
+                    round(float(day_metrics_df["pickup_lb_today"].sum()), 2)
+                    if not day_metrics_df.empty
+                    else 0.0
+                ),
+                "total_routes": (
+                    int(day_metrics_df["routes_today"].sum())
+                    if not day_metrics_df.empty
+                    else 0
+                ),
+                "total_route_minutes": (
+                    round(float(day_metrics_df["route_minutes_today"].sum()), 2)
+                    if not day_metrics_df.empty
+                    else 0.0
+                ),
+                "total_overtime": (
+                    round(float(day_metrics_df["overtime_today"].sum()), 2)
+                    if not day_metrics_df.empty
+                    else 0.0
+                ),
+                "avg_overflow_bins_start_of_day": (
+                    round(float(day_metrics_df["overflow_bins_start_of_day"].mean()), 2)
+                    if not day_metrics_df.empty
+                    else 0.0
+                ),
+                "planner_type": "rolling_horizon_reoptimization_outer_loop_with_MIP_subproblems",
+            }
+        ]
+    )
+
+    expected_routes = args.num_days * 3
+    actual_routes = int(overall_summary["total_routes"].iloc[0])
+
+    if actual_routes < expected_routes:
+        print(
+            f"[WARN] Expected about {expected_routes} stream-level routes "
+            f"but only got {actual_routes}. Check for skipped or failed stream-days."
+        )
 
     state_hist_df.to_csv(outdir / "rolling_day_state_history.csv", index=False)
     rolling_sched_df.to_csv(outdir / "rolling_day_schedule.csv", index=False)
@@ -528,8 +615,10 @@ def main() -> None:
     overall_summary.to_csv(outdir / "rolling_5day_summary.csv", index=False)
 
     print("\n========== 5-DAY SUMMARY ==========")
+
     if not overall_summary.empty:
         print(overall_summary.to_string(index=False))
+
     print(f"\n[OK] Wrote combined outputs to: {outdir}")
 
 

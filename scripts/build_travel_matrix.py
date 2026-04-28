@@ -266,7 +266,7 @@ def main() -> None:
     else:
         sched_fp = paths["processed"] / "small_instance_service_schedule.csv"
 
-    if False and sched_fp.exists():
+    if args.schedule and sched_fp.exists():
         sched = pd.read_csv(sched_fp)
         if "Serial" in sched.columns:
             active_serials = (
