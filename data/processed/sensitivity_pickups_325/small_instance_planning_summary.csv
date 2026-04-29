@@ -1,0 +1,2 @@
+status,objective_value,horizon_days,num_bins_in_instance,num_trucks,truck_work_min_input,effective_truck_work_min,resource_model,normal_lift_trucks,backup_nonlift_trucks,use_observed_shift_span,total_pickups,min_weekly_pickups,max_weekly_pickups,min_day0_pickups,max_day0_pickups,total_extra_dumps,total_overtime_min,overflow_bin_days,overflow_flag_days,max_overflow_bin_days,dump_penalty,overflow_penalty,cbc_time_limit_sec,cbc_gap_rel,require_routable
+Optimal,5567.903,7,232,3,480.0,480.0,single_shift_truck_day,3,1,False,325.0,250,325,,,33.0,0.0,9,9,,0.01,500.0,1200,0.1,True

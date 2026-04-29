@@ -1,0 +1,4 @@
+day,stream,scheduled_bins,scheduled_stops,routed_stops,dropped_stops,active_trucks,selected_mode,total_pickup_gal,total_pickup_lb,total_service_min_only,total_effective_volume_cap,total_effective_mass_cap
+0,Bottles/Cans,21,21,21,0,1,VRP,1573,474,84,1800,5200
+0,Compostables,28,28,28,0,1,VRP,2380,2854,112,2500,6500
+0,Waste,26,26,26,0,1,VRP,2442,2442,104,2500,6500

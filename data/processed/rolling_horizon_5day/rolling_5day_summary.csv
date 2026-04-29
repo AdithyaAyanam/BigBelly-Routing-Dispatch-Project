@@ -1,0 +1,2 @@
+num_days,total_pickups,total_pickup_gal,total_pickup_lb,total_routes,total_route_minutes,total_overtime,avg_overflow_bins_start_of_day,planner_type
+5,259,17903.29,16470.13,15,1512.0,27.0,2.2,rolling_horizon_reoptimization_outer_loop_with_MIP_subproblems

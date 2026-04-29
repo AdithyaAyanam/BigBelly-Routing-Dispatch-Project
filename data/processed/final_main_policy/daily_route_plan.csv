@@ -1,0 +1,4 @@
+day,stream,truck,routing_mode,num_stops,route_gal,route_lb,route_minutes,volume_capacity_effective,mass_capacity_effective,extra_dumps_from_phase1
+0,Bottles/Cans,T2,VRP,21,1573,474,122,1800,5200,3
+0,Compostables,T1,VRP,28,2380,2854,141,2500,6500,4
+0,Waste,T3,VRP,26,2442,2442,140,2500,6500,4
