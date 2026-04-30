@@ -79,7 +79,12 @@ def scenario_name(trucks: int, overtime: float, overflow_penalty: float, max_bin
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run sensitivity study for weekly Bigbelly planning model.")
-    parser.add_argument("--max-bins", type=int, default=100, help="Instance size for study; use none by omitting or setting manually in code")
+    parser.add_argument(
+        "--max-bins",
+        type=int,
+        default=None,
+        help="Optional instance size cap. Default None keeps all eligible bins."
+    )
     parser.add_argument("--truck-work-min", type=float, default=480.0)
     parser.add_argument("--cbc-time-limit-sec", type=int, default=180)
     parser.add_argument("--cbc-gap-rel", type=float, default=0.10)
