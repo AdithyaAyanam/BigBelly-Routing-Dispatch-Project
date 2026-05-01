@@ -214,6 +214,9 @@ def rebuild_projection_from_state(state_df: pd.DataFrame, horizon_days: int) -> 
         0.0,
     )
 
+    if "is_active_bin" in out.columns:
+        out = out[out["is_active_bin"].fillna(False).astype(bool)].copy()
+
     out["must_service_within_horizon"] = out["days_since_last_service"].apply(
         lambda x: (7 - safe_float(x)) <= horizon_days
     )
@@ -330,19 +333,6 @@ def main() -> None:
         help="Optional lower bound passed to the weekly planning model.",
     )
     parser.add_argument(
-        "--max-weekly-pickups",
-        type=int,
-        default=None,
-        help="Optional upper bound passed to the weekly planning model.",
-    )
-
-    parser.add_argument(
-        "--use-observed-shift-span",
-        action="store_true",
-        help="Use expanded effective truck-day span based on observed staggered driver shifts.",
-    )
-
-    parser.add_argument(
         "--min-day0-pickups",
         type=int,
         default=None,
@@ -427,17 +417,11 @@ def main() -> None:
             "--cbc-gap-rel", str(args.cbc_gap_rel),
         ]
 
-        if args.use_observed_shift_span:
-            cmd_plan.append("--use-observed-shift-span")
-
         if args.max_bins is not None:
             cmd_plan.extend(["--max-bins", str(args.max_bins)])
 
         if args.min_weekly_pickups is not None:
             cmd_plan.extend(["--min-weekly-pickups", str(args.min_weekly_pickups)])
-
-        if args.max_weekly_pickups is not None:
-            cmd_plan.extend(["--max-weekly-pickups", str(args.max_weekly_pickups)])
 
         if args.min_day0_pickups is not None:
             cmd_plan.extend(["--min-day0-pickups", str(args.min_day0_pickups)])
@@ -452,7 +436,7 @@ def main() -> None:
 
         day0_schedule, day0_trucks = overwrite_day0_schedule_and_trucks(processed)
 
-        route_work_min = 750.0 if args.use_observed_shift_span else args.truck_work_min
+        route_work_min = args.truck_work_min
 
         cmd_route = [
             py_exec,

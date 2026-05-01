@@ -23,8 +23,8 @@ This version reflects Professor Yano's feedback:
    - extra dump cycles when needed.
 6. Allow overtime at a penalty cost.
 7. Filter to bins that are routable when routing consistency is required.
-8. Support optional weekly pickup bounds for sensitivity/compliance runs.
-9. Support hard overflow-bin-day caps for zero-overflow feasibility testing.
+8. Support an optional minimum weekly service floor.
+9. Model overflow as a soft penalty rather than a hard infeasibility cap.
 10. Support tunable dump-cycle penalty.
 
 Inputs
@@ -77,16 +77,6 @@ MAX_FILL_FACTOR = 1.50
 
 NORMAL_LIFT_TRUCKS = 3
 BACKUP_NONLIFT_TRUCKS = 1
-
-SHIFT_WINDOWS = [
-    ("S1", 4 * 60, 12 * 60 + 30),   # 4:00–12:30
-    ("S2", 6 * 60, 14 * 60 + 30),   # 6:00–2:30
-    ("S3", 8 * 60, 16 * 60 + 30),   # 8:00–4:30
-]
-
-FLEET_DAY_START_MIN = 4 * 60
-FLEET_DAY_END_MIN = 16 * 60 + 30
-FLEET_DAY_SPAN_MIN = FLEET_DAY_END_MIN - FLEET_DAY_START_MIN  # 750 min
 
 
 def repo_root() -> Path:
@@ -248,15 +238,6 @@ def main() -> None:
 
     parser.add_argument("--truck-work-min", type=float, default=480.0)
 
-    parser.add_argument(
-        "--use-observed-shift-span",
-        action="store_true",
-        help=(
-            "Sensitivity option only: approximate staggered driver shifts by using "
-            "the observed fleet-day span of 750 minutes instead of the default 480."
-        ),
-    )
-
     parser.add_argument("--dump-turnaround-min", type=float, default=17.0)
     parser.add_argument("--max-extra-dumps", type=int, default=8)
 
@@ -274,43 +255,10 @@ def main() -> None:
     parser.add_argument("--cbc-gap-rel", type=float, default=0.05)
 
     parser.add_argument(
-        "--min-weekly-pickups",
-        type=int,
-        default=None,
-        help="Optional lower bound on total pickups over the planning horizon.",
-    )
-    parser.add_argument(
-        "--max-weekly-pickups",
-        type=int,
-        default=None,
-        help="Optional upper bound on total pickups over the planning horizon.",
-    )
-
-    parser.add_argument(
-        "--min-day0-pickups",
-        type=int,
-        default=None,
-        help="Optional lower bound on pickups executed on Day 0 of the planning horizon.",
-    )
-    parser.add_argument(
-        "--max-day0-pickups",
-        type=int,
-        default=None,
-        help="Optional upper bound on pickups executed on Day 0 of the planning horizon.",
-    )
-
-    parser.add_argument(
         "--overflow-penalty",
         type=float,
         default=5.0,
         help="Penalty per overflow bin-day.",
-    )
-
-    parser.add_argument(
-        "--max-overflow-bin-days",
-        type=int,
-        default=None,
-        help="Optional hard upper bound on total overflow bin-days.",
     )
 
     parser.add_argument(
@@ -338,22 +286,7 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if (
-        args.min_day0_pickups is not None
-        and args.max_day0_pickups is not None
-        and args.min_day0_pickups > args.max_day0_pickups
-    ):
-        raise ValueError("--min-day0-pickups cannot exceed --max-day0-pickups")
-
-    if (
-        args.min_weekly_pickups is not None
-        and args.max_weekly_pickups is not None
-        and args.min_weekly_pickups > args.max_weekly_pickups
-    ):
-        raise ValueError("--min-weekly-pickups cannot exceed --max-weekly-pickups")
-
-    if args.max_overflow_bin_days is not None and args.max_overflow_bin_days < 0:
-        raise ValueError("--max-overflow-bin-days cannot be negative")
+ 
 
     root = repo_root()
     paths = ensure_dirs(root)
@@ -415,6 +348,15 @@ def main() -> None:
         df["must_service_within_horizon"].fillna(False).astype(bool)
     )
 
+    if "is_active_bin" in df.columns:
+        before_active = df["Serial"].nunique()
+        df["is_active_bin"] = df["is_active_bin"].fillna(False).astype(bool)
+        df = df[df["is_active_bin"]].copy()
+        after_active = df["Serial"].nunique()
+        print(f"[INFO] active-bin filter: {after_active}/{before_active} bins retained")
+        if df.empty:
+            raise ValueError("No active bins remain after applying is_active_bin filter.")
+
     if args.require_routable:
         stop_lookup_serials = load_stop_lookup_serials(root)
 
@@ -459,10 +401,6 @@ def main() -> None:
 
     effective_truck_work_min = args.truck_work_min
     resource_model = "single_shift_truck_day"
-
-    if args.use_observed_shift_span:
-        effective_truck_work_min = FLEET_DAY_SPAN_MIN
-        resource_model = "observed_shift_span_truck_day"
 
     print(f"[INFO] resource_model = {resource_model}")
     print(f"[INFO] truck_work_min_input = {args.truck_work_min}")
@@ -538,6 +476,11 @@ def main() -> None:
 
     tiny_pickup = LpVariable.dicts("tiny_pickup", (bins, days), cat=LpBinary)
     overflow_flag = LpVariable.dicts("overflow_flag", (bins, days), cat=LpBinary)
+    overflow_slack_gal = LpVariable.dicts(  
+        "overflow_slack_gal",
+        (bins, days),
+        lowBound=0,
+    )
     threshold_violation = LpVariable.dicts(
         "threshold_violation",
         (bins, days),
@@ -565,7 +508,7 @@ def main() -> None:
             for d in days
         )
         + args.overflow_penalty * lpSum(
-            overflow_flag[i][d]
+            overflow_slack_gal[i][d]
             for i in bins
             for d in days
         )
@@ -581,23 +524,7 @@ def main() -> None:
         )
     )
 
-    if args.min_weekly_pickups is not None:
-        model += total_pickups_expr >= args.min_weekly_pickups, "min_weekly_pickups"
-
-    if args.max_weekly_pickups is not None:
-        model += total_pickups_expr <= args.max_weekly_pickups, "max_weekly_pickups"
-
-    if args.min_day0_pickups is not None:
-        model += day0_pickups_expr >= args.min_day0_pickups, "min_day0_pickups"
-
-    if args.max_day0_pickups is not None:
-        model += day0_pickups_expr <= args.max_day0_pickups, "max_day0_pickups"
-
-    if args.max_overflow_bin_days is not None:
-        model += (
-            lpSum(overflow_flag[i][d] for i in bins for d in days)
-            <= args.max_overflow_bin_days
-        ), "max_overflow_bin_days"
+    
 
     for i in bins:
         model += inventory_gal[i][0] == current_fill_gal[i], f"initial_inventory_{i}"
@@ -619,11 +546,12 @@ def main() -> None:
             model += (
                 post_service_inventory_gal[i][d]
                 <= max_inventory_gal[i] * (1 - x[i][d])
+                + (max_inventory_gal[i] - float(bin_capacity_gal[i])) * x[i][d]
             ), f"reset_if_pick_{i}_{d}"
 
             model += (
                 post_service_inventory_gal[i][d]
-                >= inventory_gal[i][d] - max_inventory_gal[i] * x[i][d]
+                >= inventory_gal[i][d] - float(bin_capacity_gal[i]) * x[i][d]
             ), f"carry_if_no_pick_{i}_{d}"
 
             model += (
@@ -632,20 +560,23 @@ def main() -> None:
             ), f"pickup_def_{i}_{d}"
 
             model += (
-                pickup_gal[i][d] <= max_inventory_gal[i] * x[i][d]
+                pickup_gal[i][d] <= float(bin_capacity_gal[i]) * x[i][d]
             ), f"pickup_activate_{i}_{d}"
 
             model += (
                 inventory_gal[i][d]
-                <= float(bin_capacity_gal[i])
-                + (max_inventory_gal[i] - float(bin_capacity_gal[i]))
-                * overflow_flag[i][d]
+                <= float(bin_capacity_gal[i]) + overflow_slack_gal[i][d]
+            ), f"overflow_slack_def_{i}_{d}"
+
+            model += (
+                overflow_slack_gal[i][d]
+                <= (max_inventory_gal[i] - float(bin_capacity_gal[i])) * overflow_flag[i][d]
             ), f"overflow_flag_link_{i}_{d}"
 
             model += (
                 pickup_gal[i][d]
                 <= args.tiny_pickup_threshold_gal
-                + max_inventory_gal[i] * (1 - tiny_pickup[i][d])
+                + float(bin_capacity_gal[i]) * (1 - tiny_pickup[i][d])
             ), f"tiny_pickup_upper_{i}_{d}"
 
             model += (
@@ -678,12 +609,12 @@ def main() -> None:
                 ), f"truck_pickup_le_total_{i}_{k}_{d}"
 
                 model += (
-                    pickup_gal_truck[i][k][d] <= max_inventory_gal[i] * y[i][k][d]
+                    pickup_gal_truck[i][k][d] <= float(bin_capacity_gal[i]) * y[i][k][d]
                 ), f"truck_pickup_activate_{i}_{k}_{d}"
 
                 model += (
                     pickup_gal_truck[i][k][d]
-                    >= pickup_gal[i][d] - max_inventory_gal[i] * (1 - y[i][k][d])
+                    >= pickup_gal[i][d] - float(bin_capacity_gal[i]) * (1 - y[i][k][d])
                 ), f"truck_pickup_lower_{i}_{k}_{d}"
 
             model += (
@@ -920,7 +851,8 @@ def main() -> None:
                         safe_value(post_service_inventory_gal[i][d]),
                         2,
                     ),
-                    "overflow_flag": int(round(safe_value(overflow_flag[i][d]))),
+                    "overflow_flag": int(safe_value(overflow_slack_gal[i][d]) > 1e-6),
+                    "overflow_slack_gal": round(safe_value(overflow_slack_gal[i][d]), 2),
                     "threshold_violation_gal": round(
                         safe_value(threshold_violation[i][d]),
                         2,
@@ -947,7 +879,13 @@ def main() -> None:
         if safe_value(inventory_gal[i][d]) > float(bin_capacity_gal[i]) + 1e-6
     )
     overflow_flag_days = sum(
-        int(round(safe_value(overflow_flag[i][d])))
+        1
+        for i in bins
+        for d in days
+        if safe_value(overflow_slack_gal[i][d]) > 1e-6
+    )
+    total_overflow_slack_gal = sum(
+        safe_value(overflow_slack_gal[i][d])
         for i in bins
         for d in days
     )
@@ -965,17 +903,12 @@ def main() -> None:
                 "resource_model": resource_model,
                 "normal_lift_trucks": NORMAL_LIFT_TRUCKS,
                 "backup_nonlift_trucks": BACKUP_NONLIFT_TRUCKS,
-                "use_observed_shift_span": bool(args.use_observed_shift_span),
                 "total_pickups": round(total_pickups, 2),
-                "min_weekly_pickups": args.min_weekly_pickups,
-                "max_weekly_pickups": args.max_weekly_pickups,
-                "min_day0_pickups": args.min_day0_pickups,
-                "max_day0_pickups": args.max_day0_pickups,
                 "total_extra_dumps": round(total_extra_dumps, 2),
                 "total_overtime_min": round(total_overtime, 2),
                 "overflow_bin_days": int(overflow_bin_days),
                 "overflow_flag_days": int(overflow_flag_days),
-                "max_overflow_bin_days": args.max_overflow_bin_days,
+                "total_overflow_slack_gal": round(total_overflow_slack_gal, 2),
                 "dump_penalty": args.dump_penalty,
                 "overflow_penalty": args.overflow_penalty,
                 "cbc_time_limit_sec": args.cbc_time_limit_sec,

@@ -71,6 +71,67 @@ DEFAULT_STREAM_DENSITY_LB_PER_GAL = {
 # -------------------------------------------------------------
 # Helper: project root
 # -------------------------------------------------------------
+
+def compute_dynamic_travel_proxy_min(processed_dir: Path, fallback: float) -> float:
+    travel_fp = processed_dir / "travel_matrix_long.csv"
+
+    if not travel_fp.exists():
+        print(f"[WARN] travel_matrix_long.csv not found; using fallback default_travel_min={fallback}")
+        return float(fallback)
+
+    tm = pd.read_csv(travel_fp)
+    print(f"[INFO] travel_matrix_long columns = {tm.columns.tolist()}")
+
+    time_col = None
+    for candidate in [
+        "travel_time_min",
+        "travel_minutes",
+        "travel_min",
+        "time_min",
+        "duration_min",
+        "minutes",
+        "route_minutes",
+    ]:
+        if candidate in tm.columns:
+            time_col = candidate
+            break
+
+    if time_col is None:
+        print(f"[WARN] No travel-time column found in travel_matrix_long.csv; using fallback default_travel_min={fallback}")
+        return float(fallback)
+
+    print(f"[INFO] using travel-time column: {time_col}")
+
+    filtered = tm.copy()
+
+    # Exclude depot-related rows.
+    if "from_label" in filtered.columns:
+        filtered = filtered[~filtered["from_label"].astype(str).str.lower().eq("depot")]
+    if "to_label" in filtered.columns:
+        filtered = filtered[~filtered["to_label"].astype(str).str.lower().eq("depot")]
+
+    # Exclude self-pairs.
+    if "from_node" in filtered.columns and "to_node" in filtered.columns:
+        filtered = filtered[filtered["from_node"] != filtered["to_node"]]
+
+    filtered[time_col] = pd.to_numeric(filtered[time_col], errors="coerce")
+    filtered = filtered[(filtered[time_col] > 0) & filtered[time_col].notna()].copy()
+
+    if filtered.empty:
+        print(f"[WARN] No valid non-depot travel times found; using fallback default_travel_min={fallback}")
+        return float(fallback)
+
+    # Use a local-travel proxy: the 25th percentile of non-depot, non-self trips.
+    # This avoids the old over-conservative all-pairs median while also avoiding
+    # unrealistically tiny nearest-neighbor values.
+    dynamic_value = float(filtered[time_col].quantile(0.25))
+
+    print(
+    f"[INFO] dynamic avg_travel_proxy_min from OSMnx local-travel 25th percentile = {dynamic_value:.2f}"
+)
+
+    return dynamic_value
+
 def repo_root() -> Path:
     """
     Return the project root directory.
@@ -421,6 +482,7 @@ def build_projection_table(
     default_travel_min: float,
     safe_bin_content_lb: float,
     hard_bin_content_lb: float,
+    processed_dir: Path,
 ) -> pd.DataFrame:
     """
     Construct the final 7-day modeling table.
@@ -475,17 +537,31 @@ def build_projection_table(
 
     base["stream"] = base["stream"].fillna("Unknown").apply(canonical_stream)
 
-    # Preserve the raw age before capping/filtering
+    # Preserve the raw age before capping/filtering and make sensor quality explicit.
+    # Do not silently drop stale/no-history bins here; downstream solver filters
+    # on is_active_bin so QA can still review what was excluded.
     base["days_since_last_service_raw"] = base["days_since_last_service"]
+    base["sensor_age_days"] = base["days_since_last_service_raw"]
 
-    # Keep bins with reasonably recent data for the prototype
-    base = base[
-        base["days_since_last_service_raw"].notna()
-        & (base["days_since_last_service_raw"] <= 21)
-    ].copy()
+    base["sensor_status"] = np.select(
+        [
+            base["sensor_age_days"].isna(),
+            base["sensor_age_days"] > 21,
+        ],
+        [
+            "no_history",
+            "stale_or_off",
+        ],
+        default="active",
+    )
 
-    # Cap age so extremely stale records do not create explosive estimates
-    base["days_since_last_service"] = base["days_since_last_service_raw"].clip(lower=0, upper=10)
+    # Cap active age so extremely stale records do not create explosive estimates.
+    # Stale/no-history bins receive age 0 and are marked inactive below.
+    base["days_since_last_service"] = np.where(
+        base["sensor_status"].eq("active"),
+        base["days_since_last_service_raw"].clip(lower=0, upper=10),
+        0.0,
+    )
 
     # Growth estimate fallback logic:
     # 1) bin-level historical median
@@ -497,10 +573,15 @@ def build_projection_table(
     )
     base["daily_fill_growth_pct"] = base["daily_fill_growth_pct"].fillna(overall_growth)
 
+    base["is_active_bin"] = (
+        base["sensor_status"].eq("active")
+        & base["daily_fill_growth_pct"].fillna(0).gt(0)
+    )
+
     # Estimate current fill at day 0
     base["current_fill_pct_est"] = (
         base["daily_fill_growth_pct"] * base["days_since_last_service"]
-    ).clip(lower=0, upper=125)
+    ).clip(lower=0, upper=150)
 
     # Attach simple default operating parameters
     base["bin_capacity_gal"] = float(default_bin_capacity_gal)
@@ -508,9 +589,10 @@ def build_projection_table(
 
     # Keep original name for compatibility with current scheduler,
     # and also provide a clearer alias.
-    base["avg_travel_proxy_min"] = float(default_travel_min)
-    base["avg_travel_proxy_min_phase1"] = float(default_travel_min)
+    dynamic_travel_min = compute_dynamic_travel_proxy_min(processed_dir, default_travel_min)
 
+    base["avg_travel_proxy_min"] = dynamic_travel_min
+    base["avg_travel_proxy_min_phase1"] = dynamic_travel_min
     # Build projected fields day by day
     for d in range(horizon_days):
         fill_col = f"fill_day_{d}"
@@ -521,7 +603,7 @@ def build_projection_table(
 
         base[fill_col] = (
             base["current_fill_pct_est"] + base["daily_fill_growth_pct"] * d
-        ).clip(upper=125)
+        ).clip(upper=150)
 
         base[gal_col] = base["bin_capacity_gal"] * base[fill_col] / 100.0
         base[lb_col] = base[gal_col] * base["density_lb_per_gal"]
@@ -570,6 +652,9 @@ def build_projection_table(
             "density_lb_per_gal",
             "days_since_last_service",
             "days_since_last_service_raw",
+            "sensor_age_days",
+            "sensor_status",
+            "is_active_bin",
             "daily_fill_growth_pct",
             "current_fill_pct_est",
             "bin_capacity_gal",
@@ -631,7 +716,7 @@ def main() -> None:
     parser.add_argument("--default-threshold-pct", type=float, default=60.0)
     parser.add_argument("--default-bin-capacity-gal", type=float, default=150.0)
     parser.add_argument("--default-service-min", type=float, default=4.0)
-    parser.add_argument("--default-travel-min", type=float, default=10.0)
+    parser.add_argument("--default-travel-min", type=float, default=3.1)
 
     # Stream densities
     parser.add_argument("--waste-density", type=float, default=DEFAULT_STREAM_DENSITY_LB_PER_GAL["Waste"])
@@ -708,6 +793,7 @@ def main() -> None:
         default_travel_min=args.default_travel_min,
         safe_bin_content_lb=args.safe_bin_content_lb,
         hard_bin_content_lb=args.hard_bin_content_lb,
+        processed_dir=paths["processed"],
     )
 
     out["anchor_date"] = anchor_date

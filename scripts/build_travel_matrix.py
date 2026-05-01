@@ -185,7 +185,7 @@ def main() -> None:
     parser.add_argument(
         "--travel-speed-mph",
         type=float,
-        default=7.0,
+        default=6.0,
         help="Average vehicle speed used to convert network length to travel time",
     )
     parser.add_argument(
