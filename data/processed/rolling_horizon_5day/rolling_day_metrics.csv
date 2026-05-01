@@ -1,6 +1,6 @@
 rolling_day,pickups_today,pickup_gal_today,pickup_lb_today,routes_today,route_minutes_today,overtime_today,overflow_bins_start_of_day,planner_status,planner_objective,num_bins_in_instance,total_extra_dumps_today
-1,78,6529.39,5796.9,3,419.0,0.0,9,Optimal,972.379,232,35.0
-2,53,3297.94,2692.37,3,305.0,22.0,2,Optimal,364.827,232,24.0
-3,37,2226.65,2128.46,3,247.0,0.0,0,Optimal,378.102,232,27.0
-4,30,1877.11,1856.5,3,196.0,5.0,0,Optimal,385.276,232,30.0
-5,61,3972.2,3995.9,3,345.0,0.0,0,Optimal,379.325,232,32.0
+1,63,4215.11,4275.13,3,367.0,0.0,9,Optimal,2440.927,210,18.0
+2,52,1721.98,1565.73,3,317.0,0.0,0,Optimal,324.326,210,14.0
+3,36,2266.5,2304.72,3,248.0,0.0,0,Optimal,324.572,210,15.0
+4,33,2012.82,1909.53,3,233.0,0.0,1,Optimal,355.637,210,14.0
+5,49,2743.96,2943.99,3,286.0,0.0,1,Optimal,345.692,210,15.0
