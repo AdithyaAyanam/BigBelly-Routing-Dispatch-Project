@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 """
@@ -6,7 +5,8 @@ run_5day_rolling_horizon.py
 -------------------------------------------------------------
 Run a 5-day rolling-horizon experiment for the Bigbelly project.
 
-This version is aligned with the final validated seven-day planning model:
+This version is aligned with the final corrected seven-calendar-day / five-service-day planning model:
+- 7-calendar-day lookahead with 5 weekday service days
 - 4 trucks
 - 1 driver per truck
 - 480 minutes per truck-day
@@ -16,6 +16,7 @@ This version is aligned with the final validated seven-day planning model:
 - 8 minutes average planning travel time
 - 17 minutes per dump cycle
 - $20 overflow penalty per bin-day
+- overflow penalty applied across all 7 calendar days, including non-service days
 - compost weekday hygiene enforced
 - no Phase-1 routable-bin filter
 - Day 0 routing is treated as a downstream feasibility check
@@ -266,10 +267,15 @@ def validate_day_routes(processed: Path, day0_schedule: pd.DataFrame, truck_work
             "routed_serials": 0,
             "missing_routed_serials": None,
             "extra_routed_serials": None,
+            "dropped_stops": None,
             "volume_violations": None,
             "mass_violations": None,
             "time_violations": None,
         }
+
+    dropped_stops = 0
+    if not route_summary.empty and "dropped_stops" in route_summary.columns:
+        dropped_stops = int(route_summary["dropped_stops"].fillna(0).sum())
 
     plan = route_plan.copy()
     plan["volume_ok"] = plan["route_gal"] <= plan["volume_capacity_effective"]
@@ -301,6 +307,7 @@ def validate_day_routes(processed: Path, day0_schedule: pd.DataFrame, truck_work
         and time_violations == 0
         and len(missing) == 0
         and len(extra) == 0
+        and dropped_stops == 0
     )
 
     return {
@@ -310,6 +317,7 @@ def validate_day_routes(processed: Path, day0_schedule: pd.DataFrame, truck_work
         "routed_serials": int(len(routed_serials)),
         "missing_routed_serials": int(len(missing)),
         "extra_routed_serials": int(len(extra)),
+        "dropped_stops": dropped_stops,
         "volume_violations": volume_violations,
         "mass_violations": mass_violations,
         "time_violations": time_violations,
@@ -322,6 +330,15 @@ def main() -> None:
     parser.add_argument("--projection-input", type=str, default=None)
     parser.add_argument("--num-days", type=int, default=5)
     parser.add_argument("--horizon-days", type=int, default=7)
+    parser.add_argument(
+        "--num-service-days",
+        type=int,
+        default=5,
+        help=(
+            "Number of weekday operating/service days inside the seven-calendar-day "
+            "lookahead. Use 5 because drivers do not work weekends."
+        ),
+    )
 
     parser.add_argument("--num-trucks", type=int, default=4)
     parser.add_argument("--truck-work-min", type=float, default=480.0)
@@ -357,6 +374,11 @@ def main() -> None:
     parser.add_argument("--skip-routing", action="store_true")
 
     args = parser.parse_args()
+
+    if args.num_service_days > args.horizon_days:
+        raise ValueError("--num-service-days cannot exceed --horizon-days")
+    if args.num_service_days < 1:
+        raise ValueError("--num-service-days must be at least 1")
 
     root = repo_root()
     paths = ensure_dirs(root)
@@ -398,6 +420,7 @@ def main() -> None:
             "--input", str(temp_projection_fp),
             "--num-trucks", str(args.num_trucks),
             "--horizon-days", str(args.horizon_days),
+            "--num-service-days", str(args.num_service_days),
             "--truck-work-min", str(args.truck_work_min),
             "--sensitivity-truck-work-min", str(args.sensitivity_truck_work_min),
             "--truck-mass-lb", str(args.truck_mass_lb),
@@ -512,6 +535,10 @@ def main() -> None:
         day_metrics_rows.append(
             {
                 "rolling_day": rolling_day + 1,
+                "horizon_days": args.horizon_days,
+                "num_service_days": args.num_service_days,
+                "service_days": ",".join(str(d) for d in range(args.num_service_days)),
+                "nonservice_days": ",".join(str(d) for d in range(args.num_service_days, args.horizon_days)),
                 "pickups_today": pickups_today,
                 "pickup_gal_today": round(pickup_gal_today, 2),
                 "pickup_lb_today": round(pickup_lb_today, 2),
@@ -544,6 +571,10 @@ def main() -> None:
         [
             {
                 "num_days": args.num_days,
+                "horizon_days": args.horizon_days,
+                "num_service_days": args.num_service_days,
+                "service_days": ",".join(str(d) for d in range(args.num_service_days)),
+                "nonservice_days": ",".join(str(d) for d in range(args.num_service_days, args.horizon_days)),
                 "total_pickups": int(day_metrics_df["pickups_today"].sum()) if not day_metrics_df.empty else 0,
                 "total_pickup_gal": round(float(day_metrics_df["pickup_gal_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
                 "total_pickup_lb": round(float(day_metrics_df["pickup_lb_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
@@ -554,7 +585,11 @@ def main() -> None:
                 "avg_overflow_bins_start_of_day": round(float(day_metrics_df["overflow_bins_start_of_day"].mean()), 2) if not day_metrics_df.empty else 0.0,
                 "routing_feasible_all_days": bool(day_metrics_df["routing_feasible"].fillna(False).all()) if not day_metrics_df.empty and "routing_feasible" in day_metrics_df.columns else None,
                 "planner_type": "5day_rolling_horizon_reoptimization_with_7day_MIP_subproblems",
-                "phase1_assumptions": "4 trucks, 480 min, no overtime, $20 overflow, compost weekday hygiene",
+                "phase1_assumptions": (
+                    "7-calendar-day lookahead, 5 weekday service days, 4 trucks, "
+                    "480 min, no overtime, $20 overflow across all 7 days, "
+                    "compost weekday hygiene"
+                ),
             }
         ]
     )
@@ -581,7 +616,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
- 
