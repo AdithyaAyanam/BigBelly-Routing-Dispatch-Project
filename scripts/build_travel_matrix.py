@@ -38,7 +38,10 @@ or
 Optional schedule file:
 - data/processed/small_instance_service_schedule.csv
 If available, the matrix is restricted to bins currently appearing in the
-Phase 1 schedule. Otherwise, it includes all bins with valid access coordinates.
+Phase 1 schedule. If --route-day is supplied, the matrix is further restricted
+to scheduled bins for that specific service_day. Otherwise, it includes all
+scheduled bins across the seven-day plan. If no schedule exists, it includes
+all bins with valid access coordinates.
 
 Preferred columns in the input
 ------------------------------
@@ -144,6 +147,15 @@ def main() -> None:
         type=str,
         default=None,
         help="Optional Phase 1 service schedule CSV used to restrict the matrix to active bins",
+    )
+    parser.add_argument(
+        "--route-day",
+        type=int,
+        default=None,
+        help=(
+            "Optional service_day to restrict the travel matrix to. "
+            "Use --route-day 0 for Day 0 routing. If omitted, includes all scheduled bins."
+        ),
     )
     parser.add_argument(
         "--depot-lat",
@@ -266,9 +278,19 @@ def main() -> None:
     else:
         sched_fp = paths["processed"] / "small_instance_service_schedule.csv"
 
-    if args.schedule and sched_fp.exists():
+    if sched_fp.exists():
         sched = pd.read_csv(sched_fp)
+
         if "Serial" in sched.columns:
+            sched["Serial"] = sched["Serial"].astype(str).str.strip()
+
+            if "service_day" in sched.columns and args.route_day is not None:
+                sched["service_day"] = pd.to_numeric(
+                    sched["service_day"],
+                    errors="coerce",
+                ).astype("Int64")
+                sched = sched[sched["service_day"] == int(args.route_day)].copy()
+
             active_serials = (
                 sched["Serial"]
                 .dropna()
@@ -277,8 +299,24 @@ def main() -> None:
                 .unique()
                 .tolist()
             )
+
             if active_serials:
+                before = df["Serial"].nunique()
                 df = df[df["Serial"].isin(active_serials)].copy()
+                after = df["Serial"].nunique()
+                print(f"[INFO] schedule filter retained {after}/{before} bins")
+            else:
+                print(
+                    "[WARN] Schedule file exists but no active serials were found. "
+                    "Building matrix for all bins in projection input."
+                )
+        else:
+            print(
+                "[WARN] Schedule file exists but has no Serial column. "
+                "Building matrix for all bins in projection input."
+            )
+    else:
+        print(f"[WARN] Schedule file not found, building matrix for all bins: {sched_fp}")
 
     df = df.dropna(subset=[lat_col, lng_col]).drop_duplicates(subset=["Serial"]).copy()
     if df.empty:
@@ -494,6 +532,7 @@ def main() -> None:
     print(f"[INFO] query_dist_m = {query_dist_m:.1f}")
     print(f"[INFO] routing_direction = {args.routing_direction}")
     print(f"[INFO] network_type = {args.network_type}")
+    print(f"[INFO] route_day_filter = {args.route_day if args.route_day is not None else 'all scheduled days'}")
 
 
 if __name__ == "__main__":

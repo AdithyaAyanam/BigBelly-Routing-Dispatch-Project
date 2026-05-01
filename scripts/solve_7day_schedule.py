@@ -11,6 +11,8 @@ This version is aligned with the professor-confirmation assumption table:
 
 Operational assumptions
 -----------------------
+- Planning horizon: 7 calendar days for inventory lookahead.
+- Service days: 5 weekday operating days; no pickups are allowed on weekend/non-working days.
 - Primary truck-day resource: 480 minutes, representing one 8-hour shift.
 - Sensitivity alternative: 750 minutes, retained only as a prior extended-span comparison.
 - Primary fleet: 4 trucks, with one driver assigned to each truck.
@@ -31,10 +33,11 @@ Operational assumptions
 - Dump-cycle cost: 17 * $40/60 = $11.33.
 - Approximate pickup cost: (4 + 8) * $40/60 = $8.00.
 - Overflow penalty: default $20 per overflow bin-day, with $15 as a sensitivity value.
+- Overflow penalty is applied across all seven calendar days, including weekend/non-service days.
 - 60% threshold penalty: 0; threshold is diagnostic/planning signal only.
 - Tiny pickup penalty: 0; realistic pickup labor cost discourages unnecessary pickups.
 - Maximum extra dumps: default 3 per truck-stream-day.
-- Compost weekday hygiene rule: optional flag requires every compost bin to be serviced at least once.
+- Compost weekday hygiene rule: optional flag requires every compost bin to be serviced at least once within the 5 service days.
 - CBC time limit and optimality gap are configurable.
 """
 
@@ -235,7 +238,18 @@ def parse_args() -> argparse.Namespace:
         "--horizon-days",
         type=int,
         default=7,
-        help="Seven-day planning horizon.",
+        help="Seven-calendar-day planning horizon used for inventory lookahead.",
+    )
+
+    parser.add_argument(
+        "--num-service-days",
+        type=int,
+        default=5,
+        help=(
+            "Number of weekday operating days within the planning horizon. "
+            "Use 5 because drivers do not work weekends. Service is allowed "
+            "only on days 0 through num_service_days-1."
+        ),
     )
 
     parser.add_argument(
@@ -382,8 +396,8 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "If set, require every compost bin to be serviced at least once "
-            "during the planning horizon, reflecting the practical 5-weekday "
-            "hygiene rule because drivers do not work weekends."
+            "during the 5 weekday service days, reflecting that drivers "
+            "do not work weekends."
         ),
     )
 
@@ -424,6 +438,12 @@ def main() -> None:
             f"[WARN] Professor-aligned baseline uses {NORMAL_LIFT_TRUCKS} trucks, "
             f"but num_trucks={args.num_trucks}"
         )
+
+    if args.num_service_days > args.horizon_days:
+        raise ValueError("--num-service-days cannot exceed --horizon-days")
+
+    if args.num_service_days < 1:
+        raise ValueError("--num-service-days must be at least 1")
 
     if args.input:
         input_fp = Path(args.input)
@@ -518,6 +538,8 @@ def main() -> None:
         if s != "Unknown"
     ]
     days = list(range(args.horizon_days))
+    service_days = list(range(args.num_service_days))
+    nonservice_days = [d for d in days if d not in service_days]
     trucks = [f"T{k + 1}" for k in range(args.num_trucks)]
 
     bin_stream = dict(zip(instance["Serial"], instance["stream"]))
@@ -548,6 +570,8 @@ def main() -> None:
     print(f"[INFO] resource_model = {resource_model}")
     print(f"[INFO] truck_work_min = {args.truck_work_min}")
     print(f"[INFO] sensitivity_truck_work_min = {args.sensitivity_truck_work_min}")
+    print(f"[INFO] service_days = {service_days}")
+    print(f"[INFO] nonservice_days = {nonservice_days}")
     print(f"[INFO] shift_windows = {SHIFT_WINDOWS}")
     print(f"[INFO] depot = {DEPOT_NAME}")
     print(f"[INFO] service_travel_source = {service_travel_source}")
@@ -670,6 +694,7 @@ def main() -> None:
     print(f"[INFO] dump_penalty = {dump_penalty:.3f}")
     print(f"[INFO] overtime_penalty_per_min = {overtime_penalty_per_min:.3f}")
     print(f"[INFO] overflow_penalty = {args.overflow_penalty}")
+    print("[INFO] overflow_penalty_applies_to = all 7 calendar days including non-service days")
     print("[INFO] threshold_penalty = 0.0")
     print(f"[INFO] tiny_pickup_penalty = {args.tiny_pickup_penalty}")
 
@@ -680,22 +705,26 @@ def main() -> None:
         (float(service_min[i]) + float(travel_min[i])) * y[i][k][d]
         for i in bins
         for k in trucks
-        for d in days
+        for d in service_days
     )
 
     dump_cost_expr = dump_penalty * lpSum(
         extra_dumps[k][s][d]
         for k in trucks
         for s in streams
-        for d in days
+        for d in service_days
     )
 
     overtime_cost_expr = overtime_penalty_per_min * lpSum(
         overtime_min[k][d]
         for k in trucks
-        for d in days
+        for d in service_days
     )
 
+    # Overflow is penalized over the full seven-calendar-day lookahead,
+    # including weekend/non-service days. Drivers cannot collect on Days 5-6,
+    # but weekend overflow still matters operationally and should influence
+    # Friday/Thursday service decisions.
     overflow_cost_expr = args.overflow_penalty * lpSum(
         overflow_flag[i][d]
         for i in bins
@@ -707,7 +736,7 @@ def main() -> None:
         + dump_cost_expr
         + overtime_cost_expr
         + overflow_cost_expr
-        + epsilon * lpSum((days[-1] - d) * x[i][d] for i in bins for d in days)
+        + epsilon * lpSum((service_days[-1] - d) * x[i][d] for i in bins for d in service_days)
     )
 
     # ------------------------------------------------------------------
@@ -731,8 +760,15 @@ def main() -> None:
         # every compost bin receives at least one service when this option is enabled.
         if args.enforce_compost_weekday_hygiene and bin_stream[i] == "Compostables":
             model += (
-                lpSum(x[i][d] for d in days) >= 1
+                lpSum(x[i][d] for d in service_days) >= 1
             ), f"compost_weekday_hygiene_{i}"
+
+        # Drivers do not work weekends/non-service days. Inventory is still tracked
+        # across the full seven-calendar-day lookahead, but service decisions,
+        # pickup volume, and truck assignment are forced to zero on non-service days.
+        for d in nonservice_days:
+            model += x[i][d] == 0, f"no_service_nonworking_day_{i}_{d}"
+            model += pickup_gal[i][d] == 0, f"no_pickup_volume_nonworking_day_{i}_{d}"
 
         for d in days:
             model += inventory_gal[i][d] <= max_inventory_gal[i], f"inventory_cap_{i}_{d}"
@@ -802,6 +838,22 @@ def main() -> None:
     # ------------------------------------------------------------------
 
     for i in bins:
+        for d in nonservice_days:
+            for k in trucks:
+                model += y[i][k][d] == 0, f"no_truck_assignment_nonworking_day_{i}_{k}_{d}"
+                model += pickup_gal_truck[i][k][d] == 0, f"no_truck_pickup_nonworking_day_{i}_{k}_{d}"
+
+    for k in trucks:
+        for s in streams:
+            for d in nonservice_days:
+                model += z[k][s][d] == 0, f"no_stream_assignment_nonworking_day_{k}_{s}_{d}"
+                model += extra_dumps[k][s][d] == 0, f"no_extra_dumps_nonworking_day_{k}_{s}_{d}"
+
+    for k in trucks:
+        for d in nonservice_days:
+            model += overtime_min[k][d] == 0, f"no_overtime_nonworking_day_{k}_{d}"
+
+    for i in bins:
         for d in days:
             model += (
                 lpSum(y[i][k][d] for k in trucks) == x[i][d]
@@ -832,7 +884,7 @@ def main() -> None:
             ), f"one_stream_{k}_{d}"
 
     # Symmetry breaking: use earlier truck labels first when possible.
-    for d in days:
+    for d in service_days:
         for t in range(len(trucks) - 1):
             model += (
                 lpSum(z[trucks[t]][s][d] for s in streams)
@@ -1089,13 +1141,13 @@ def main() -> None:
                 }
             )
 
-    total_pickups = sum(safe_value(x[i][d]) for i in bins for d in days)
+    total_pickups = sum(safe_value(x[i][d]) for i in bins for d in service_days)
 
     total_extra_dumps = sum(
         safe_value(extra_dumps[k][s][d])
         for k in trucks
         for s in streams
-        for d in days
+        for d in service_days
     )
 
     total_overtime = sum(
@@ -1135,6 +1187,9 @@ def main() -> None:
                 "status": status,
                 "objective_value": round(objective_value, 3),
                 "horizon_days": args.horizon_days,
+                "num_service_days": args.num_service_days,
+                "service_days": ",".join(str(d) for d in service_days),
+                "nonservice_days": ",".join(str(d) for d in nonservice_days),
                 "num_bins_in_instance": len(bins),
                 "num_trucks": args.num_trucks,
                 "primary_fleet": "4 trucks, one driver assigned to each",
@@ -1170,6 +1225,11 @@ def main() -> None:
                 "overtime_cost": round(overtime_cost_value, 2),
                 "overflow_penalty": args.overflow_penalty,
                 "overflow_cost": round(overflow_cost_value, 2),
+                "expected_overflow_cost_from_model_flags": round(
+                    args.overflow_penalty * overflow_flag_days,
+                    2,
+                ),
+                "overflow_penalty_applies_to": "all 7 calendar days including non-service days",
                 "max_fill_factor": MAX_FILL_FACTOR,
                 "volume_capacity_factor": 1.0,
                 "volume_capacity_note": "Uses stated capacities directly; no 99 percent safety factor.",
@@ -1181,6 +1241,8 @@ def main() -> None:
                 "one_stream_per_truck_day": True,
                 "fixed_geographic_zones": False,
                 "enforce_compost_weekday_hygiene": bool(args.enforce_compost_weekday_hygiene),
+                "weekday_service_only": True,
+                "weekend_service_allowed": False,
                 "threshold_penalty": 0.0,
                 "tiny_pickup_penalty": args.tiny_pickup_penalty,
                 "cbc_time_limit_sec": args.cbc_time_limit_sec,
