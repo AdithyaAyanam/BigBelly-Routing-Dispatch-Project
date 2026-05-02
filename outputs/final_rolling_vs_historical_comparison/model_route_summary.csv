@@ -1,0 +1,7 @@
+rolling_day,stream,model_routes,model_route_minutes,model_route_gal,model_route_lb,model_stops,historical_date
+1,Bottles/Cans,1,118,423,129,16,2026-02-04
+1,Compostables,1,146,985,1186,25,2026-02-04
+1,Waste,2,111,1252,1252,15,2026-02-04
+2,Bottles/Cans,1,152,388,121,25,2026-02-05
+2,Compostables,1,74,489,587,7,2026-02-05
+2,Waste,2,148,897,897,20,2026-02-05

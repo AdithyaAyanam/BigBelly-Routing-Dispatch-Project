@@ -1,0 +1,3 @@
+rolling_day,horizon_days,num_service_days,service_days,nonservice_days,target_avg_interstop_min,pickups_today,pickup_gal_today,pickup_lb_today,routes_today,route_minutes_today,overtime_today,extra_dumps_today,capacity_time_violations,overflow_bins_start_of_day,compost_bins_total,compost_bins_served_today,planner_status,planner_objective,num_bins_in_instance,routing_feasible,route_plan_rows,route_summary_rows,routed_serials,missing_routed_serials,extra_routed_serials,dropped_stops,volume_violations,mass_violations,time_violations
+1,7,5,"0,1,2,3,4","5,6",8.0,56,2659.96,2561.53,4,375.0,0.0,3.0,0,9,79,25,Optimal,2310.511,210,True,4,3,56,0,0,0,0,0,0
+2,7,5,"0,1,2,3,4","5,6",8.0,52,1772.9,1599.11,4,374.0,0.0,3.0,0,0,79,7,Optimal,1926.409,210,True,4,3,52,0,0,0,0,0,0

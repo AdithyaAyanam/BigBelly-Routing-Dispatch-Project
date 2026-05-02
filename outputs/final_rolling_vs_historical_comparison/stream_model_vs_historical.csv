@@ -1,0 +1,7 @@
+rolling_day,stream,model_pickups,model_unique_bins,model_pickup_gal,model_pickup_lb,historical_date,historical_pickups,historical_unique_bins,historical_avg_fullness_pct,pickup_difference_model_minus_actual,pickup_ratio_model_to_actual
+1,Bottles/Cans,16,16,422.42,126.73,2026-02-04,14,14,,2,1.1428571428571428
+1,Compostables,25,25,986.35,1183.6100000000001,2026-02-04,44,33,,-19,0.5681818181818182
+1,Waste,15,15,1251.19,1251.19,2026-02-04,57,49,,-42,0.2631578947368421
+2,Bottles/Cans,25,25,388.09000000000003,116.43,2026-02-05,3,3,,22,8.333333333333334
+2,Compostables,7,7,489.27,587.1400000000001,2026-02-05,23,17,,-16,0.30434782608695654
+2,Waste,20,20,895.54,895.54,2026-02-05,40,35,,-20,0.5

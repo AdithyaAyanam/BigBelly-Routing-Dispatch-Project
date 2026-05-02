@@ -1,0 +1,2 @@
+num_days,horizon_days,num_service_days,service_days,nonservice_days,target_avg_interstop_min,total_pickups,total_pickup_gal,total_pickup_lb,total_routes,total_route_minutes,total_overtime,total_capacity_time_violations,avg_overflow_bins_start_of_day,routing_feasible_all_days,planner_type,phase1_assumptions
+2,7,5,"0,1,2,3,4","5,6",8.0,108,4432.86,4160.64,8,749.0,0.0,0,4.5,True,5day_rolling_horizon_reoptimization_with_7day_MIP_subproblems,"7-calendar-day lookahead, 5 weekday service days, 4 trucks, 480 min, no overtime, $20 overflow across all 7 days, compost weekday hygiene"

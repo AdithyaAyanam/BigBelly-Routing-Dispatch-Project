@@ -1,0 +1,125 @@
+day,stream,truck,routing_mode,stop_order,local_node,Stop_ID,Serials_at_stop,label,is_depot,pickup_gal,pickup_lb,service_min,rolling_day
+0,Bottles/Cans,T2,SingleTruckRoute,1,0,,,DEPOT,1,0,0,0,1
+0,Bottles/Cans,T2,SingleTruckRoute,2,1,1503642.0,1503642.0,E14 Physics,0,5,2,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,3,4,1515723.0,1515723.0,E13 Stanley Hall,0,0,0,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,4,5,1515725.0,1515725.0,U27 Anthony Hall,0,5,2,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,5,13,1515769.0,1515769.0,U12 Upper MLK Union,0,1,0,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,6,14,1515773.0,1515773.0,U07 Cal Book Store,0,127,38,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,7,3,1515722.0,1515722.0,U09 MLK Ramp,0,48,14,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,8,16,1516530.0,1516530.0,U33 Spieker Plaza,0,3,1,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,9,9,1515739.0,1515739.0,U17 Dwinelle Plaza Entry,0,130,39,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,10,8,1515738.0,1515738.0,U05 Cesar Chavez,0,5,2,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,11,2,1514021.0,1514021.0,001 Berkeley Way (Offsite),0,8,3,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,12,10,1515761.0,1515761.0,E05 V&A Cafe/Etcheverry,0,17,5,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,13,7,1515732.0,1515732.0,E04 North Gate Entrance,0,0,0,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,14,12,1515766.0,1515766.0,E07 Sutardja Dai Hall/Yali's 2,0,5,2,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,15,15,1515776.0,1515776.0,E06 Sutardja Dali Hall/Yali's 1,0,12,4,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,16,11,1515765.0,1515765.0,E02 North Entrance Memorial Glade,0,57,17,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,17,6,1515726.0,1515726.0,E15 Bancroft Library,0,0,0,4,1
+0,Bottles/Cans,T2,SingleTruckRoute,18,0,,,DEPOT,1,0,0,0,1
+0,Compostables,T3,VRP,1,0,,,DEPOT,1,0,0,0,1
+0,Compostables,T3,VRP,2,15,1515784.0,1515784.0,U19 Wheeler Walkway,0,125,150,4,1
+0,Compostables,T3,VRP,3,20,1516538.0,1516538.0,U28 Wheeler,0,0,0,4,1
+0,Compostables,T3,VRP,4,11,1515716.0,1515716.0,E16 Campanile,0,40,48,4,1
+0,Compostables,T3,VRP,5,3,1503641.0,1503641.0,E19 South Path Drive,0,0,0,4,1
+0,Compostables,T3,VRP,6,2,1503637.0,1503637.0,E22 May Morrison Hall,0,52,63,4,1
+0,Compostables,T3,VRP,7,19,1516537.0,1516537.0,U30 Birge Path,0,15,18,4,1
+0,Compostables,T3,VRP,8,24,1520925.0,1520925.0,Stadium Gate 3,0,0,0,4,1
+0,Compostables,T3,VRP,9,23,1520924.0,1520924.0,Hearst Gym Annex,0,0,0,4,1
+0,Compostables,T3,VRP,10,8,1515687.0,1515687.0,U20 Sproul Hall UCPD,0,26,32,4,1
+0,Compostables,T3,VRP,11,14,1515757.0,1515757.0,W12 VLSB/Campanile Way,0,0,0,4,1
+0,Compostables,T3,VRP,12,16,1515785.0,1515785.0,U02 Spieker Plaza Center,0,0,0,4,1
+0,Compostables,T3,VRP,13,25,2503763.0,2503763.0,U03 Grade Street,0,30,36,4,1
+0,Compostables,T3,VRP,14,5,1514001.0,1514001.0,U16 Durant Hall,0,51,62,4,1
+0,Compostables,T3,VRP,15,9,1515690.0,1515690.0,W02 Crescent,0,132,159,4,1
+0,Compostables,T3,VRP,16,1,1503614.0,1503614.0,W08 University Drive,0,150,180,4,1
+0,Compostables,T3,VRP,17,21,1516543.0,1516543.0,W16 VLSB Northside,0,6,8,4,1
+0,Compostables,T3,VRP,18,6,1514003.0,1514003.0,W11 Moffitt Library @ Press,0,150,180,4,1
+0,Compostables,T3,VRP,19,17,1515787.0,1515787.0,E01 California Hall,0,0,0,4,1
+0,Compostables,T3,VRP,20,10,1515712.0,1515712.0,E09- East Asian Library,0,0,0,4,1
+0,Compostables,T3,VRP,21,13,1515750.0,1515750.0,E02 North Entrance Memorial Glade,0,128,153,4,1
+0,Compostables,T3,VRP,22,4,1503651.0,1503651.0,E14 Physics,0,10,12,4,1
+0,Compostables,T3,VRP,23,7,1514004.0,1514004.0,Bechtel East,0,1,2,4,1
+0,Compostables,T3,VRP,24,22,1520912.0,1520912.0,E30 Tan Hall North Side,0,0,0,4,1
+0,Compostables,T3,VRP,25,12,1515748.0,1515748.0,E12 Evans Hall Bus Stop,0,0,0,4,1
+0,Compostables,T3,VRP,26,18,1515788.0,1515788.0,E03 University Library,0,69,83,4,1
+0,Compostables,T3,VRP,27,0,,,DEPOT,1,0,0,0,1
+0,Waste,T1,VRP,1,0,,,DEPOT,1,0,0,0,1
+0,Waste,T1,VRP,2,3,1515700.0,1515700.0,E06 Sutardja Dali Hall/Yali's 1,0,41,41,4,1
+0,Waste,T1,VRP,3,9,1515673.0,1515673.0,E04 North Gate Entrance,0,85,85,4,1
+0,Waste,T1,VRP,4,12,1515743.0,1515743.0,E02 North Entrance Memorial Glade,0,150,150,4,1
+0,Waste,T1,VRP,5,11,1515742.0,1515742.0,E03 University Library,0,150,150,4,1
+0,Waste,T1,VRP,6,0,,,DEPOT,1,0,0,0,1
+0,Waste,T4,VRP,1,0,,,DEPOT,1,0,0,0,1
+0,Waste,T4,VRP,2,1,1514026.0,1514026.0,W11 Moffitt Library @ Press,0,150,150,4,1
+0,Waste,T4,VRP,3,4,1516554.0,1516554.0,W16 VLSB Northside,0,150,150,4,1
+0,Waste,T4,VRP,4,6,2503768.0,2503768.0,W06 West Circle,0,39,39,4,1
+0,Waste,T4,VRP,5,10,1515674.0,1515674.0,W02 Crescent,0,150,150,4,1
+0,Waste,T4,VRP,6,7,1503633.0,1503633.0,W18 Campanile Way West Entrance,0,20,20,4,1
+0,Waste,T4,VRP,7,13,1516550.0,1516550.0,U33 Spieker Plaza,0,30,30,4,1
+0,Waste,T4,VRP,8,5,2503767.0,2503767.0,U26 A&E Sproul,0,5,5,4,1
+0,Waste,T4,VRP,9,14,1520915.0,1520915.0,Hearst Gym Annex,0,146,146,4,1
+0,Waste,T4,VRP,10,2,1514027.0,1514027.0,Bechtel East,0,60,60,4,1
+0,Waste,T4,VRP,11,15,2503765.0,2503765.0,E18 Latimer Courtyard,0,22,22,4,1
+0,Waste,T4,VRP,12,8,1515666.0,1515666.0,E16 Campanile,0,54,54,4,1
+0,Waste,T4,VRP,13,0,,,DEPOT,1,0,0,0,1
+0,Bottles/Cans,T4,SingleTruckRoute,1,0,,,DEPOT,1,0,0,0,2
+0,Bottles/Cans,T4,SingleTruckRoute,2,11,1515734.0,1515734.0,U19 Wheeler Walkway,0,15,5,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,3,17,1515775.0,1515775.0,U18 Dwinelle Walkway,0,101,30,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,4,8,1515727.0,1515727.0,E16 Campanile,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,5,25,2503774.0,2503774.0,E18 Latimer Courtyard,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,6,6,1514018.0,1514018.0,Bechtel East,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,7,16,1515771.0,1515771.0,E12 Evans Hall Bus Stop,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,8,5,1514015.0,1514015.0,E24 Chiet Hall,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,9,7,1514020.0,1514020.0,E21 Cafe Think,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,10,22,1520909.0,1520909.0,U23 Law Building west of Heyman Terrace,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,11,18,1516524.0,1516524.0,U30 Birge Path,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,12,9,1515729.0,1515729.0,E25 Cronk Gate,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,13,21,1516535.0,1516535.0,West Circle,0,7,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,14,12,1515735.0,1515735.0,U20 Sproul Hall UCPD,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,15,13,1515740.0,1515740.0,U04 Zellerbach,0,0,0,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,16,23,2502339.0,2502339.0,W18 Campanile Way West Entrance,0,54,16,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,17,24,2503773.0,2503773.0,U03 Grade Street,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,18,4,1514014.0,1514014.0,U16 Durant Hall,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,19,10,1515731.0,1515731.0,W02 Crescent,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,20,20,1516533.0,1516533.0,W15 Koshland,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,21,1,1503638.0,1503638.0,W08 University Drive,0,6,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,22,19,1516532.0,1516532.0,W16 VLSB Northside,0,24,7,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,23,3,1514013.0,1514013.0,W11 Moffitt Library @ Press,0,80,24,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,24,2,1514012.0,1514012.0,Bechtel West,0,16,5,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,25,14,1515760.0,1515760.0,E23 Glade Path,0,40,12,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,26,15,1515764.0,1515764.0,E29 Campanile East,0,5,2,4,2
+0,Bottles/Cans,T4,SingleTruckRoute,27,0,,,DEPOT,1,0,0,0,2
+0,Compostables,T1,SingleTruckRoute,1,0,,,DEPOT,1,0,0,0,2
+0,Compostables,T1,SingleTruckRoute,2,3,1515715.0,1515715.0,E04 North Gate Entrance,0,69,83,4,2
+0,Compostables,T1,SingleTruckRoute,3,6,1515758.0,1515758.0,U17 Dwinelle Plaza Entry,0,92,110,4,2
+0,Compostables,T1,SingleTruckRoute,4,7,1515759.0,1515759.0,U09 MLK Ramp,0,119,143,4,2
+0,Compostables,T1,SingleTruckRoute,5,5,1515751.0,1515751.0,U14 Sproul Hall Steps,0,70,84,4,2
+0,Compostables,T1,SingleTruckRoute,6,1,1514005.0,1514005.0,U25 Anthropology and Art Practice (Compost),0,36,44,4,2
+0,Compostables,T1,SingleTruckRoute,7,2,1515714.0,1515714.0,"U24 Rice & Bones, Wurster",0,58,69,4,2
+0,Compostables,T1,SingleTruckRoute,8,4,1515718.0,1515718.0,U18 Dwinelle Walkway,0,45,54,4,2
+0,Compostables,T1,SingleTruckRoute,9,0,,,DEPOT,1,0,0,0,2
+0,Waste,T2,VRP,1,0,,,DEPOT,1,0,0,0,2
+0,Waste,T2,VRP,2,7,1515710.0,1515710.0,E29 Campanile East,0,49,49,4,2
+0,Waste,T2,VRP,3,9,1516556.0,1516556.0,U28 Wheeler,0,26,26,4,2
+0,Waste,T2,VRP,4,1,1503621.0,1503621.0,E19 South Path Drive,0,41,41,4,2
+0,Waste,T2,VRP,5,18,1520913.0,1520913.0,U23 Law Building west of Heyman Terrace,0,59,59,4,2
+0,Waste,T2,VRP,6,3,1515671.0,1515671.0,"U24 Rice & Bones, Wurster",0,31,31,4,2
+0,Waste,T2,VRP,7,12,1515668.0,1515668.0,E25 Cronk Gate,0,41,41,4,2
+0,Waste,T2,VRP,8,6,1515704.0,1515704.0,E05 V&A Cafe/Etcheverry,0,96,96,4,2
+0,Waste,T2,VRP,9,2,1514024.0,1514024.0,Bechtel West,0,19,19,4,2
+0,Waste,T2,VRP,10,16,1516548.0,1516548.0,W17 Mulford Hall,0,44,44,4,2
+0,Waste,T2,VRP,11,10,1503628.0,1503628.0,E28 Library/Campanile Way,0,5,5,4,2
+0,Waste,T2,VRP,12,0,,,DEPOT,1,0,0,0,2
+0,Waste,T3,VRP,1,0,,,DEPOT,1,0,0,0,2
+0,Waste,T3,VRP,2,17,1516555.0,1516555.0,U32 HFA / Hearst Gym - West Side,0,15,15,4,2
+0,Waste,T3,VRP,3,19,2503766.0,2503766.0,U21 Social Sciences Building,0,58,58,4,2
+0,Waste,T3,VRP,4,4,1515680.0,1515680.0,U10 GoldenBear Walkway,0,35,35,4,2
+0,Waste,T3,VRP,5,14,1515711.0,1515711.0,U07 Cal Book Store,0,83,83,4,2
+0,Waste,T3,VRP,6,5,1515696.0,1515696.0,U08 MLK Courtyard,0,94,94,4,2
+0,Waste,T3,VRP,7,11,1514031.0,1514031.0,W13 Recreational Sport Facility (LF),0,46,46,4,2
+0,Waste,T3,VRP,8,15,1515747.0,1515747.0,U17 Dwinelle Plaza Entry,0,84,84,4,2
+0,Waste,T3,VRP,9,20,2503769.0,2503769.0,U03 Grade Street,0,54,54,4,2
+0,Waste,T3,VRP,10,8,1515745.0,1515745.0,W12 VLSB/Campanile Way,0,17,17,4,2
+0,Waste,T3,VRP,11,13,1515703.0,1515703.0,E09- East Asian Library,0,0,0,4,2
+0,Waste,T3,VRP,12,0,,,DEPOT,1,0,0,0,2
