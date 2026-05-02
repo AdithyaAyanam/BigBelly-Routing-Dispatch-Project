@@ -62,6 +62,13 @@ Outputs
 - data/processed/travel_matrix_long.csv
 - data/processed/travel_matrix_wide.csv
 - data/processed/osmnx_graph.graphml
+
+Travel-time calibration
+-----------------------
+The raw GIS/OSMnx travel times can be too optimistic because they do not
+capture campus traffic, access delays, maneuvering, or operational friction.
+Use --target-avg-interstop-min 8 to scale non-depot, non-self inter-stop
+travel times so their mean is close to the 8-minute planning assumption.
 """
 
 import argparse
@@ -201,6 +208,27 @@ def main() -> None:
         help="Average vehicle speed used to convert network length to travel time",
     )
     parser.add_argument(
+        "--target-avg-interstop-min",
+        type=float,
+        default=None,
+        help=(
+            "Optional calibration target for non-depot, non-self inter-stop travel times. "
+            "Use 8 to scale GIS travel times so their average matches the planning model's "
+            "8-minute inter-location travel assumption. If omitted, no scaling is applied."
+        ),
+    )
+
+    parser.add_argument(
+        "--min-travel-min",
+        type=float,
+        default=0.0,
+        help=(
+            "Optional minimum positive travel time after scaling. Default 0 means no floor. "
+            "Example: use 0.5 if every nonzero OD travel time should be at least 0.5 minutes."
+        ),
+    )
+
+    parser.add_argument(
         "--query-margin-m",
         type=float,
         default=500.0,
@@ -220,6 +248,12 @@ def main() -> None:
 
     if args.travel_speed_mph <= 0:
         raise ValueError("--travel-speed-mph must be positive")
+
+    if args.target_avg_interstop_min is not None and args.target_avg_interstop_min <= 0:
+        raise ValueError("--target-avg-interstop-min must be positive when supplied")
+
+    if args.min_travel_min < 0:
+        raise ValueError("--min-travel-min cannot be negative")
 
     root = repo_root()
     paths = ensure_dirs(root)
@@ -498,6 +532,51 @@ def main() -> None:
         )
 
     long_df = pd.DataFrame(rows).sort_values(["from_node", "to_node"]).reset_index(drop=True)
+
+    # ---------------------------------------------------------
+    # Optional travel-time calibration
+    # ---------------------------------------------------------
+    # Professor Yano noted that raw GIS route times are likely too small because
+    # they do not capture real campus traffic, access delays, maneuvering, or
+    # operational interruptions. This optional scaling keeps the shortest-path
+    # sequence structure from GIS but scales travel_min so that the average
+    # non-depot, non-self inter-stop time is close to the planning model's
+    # 8-minute inter-location assumption.
+    long_df["travel_min_raw"] = pd.to_numeric(long_df["travel_min"], errors="coerce")
+
+    non_depot_interstop_mask = (
+        (long_df["from_node"] != long_df["to_node"])
+        & (long_df["from_node"] != 0)
+        & (long_df["to_node"] != 0)
+        & long_df["travel_min_raw"].notna()
+        & (long_df["travel_min_raw"] > 0)
+    )
+
+    raw_avg_interstop_min = float(long_df.loc[non_depot_interstop_mask, "travel_min_raw"].mean()) if non_depot_interstop_mask.any() else np.nan
+    travel_time_scale_factor = 1.0
+
+    if args.target_avg_interstop_min is not None:
+        if not np.isfinite(raw_avg_interstop_min) or raw_avg_interstop_min <= 0:
+            raise ValueError(
+                "Cannot apply --target-avg-interstop-min because no valid positive "
+                "non-depot, non-self inter-stop travel times were found."
+            )
+
+        travel_time_scale_factor = float(args.target_avg_interstop_min) / raw_avg_interstop_min
+
+        long_df["travel_min"] = long_df["travel_min_raw"] * travel_time_scale_factor
+
+        if args.min_travel_min > 0:
+            positive_mask = long_df["travel_min"].notna() & (long_df["travel_min"] > 0)
+            long_df.loc[positive_mask, "travel_min"] = long_df.loc[positive_mask, "travel_min"].clip(lower=args.min_travel_min)
+
+        long_df["travel_min"] = long_df["travel_min"].round(2)
+
+    else:
+        long_df["travel_min"] = long_df["travel_min_raw"].round(2)
+
+    scaled_avg_interstop_min = float(long_df.loc[non_depot_interstop_mask, "travel_min"].mean()) if non_depot_interstop_mask.any() else np.nan
+
     wide_df = long_df.pivot(index="from_node", columns="to_node", values="travel_min").sort_index()
     wide_df = wide_df.sort_index(axis=1)
 
@@ -532,6 +611,10 @@ def main() -> None:
     print(f"[INFO] query_dist_m = {query_dist_m:.1f}")
     print(f"[INFO] routing_direction = {args.routing_direction}")
     print(f"[INFO] network_type = {args.network_type}")
+    print(f"[INFO] raw_avg_interstop_min_non_depot = {raw_avg_interstop_min:.2f}" if np.isfinite(raw_avg_interstop_min) else "[INFO] raw_avg_interstop_min_non_depot = NA")
+    print(f"[INFO] target_avg_interstop_min = {args.target_avg_interstop_min if args.target_avg_interstop_min is not None else 'not applied'}")
+    print(f"[INFO] travel_time_scale_factor = {travel_time_scale_factor:.4f}")
+    print(f"[INFO] scaled_avg_interstop_min_non_depot = {scaled_avg_interstop_min:.2f}" if np.isfinite(scaled_avg_interstop_min) else "[INFO] scaled_avg_interstop_min_non_depot = NA")
     print(f"[INFO] route_day_filter = {args.route_day if args.route_day is not None else 'all scheduled days'}")
 
 

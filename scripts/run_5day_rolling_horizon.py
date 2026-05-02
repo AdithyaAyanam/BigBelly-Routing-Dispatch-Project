@@ -20,6 +20,7 @@ This version is aligned with the final corrected seven-calendar-day / five-servi
 - compost weekday hygiene enforced
 - no Phase-1 routable-bin filter
 - Day 0 routing is treated as a downstream feasibility check
+- Day 0 travel matrix is scaled to the 8-minute average inter-stop assumption
 
 For each operating day:
 1. Start from the current bin state table.
@@ -370,6 +371,16 @@ def main() -> None:
     parser.add_argument("--routing-direction", type=str, default="undirected", choices=["directed", "undirected"])
     parser.add_argument("--query-margin-m", type=float, default=1000.0)
     parser.add_argument("--travel-speed-mph", type=float, default=6.0)
+    parser.add_argument(
+        "--target-avg-interstop-min",
+        type=float,
+        default=8.0,
+        help=(
+            "Scale each Day 0 travel matrix so the average non-depot, non-self "
+            "inter-stop travel time is close to this value. Use 8 to align with "
+            "the planning model's 8-minute travel-time assumption."
+        ),
+    )
     parser.add_argument("--routing-time-limit-sec", type=int, default=300)
     parser.add_argument("--skip-routing", action="store_true")
 
@@ -379,6 +390,8 @@ def main() -> None:
         raise ValueError("--num-service-days cannot exceed --horizon-days")
     if args.num_service_days < 1:
         raise ValueError("--num-service-days must be at least 1")
+    if args.target_avg_interstop_min is not None and args.target_avg_interstop_min <= 0:
+        raise ValueError("--target-avg-interstop-min must be positive when supplied")
 
     root = repo_root()
     paths = ensure_dirs(root)
@@ -473,6 +486,7 @@ def main() -> None:
                 "--routing-direction", str(args.routing_direction),
                 "--query-margin-m", str(args.query_margin_m),
                 "--travel-speed-mph", str(args.travel_speed_mph),
+                "--target-avg-interstop-min", str(args.target_avg_interstop_min),
             ]
             run_subprocess(cmd_matrix, cwd=root)
 
@@ -539,6 +553,7 @@ def main() -> None:
                 "num_service_days": args.num_service_days,
                 "service_days": ",".join(str(d) for d in range(args.num_service_days)),
                 "nonservice_days": ",".join(str(d) for d in range(args.num_service_days, args.horizon_days)),
+                "target_avg_interstop_min": args.target_avg_interstop_min,
                 "pickups_today": pickups_today,
                 "pickup_gal_today": round(pickup_gal_today, 2),
                 "pickup_lb_today": round(pickup_lb_today, 2),
@@ -575,6 +590,7 @@ def main() -> None:
                 "num_service_days": args.num_service_days,
                 "service_days": ",".join(str(d) for d in range(args.num_service_days)),
                 "nonservice_days": ",".join(str(d) for d in range(args.num_service_days, args.horizon_days)),
+                "target_avg_interstop_min": args.target_avg_interstop_min,
                 "total_pickups": int(day_metrics_df["pickups_today"].sum()) if not day_metrics_df.empty else 0,
                 "total_pickup_gal": round(float(day_metrics_df["pickup_gal_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
                 "total_pickup_lb": round(float(day_metrics_df["pickup_lb_today"].sum()), 2) if not day_metrics_df.empty else 0.0,
