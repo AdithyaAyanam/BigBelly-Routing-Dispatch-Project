@@ -1,0 +1,5 @@
+day,truck,assigned_stream,extra_dumps,resource_model
+0,T1,Waste,0,four_trucks_one_driver_each_8hr_shift
+0,T2,Bottles/Cans,0,four_trucks_one_driver_each_8hr_shift
+0,T3,Compostables,0,four_trucks_one_driver_each_8hr_shift
+0,T4,Waste,0,four_trucks_one_driver_each_8hr_shift

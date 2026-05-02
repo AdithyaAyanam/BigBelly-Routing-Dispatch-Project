@@ -1,0 +1,1765 @@
+from_node,to_node,from_label,to_label,distance_m,travel_min,travel_min_raw
+0,0,DEPOT,DEPOT,0.0,0.0,0.0
+0,1,DEPOT,W08 University Drive,532.05,4.53,3.31
+0,2,DEPOT,E19 South Path Drive,242.5,2.07,1.51
+0,3,DEPOT,W18 Campanile Way West Entrance,1246.09,10.6,7.74
+0,4,DEPOT,E14 Physics,209.09,1.78,1.3
+0,5,DEPOT,E14 Physics,209.09,1.78,1.3
+0,6,DEPOT,U16 Durant Hall,1489.52,12.68,9.26
+0,7,DEPOT,W11 Moffitt Library @ Press,352.21,3.0,2.19
+0,8,DEPOT,Bechtel East,318.98,2.71,1.98
+0,9,DEPOT,001 Berkeley Way (Offsite),1124.05,9.56,6.98
+0,10,DEPOT,W11 Moffitt Library @ Press,352.21,3.0,2.19
+0,11,DEPOT,Bechtel East,318.98,2.71,1.98
+0,12,DEPOT,W13 Recreational Sport Facility (LF),1594.29,13.57,9.91
+0,13,DEPOT,E25 Cronk Gate,615.89,5.24,3.83
+0,14,DEPOT,W02 Crescent,803.07,6.83,4.99
+0,15,DEPOT,E06 Sutardja Dali Hall/Yali's 1,469.23,4.0,2.92
+0,16,DEPOT,E29 Campanile East,0.0,0.0,0.0
+0,17,DEPOT,E16 Campanile,158.71,1.36,0.99
+0,18,DEPOT,U09 MLK Ramp,1685.13,14.33,10.47
+0,19,DEPOT,E13 Stanley Hall,385.26,3.27,2.39
+0,20,DEPOT,U27 Anthony Hall,1637.35,13.92,10.17
+0,21,DEPOT,E15 Bancroft Library,116.6,0.99,0.72
+0,22,DEPOT,U05 Cesar Chavez,1540.17,13.1,9.57
+0,23,DEPOT,U17 Dwinelle Plaza Entry,1518.32,12.91,9.43
+0,24,DEPOT,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+0,25,DEPOT,W12 VLSB/Campanile Way,1423.49,12.12,8.85
+0,26,DEPOT,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+0,27,DEPOT,E05 V&A Cafe/Etcheverry,533.95,4.54,3.32
+0,28,DEPOT,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+0,29,DEPOT,E07 Sutardja Dai Hall/Yali's 2,469.23,4.0,2.92
+0,30,DEPOT,U07 Cal Book Store,1567.33,13.33,9.74
+0,31,DEPOT,E06 Sutardja Dali Hall/Yali's 1,469.23,4.0,2.92
+0,32,DEPOT,E03 University Library,116.6,0.99,0.72
+0,33,DEPOT,U33 Spieker Plaza,1667.27,14.18,10.36
+0,34,DEPOT,W17 Mulford Hall,778.58,6.63,4.84
+0,35,DEPOT,W16 VLSB Northside,457.99,3.9,2.85
+0,36,DEPOT,U28 Wheeler,102.83,0.88,0.64
+0,37,DEPOT,E30 Tan Hall North Side,315.01,2.68,1.96
+0,38,DEPOT,Hearst Gym Annex,1359.97,11.57,8.45
+0,39,DEPOT,U03 Grade Street,1540.17,13.1,9.57
+0,40,DEPOT,U26 A&E Sproul,1816.05,15.44,11.28
+0,41,DEPOT,W06 West Circle,647.83,5.52,4.03
+1,0,W08 University Drive,DEPOT,532.05,4.53,3.31
+1,1,W08 University Drive,W08 University Drive,0.0,0.0,0.0
+1,2,W08 University Drive,E19 South Path Drive,709.32,6.04,4.41
+1,3,W08 University Drive,W18 Campanile Way West Entrance,714.04,6.08,4.44
+1,4,W08 University Drive,E14 Physics,507.94,4.33,3.16
+1,5,W08 University Drive,E14 Physics,507.94,4.33,3.16
+1,6,W08 University Drive,U16 Durant Hall,957.47,8.15,5.95
+1,7,W08 University Drive,W11 Moffitt Library @ Press,179.84,1.53,1.12
+1,8,W08 University Drive,Bechtel East,617.83,5.26,3.84
+1,9,W08 University Drive,001 Berkeley Way (Offsite),680.12,5.79,4.23
+1,10,W08 University Drive,W11 Moffitt Library @ Press,179.84,1.53,1.12
+1,11,W08 University Drive,Bechtel East,617.83,5.26,3.84
+1,12,W08 University Drive,W13 Recreational Sport Facility (LF),1062.24,9.04,6.6
+1,13,W08 University Drive,E25 Cronk Gate,1034.72,8.8,6.43
+1,14,W08 University Drive,W02 Crescent,271.02,2.3,1.68
+1,15,W08 University Drive,E06 Sutardja Dali Hall/Yali's 1,496.64,4.23,3.09
+1,16,W08 University Drive,E29 Campanile East,532.05,4.53,3.31
+1,17,W08 University Drive,E16 Campanile,690.76,5.87,4.29
+1,18,W08 University Drive,U09 MLK Ramp,1240.42,10.55,7.71
+1,19,W08 University Drive,E13 Stanley Hall,684.11,5.82,4.25
+1,20,W08 University Drive,U27 Anthony Hall,1644.65,13.99,10.22
+1,21,W08 University Drive,E15 Bancroft Library,415.45,3.53,2.58
+1,22,W08 University Drive,U05 Cesar Chavez,1008.12,8.57,6.26
+1,23,W08 University Drive,U17 Dwinelle Plaza Entry,986.27,8.39,6.13
+1,24,W08 University Drive,E02 North Entrance Memorial Glade,279.73,2.38,1.74
+1,25,W08 University Drive,W12 VLSB/Campanile Way,891.44,7.58,5.54
+1,26,W08 University Drive,E02 North Entrance Memorial Glade,279.73,2.38,1.74
+1,27,W08 University Drive,E05 V&A Cafe/Etcheverry,475.74,4.05,2.96
+1,28,W08 University Drive,E02 North Entrance Memorial Glade,279.73,2.38,1.74
+1,29,W08 University Drive,E07 Sutardja Dai Hall/Yali's 2,496.64,4.23,3.09
+1,30,W08 University Drive,U07 Cal Book Store,1249.4,10.62,7.76
+1,31,W08 University Drive,E06 Sutardja Dali Hall/Yali's 1,496.64,4.23,3.09
+1,32,W08 University Drive,E03 University Library,415.45,3.53,2.58
+1,33,W08 University Drive,U33 Spieker Plaza,1135.22,9.65,7.05
+1,34,W08 University Drive,W17 Mulford Hall,246.53,2.09,1.53
+1,35,W08 University Drive,W16 VLSB Northside,74.06,0.63,0.46
+1,36,W08 University Drive,U28 Wheeler,634.88,5.39,3.94
+1,37,W08 University Drive,E30 Tan Hall North Side,613.86,5.22,3.81
+1,38,W08 University Drive,Hearst Gym Annex,1456.76,12.39,9.05
+1,39,W08 University Drive,U03 Grade Street,1008.12,8.57,6.26
+1,40,W08 University Drive,U26 A&E Sproul,1823.35,15.51,11.33
+1,41,W08 University Drive,W06 West Circle,115.78,0.99,0.72
+2,0,E19 South Path Drive,DEPOT,242.5,2.07,1.51
+2,1,E19 South Path Drive,W08 University Drive,709.32,6.04,4.41
+2,2,E19 South Path Drive,E19 South Path Drive,0.0,0.0,0.0
+2,3,E19 South Path Drive,W18 Campanile Way West Entrance,1423.37,12.1,8.84
+2,4,E19 South Path Drive,E14 Physics,243.43,2.07,1.51
+2,5,E19 South Path Drive,E14 Physics,243.43,2.07,1.51
+2,6,E19 South Path Drive,U16 Durant Hall,1666.79,14.18,10.36
+2,7,E19 South Path Drive,W11 Moffitt Library @ Press,529.48,4.5,3.29
+2,8,E19 South Path Drive,Bechtel East,229.87,1.96,1.43
+2,9,E19 South Path Drive,001 Berkeley Way (Offsite),1301.32,11.07,8.09
+2,10,E19 South Path Drive,W11 Moffitt Library @ Press,529.48,4.5,3.29
+2,11,E19 South Path Drive,Bechtel East,229.87,1.96,1.43
+2,12,E19 South Path Drive,W13 Recreational Sport Facility (LF),1511.99,12.87,9.4
+2,13,E19 South Path Drive,E25 Cronk Gate,373.39,3.18,2.32
+2,14,E19 South Path Drive,W02 Crescent,980.34,8.34,6.09
+2,15,E19 South Path Drive,E06 Sutardja Dali Hall/Yali's 1,646.5,5.5,4.02
+2,16,E19 South Path Drive,E29 Campanile East,242.5,2.07,1.51
+2,17,E19 South Path Drive,E16 Campanile,117.98,1.0,0.73
+2,18,E19 South Path Drive,U09 MLK Ramp,1442.63,12.27,8.96
+2,19,E19 South Path Drive,E13 Stanley Hall,219.64,1.86,1.36
+2,20,E19 South Path Drive,U27 Anthony Hall,1394.85,11.87,8.67
+2,21,E19 South Path Drive,E15 Bancroft Library,293.87,2.51,1.83
+2,22,E19 South Path Drive,U05 Cesar Chavez,1717.44,14.61,10.67
+2,23,E19 South Path Drive,U17 Dwinelle Plaza Entry,1695.59,14.43,10.54
+2,24,E19 South Path Drive,E02 North Entrance Memorial Glade,429.59,3.66,2.67
+2,25,E19 South Path Drive,W12 VLSB/Campanile Way,1600.76,13.62,9.95
+2,26,E19 South Path Drive,E02 North Entrance Memorial Glade,429.59,3.66,2.67
+2,27,E19 South Path Drive,E05 V&A Cafe/Etcheverry,711.22,6.05,4.42
+2,28,E19 South Path Drive,E02 North Entrance Memorial Glade,429.59,3.66,2.67
+2,29,E19 South Path Drive,E07 Sutardja Dai Hall/Yali's 2,646.5,5.5,4.02
+2,30,E19 South Path Drive,U07 Cal Book Store,1324.83,11.27,8.23
+2,31,E19 South Path Drive,E06 Sutardja Dali Hall/Yali's 1,646.5,5.5,4.02
+2,32,E19 South Path Drive,E03 University Library,293.87,2.51,1.83
+2,33,E19 South Path Drive,U33 Spieker Plaza,1439.01,12.24,8.94
+2,34,E19 South Path Drive,W17 Mulford Hall,955.86,8.13,5.94
+2,35,E19 South Path Drive,W16 VLSB Northside,635.26,5.41,3.95
+2,36,E19 South Path Drive,U28 Wheeler,227.49,1.93,1.41
+2,37,E19 South Path Drive,E30 Tan Hall North Side,149.39,1.27,0.93
+2,38,E19 South Path Drive,Hearst Gym Annex,1117.47,9.5,6.94
+2,39,E19 South Path Drive,U03 Grade Street,1717.44,14.61,10.67
+2,40,E19 South Path Drive,U26 A&E Sproul,1573.56,13.39,9.78
+2,41,E19 South Path Drive,W06 West Circle,825.1,7.02,5.13
+3,0,W18 Campanile Way West Entrance,DEPOT,1246.09,10.6,7.74
+3,1,W18 Campanile Way West Entrance,W08 University Drive,714.04,6.08,4.44
+3,2,W18 Campanile Way West Entrance,E19 South Path Drive,1423.37,12.1,8.84
+3,3,W18 Campanile Way West Entrance,W18 Campanile Way West Entrance,0.0,0.0,0.0
+3,4,W18 Campanile Way West Entrance,E14 Physics,1221.99,10.39,7.59
+3,5,W18 Campanile Way West Entrance,E14 Physics,1221.99,10.39,7.59
+3,6,W18 Campanile Way West Entrance,U16 Durant Hall,243.42,2.07,1.51
+3,7,W18 Campanile Way West Entrance,W11 Moffitt Library @ Press,893.89,7.6,5.55
+3,8,W18 Campanile Way West Entrance,Bechtel East,1331.87,11.34,8.28
+3,9,W18 Campanile Way West Entrance,001 Berkeley Way (Offsite),780.8,6.64,4.85
+3,10,W18 Campanile Way West Entrance,W11 Moffitt Library @ Press,893.89,7.6,5.55
+3,11,W18 Campanile Way West Entrance,Bechtel East,1331.87,11.34,8.28
+3,12,W18 Campanile Way West Entrance,W13 Recreational Sport Facility (LF),800.91,6.82,4.98
+3,13,W18 Campanile Way West Entrance,E25 Cronk Gate,1748.76,14.88,10.87
+3,14,W18 Campanile Way West Entrance,W02 Crescent,457.92,3.9,2.85
+3,15,W18 Campanile Way West Entrance,E06 Sutardja Dali Hall/Yali's 1,1210.68,10.29,7.52
+3,16,W18 Campanile Way West Entrance,E29 Campanile East,1246.09,10.6,7.74
+3,17,W18 Campanile Way West Entrance,E16 Campanile,1404.81,11.95,8.73
+3,18,W18 Campanile Way West Entrance,U09 MLK Ramp,979.09,8.32,6.08
+3,19,W18 Campanile Way West Entrance,E13 Stanley Hall,1398.15,11.9,8.69
+3,20,W18 Campanile Way West Entrance,U27 Anthony Hall,1383.31,11.77,8.6
+3,21,W18 Campanile Way West Entrance,E15 Bancroft Library,1129.49,9.61,7.02
+3,22,W18 Campanile Way West Entrance,U05 Cesar Chavez,294.07,2.51,1.83
+3,23,W18 Campanile Way West Entrance,U17 Dwinelle Plaza Entry,272.23,2.31,1.69
+3,24,W18 Campanile Way West Entrance,E02 North Entrance Memorial Glade,993.77,8.46,6.18
+3,25,W18 Campanile Way West Entrance,W12 VLSB/Campanile Way,177.39,1.51,1.1
+3,26,W18 Campanile Way West Entrance,E02 North Entrance Memorial Glade,993.77,8.46,6.18
+3,27,W18 Campanile Way West Entrance,E05 V&A Cafe/Etcheverry,1189.78,10.12,7.39
+3,28,W18 Campanile Way West Entrance,E02 North Entrance Memorial Glade,993.77,8.46,6.18
+3,29,W18 Campanile Way West Entrance,E07 Sutardja Dai Hall/Yali's 2,1210.68,10.29,7.52
+3,30,W18 Campanile Way West Entrance,U07 Cal Book Store,988.06,8.41,6.14
+3,31,W18 Campanile Way West Entrance,E06 Sutardja Dali Hall/Yali's 1,1210.68,10.29,7.52
+3,32,W18 Campanile Way West Entrance,E03 University Library,1129.49,9.61,7.02
+3,33,W18 Campanile Way West Entrance,U33 Spieker Plaza,873.89,7.43,5.43
+3,34,W18 Campanile Way West Entrance,W17 Mulford Hall,704.5,6.0,4.38
+3,35,W18 Campanile Way West Entrance,W16 VLSB Northside,788.11,6.71,4.9
+3,36,W18 Campanile Way West Entrance,U28 Wheeler,1348.93,11.47,8.38
+3,37,W18 Campanile Way West Entrance,E30 Tan Hall North Side,1327.91,11.29,8.25
+3,38,W18 Campanile Way West Entrance,Hearst Gym Annex,1195.42,10.17,7.43
+3,39,W18 Campanile Way West Entrance,U03 Grade Street,294.07,2.51,1.83
+3,40,W18 Campanile Way West Entrance,U26 A&E Sproul,1562.02,13.29,9.71
+3,41,W18 Campanile Way West Entrance,W06 West Circle,598.27,5.09,3.72
+4,0,E14 Physics,DEPOT,209.09,1.78,1.3
+4,1,E14 Physics,W08 University Drive,507.94,4.33,3.16
+4,2,E14 Physics,E19 South Path Drive,243.43,2.07,1.51
+4,3,E14 Physics,W18 Campanile Way West Entrance,1221.99,10.39,7.59
+4,4,E14 Physics,E14 Physics,0.0,0.0,0.0
+4,5,E14 Physics,E14 Physics,0.0,0.0,0.0
+4,6,E14 Physics,U16 Durant Hall,1465.41,12.47,9.11
+4,7,E14 Physics,W11 Moffitt Library @ Press,328.1,2.79,2.04
+4,8,E14 Physics,Bechtel East,151.94,1.29,0.94
+4,9,E14 Physics,001 Berkeley Way (Offsite),1099.94,9.35,6.83
+4,10,E14 Physics,W11 Moffitt Library @ Press,328.1,2.79,2.04
+4,11,E14 Physics,Bechtel East,151.94,1.29,0.94
+4,12,E14 Physics,W13 Recreational Sport Facility (LF),1570.18,13.36,9.76
+4,13,E14 Physics,E25 Cronk Gate,568.83,4.83,3.53
+4,14,E14 Physics,W02 Crescent,778.96,6.63,4.84
+4,15,E14 Physics,E06 Sutardja Dali Hall/Yali's 1,445.12,3.79,2.77
+4,16,E14 Physics,E29 Campanile East,209.09,1.78,1.3
+4,17,E14 Physics,E16 Campanile,361.41,3.08,2.25
+4,18,E14 Physics,U09 MLK Ramp,1638.07,13.94,10.18
+4,19,E14 Physics,E13 Stanley Hall,218.22,1.86,1.36
+4,20,E14 Physics,U27 Anthony Hall,1590.29,13.53,9.88
+4,21,E14 Physics,E15 Bancroft Library,92.49,0.78,0.57
+4,22,E14 Physics,U05 Cesar Chavez,1516.06,12.9,9.42
+4,23,E14 Physics,U17 Dwinelle Plaza Entry,1494.21,12.7,9.28
+4,24,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+4,25,E14 Physics,W12 VLSB/Campanile Way,1399.38,11.91,8.7
+4,26,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+4,27,E14 Physics,E05 V&A Cafe/Etcheverry,509.84,4.34,3.17
+4,28,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+4,29,E14 Physics,E07 Sutardja Dai Hall/Yali's 2,445.12,3.79,2.77
+4,30,E14 Physics,U07 Cal Book Store,1520.27,12.94,9.45
+4,31,E14 Physics,E06 Sutardja Dali Hall/Yali's 1,445.12,3.79,2.77
+4,32,E14 Physics,E03 University Library,92.49,0.78,0.57
+4,33,E14 Physics,U33 Spieker Plaza,1634.45,13.91,10.16
+4,34,E14 Physics,W17 Mulford Hall,754.48,6.42,4.69
+4,35,E14 Physics,W16 VLSB Northside,433.88,3.7,2.7
+4,36,E14 Physics,U28 Wheeler,311.92,2.66,1.94
+4,37,E14 Physics,E30 Tan Hall North Side,147.97,1.26,0.92
+4,38,E14 Physics,Hearst Gym Annex,1312.91,11.17,8.16
+4,39,E14 Physics,U03 Grade Street,1516.06,12.9,9.42
+4,40,E14 Physics,U26 A&E Sproul,1769.0,15.04,10.99
+4,41,E14 Physics,W06 West Circle,623.72,5.31,3.88
+5,0,E14 Physics,DEPOT,209.09,1.78,1.3
+5,1,E14 Physics,W08 University Drive,507.94,4.33,3.16
+5,2,E14 Physics,E19 South Path Drive,243.43,2.07,1.51
+5,3,E14 Physics,W18 Campanile Way West Entrance,1221.99,10.39,7.59
+5,4,E14 Physics,E14 Physics,0.0,0.0,0.0
+5,5,E14 Physics,E14 Physics,0.0,0.0,0.0
+5,6,E14 Physics,U16 Durant Hall,1465.41,12.47,9.11
+5,7,E14 Physics,W11 Moffitt Library @ Press,328.1,2.79,2.04
+5,8,E14 Physics,Bechtel East,151.94,1.29,0.94
+5,9,E14 Physics,001 Berkeley Way (Offsite),1099.94,9.35,6.83
+5,10,E14 Physics,W11 Moffitt Library @ Press,328.1,2.79,2.04
+5,11,E14 Physics,Bechtel East,151.94,1.29,0.94
+5,12,E14 Physics,W13 Recreational Sport Facility (LF),1570.18,13.36,9.76
+5,13,E14 Physics,E25 Cronk Gate,568.83,4.83,3.53
+5,14,E14 Physics,W02 Crescent,778.96,6.63,4.84
+5,15,E14 Physics,E06 Sutardja Dali Hall/Yali's 1,445.12,3.79,2.77
+5,16,E14 Physics,E29 Campanile East,209.09,1.78,1.3
+5,17,E14 Physics,E16 Campanile,361.41,3.08,2.25
+5,18,E14 Physics,U09 MLK Ramp,1638.07,13.94,10.18
+5,19,E14 Physics,E13 Stanley Hall,218.22,1.86,1.36
+5,20,E14 Physics,U27 Anthony Hall,1590.29,13.53,9.88
+5,21,E14 Physics,E15 Bancroft Library,92.49,0.78,0.57
+5,22,E14 Physics,U05 Cesar Chavez,1516.06,12.9,9.42
+5,23,E14 Physics,U17 Dwinelle Plaza Entry,1494.21,12.7,9.28
+5,24,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+5,25,E14 Physics,W12 VLSB/Campanile Way,1399.38,11.91,8.7
+5,26,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+5,27,E14 Physics,E05 V&A Cafe/Etcheverry,509.84,4.34,3.17
+5,28,E14 Physics,E02 North Entrance Memorial Glade,228.21,1.94,1.42
+5,29,E14 Physics,E07 Sutardja Dai Hall/Yali's 2,445.12,3.79,2.77
+5,30,E14 Physics,U07 Cal Book Store,1520.27,12.94,9.45
+5,31,E14 Physics,E06 Sutardja Dali Hall/Yali's 1,445.12,3.79,2.77
+5,32,E14 Physics,E03 University Library,92.49,0.78,0.57
+5,33,E14 Physics,U33 Spieker Plaza,1634.45,13.91,10.16
+5,34,E14 Physics,W17 Mulford Hall,754.48,6.42,4.69
+5,35,E14 Physics,W16 VLSB Northside,433.88,3.7,2.7
+5,36,E14 Physics,U28 Wheeler,311.92,2.66,1.94
+5,37,E14 Physics,E30 Tan Hall North Side,147.97,1.26,0.92
+5,38,E14 Physics,Hearst Gym Annex,1312.91,11.17,8.16
+5,39,E14 Physics,U03 Grade Street,1516.06,12.9,9.42
+5,40,E14 Physics,U26 A&E Sproul,1769.0,15.04,10.99
+5,41,E14 Physics,W06 West Circle,623.72,5.31,3.88
+6,0,U16 Durant Hall,DEPOT,1489.52,12.68,9.26
+6,1,U16 Durant Hall,W08 University Drive,957.47,8.15,5.95
+6,2,U16 Durant Hall,E19 South Path Drive,1666.79,14.18,10.36
+6,3,U16 Durant Hall,W18 Campanile Way West Entrance,243.42,2.07,1.51
+6,4,U16 Durant Hall,E14 Physics,1465.41,12.47,9.11
+6,5,U16 Durant Hall,E14 Physics,1465.41,12.47,9.11
+6,6,U16 Durant Hall,U16 Durant Hall,0.0,0.0,0.0
+6,7,U16 Durant Hall,W11 Moffitt Library @ Press,1137.31,9.68,7.07
+6,8,U16 Durant Hall,Bechtel East,1575.3,13.4,9.79
+6,9,U16 Durant Hall,001 Berkeley Way (Offsite),1024.22,8.71,6.36
+6,10,U16 Durant Hall,W11 Moffitt Library @ Press,1137.31,9.68,7.07
+6,11,U16 Durant Hall,Bechtel East,1575.3,13.4,9.79
+6,12,U16 Durant Hall,W13 Recreational Sport Facility (LF),1044.33,8.88,6.49
+6,13,U16 Durant Hall,E25 Cronk Gate,1992.18,16.95,12.38
+6,14,U16 Durant Hall,W02 Crescent,701.34,5.97,4.36
+6,15,U16 Durant Hall,E06 Sutardja Dali Hall/Yali's 1,1454.11,12.38,9.04
+6,16,U16 Durant Hall,E29 Campanile East,1489.52,12.68,9.26
+6,17,U16 Durant Hall,E16 Campanile,1648.23,14.02,10.24
+6,18,U16 Durant Hall,U09 MLK Ramp,1222.51,10.4,7.6
+6,19,U16 Durant Hall,E13 Stanley Hall,1641.57,13.96,10.2
+6,20,U16 Durant Hall,U27 Anthony Hall,1626.74,13.84,10.11
+6,21,U16 Durant Hall,E15 Bancroft Library,1372.92,11.68,8.53
+6,22,U16 Durant Hall,U05 Cesar Chavez,50.65,0.42,0.31
+6,23,U16 Durant Hall,U17 Dwinelle Plaza Entry,28.8,0.25,0.18
+6,24,U16 Durant Hall,E02 North Entrance Memorial Glade,1237.2,10.53,7.69
+6,25,U16 Durant Hall,W12 VLSB/Campanile Way,79.57,0.67,0.49
+6,26,U16 Durant Hall,E02 North Entrance Memorial Glade,1237.2,10.53,7.69
+6,27,U16 Durant Hall,E05 V&A Cafe/Etcheverry,1433.2,12.2,8.91
+6,28,U16 Durant Hall,E02 North Entrance Memorial Glade,1237.2,10.53,7.69
+6,29,U16 Durant Hall,E07 Sutardja Dai Hall/Yali's 2,1454.11,12.38,9.04
+6,30,U16 Durant Hall,U07 Cal Book Store,1231.49,10.47,7.65
+6,31,U16 Durant Hall,E06 Sutardja Dali Hall/Yali's 1,1454.11,12.38,9.04
+6,32,U16 Durant Hall,E03 University Library,1372.92,11.68,8.53
+6,33,U16 Durant Hall,U33 Spieker Plaza,1117.31,9.5,6.94
+6,34,U16 Durant Hall,W17 Mulford Hall,947.93,8.06,5.89
+6,35,U16 Durant Hall,W16 VLSB Northside,1031.53,8.78,6.41
+6,36,U16 Durant Hall,U28 Wheeler,1592.35,13.54,9.89
+6,37,U16 Durant Hall,E30 Tan Hall North Side,1571.33,13.36,9.76
+6,38,U16 Durant Hall,Hearst Gym Annex,1438.85,12.24,8.94
+6,39,U16 Durant Hall,U03 Grade Street,50.65,0.42,0.31
+6,40,U16 Durant Hall,U26 A&E Sproul,1805.44,15.36,11.22
+6,41,U16 Durant Hall,W06 West Circle,841.69,7.16,5.23
+7,0,W11 Moffitt Library @ Press,DEPOT,352.21,3.0,2.19
+7,1,W11 Moffitt Library @ Press,W08 University Drive,179.84,1.53,1.12
+7,2,W11 Moffitt Library @ Press,E19 South Path Drive,529.48,4.5,3.29
+7,3,W11 Moffitt Library @ Press,W18 Campanile Way West Entrance,893.89,7.6,5.55
+7,4,W11 Moffitt Library @ Press,E14 Physics,328.1,2.79,2.04
+7,5,W11 Moffitt Library @ Press,E14 Physics,328.1,2.79,2.04
+7,6,W11 Moffitt Library @ Press,U16 Durant Hall,1137.31,9.68,7.07
+7,7,W11 Moffitt Library @ Press,W11 Moffitt Library @ Press,0.0,0.0,0.0
+7,8,W11 Moffitt Library @ Press,Bechtel East,437.99,3.72,2.72
+7,9,W11 Moffitt Library @ Press,001 Berkeley Way (Offsite),823.87,7.01,5.12
+7,10,W11 Moffitt Library @ Press,W11 Moffitt Library @ Press,0.0,0.0,0.0
+7,11,W11 Moffitt Library @ Press,Bechtel East,437.99,3.72,2.72
+7,12,W11 Moffitt Library @ Press,W13 Recreational Sport Facility (LF),1242.09,10.57,7.72
+7,13,W11 Moffitt Library @ Press,E25 Cronk Gate,854.87,7.27,5.31
+7,14,W11 Moffitt Library @ Press,W02 Crescent,450.87,3.83,2.8
+7,15,W11 Moffitt Library @ Press,E06 Sutardja Dali Hall/Yali's 1,316.8,2.7,1.97
+7,16,W11 Moffitt Library @ Press,E29 Campanile East,352.21,3.0,2.19
+7,17,W11 Moffitt Library @ Press,E16 Campanile,510.92,4.34,3.17
+7,18,W11 Moffitt Library @ Press,U09 MLK Ramp,1420.27,12.09,8.83
+7,19,W11 Moffitt Library @ Press,E13 Stanley Hall,504.26,4.28,3.13
+7,20,W11 Moffitt Library @ Press,U27 Anthony Hall,1824.49,15.52,11.34
+7,21,W11 Moffitt Library @ Press,E15 Bancroft Library,235.61,2.0,1.46
+7,22,W11 Moffitt Library @ Press,U05 Cesar Chavez,1187.96,10.1,7.38
+7,23,W11 Moffitt Library @ Press,U17 Dwinelle Plaza Entry,1166.11,9.93,7.25
+7,24,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+7,25,W11 Moffitt Library @ Press,W12 VLSB/Campanile Way,1071.28,9.12,6.66
+7,26,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+7,27,W11 Moffitt Library @ Press,E05 V&A Cafe/Etcheverry,355.01,3.03,2.21
+7,28,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+7,29,W11 Moffitt Library @ Press,E07 Sutardja Dai Hall/Yali's 2,316.8,2.7,1.97
+7,30,W11 Moffitt Library @ Press,U07 Cal Book Store,1429.24,12.16,8.88
+7,31,W11 Moffitt Library @ Press,E06 Sutardja Dali Hall/Yali's 1,316.8,2.7,1.97
+7,32,W11 Moffitt Library @ Press,E03 University Library,235.61,2.0,1.46
+7,33,W11 Moffitt Library @ Press,U33 Spieker Plaza,1315.06,11.18,8.17
+7,34,W11 Moffitt Library @ Press,W17 Mulford Hall,426.38,3.63,2.65
+7,35,W11 Moffitt Library @ Press,W16 VLSB Northside,105.78,0.9,0.66
+7,36,W11 Moffitt Library @ Press,U28 Wheeler,455.04,3.87,2.83
+7,37,W11 Moffitt Library @ Press,E30 Tan Hall North Side,434.02,3.7,2.7
+7,38,W11 Moffitt Library @ Press,Hearst Gym Annex,1598.96,13.61,9.94
+7,39,W11 Moffitt Library @ Press,U03 Grade Street,1187.96,10.1,7.38
+7,40,W11 Moffitt Library @ Press,U26 A&E Sproul,2003.2,17.04,12.45
+7,41,W11 Moffitt Library @ Press,W06 West Circle,295.62,2.52,1.84
+8,0,Bechtel East,DEPOT,318.98,2.71,1.98
+8,1,Bechtel East,W08 University Drive,617.83,5.26,3.84
+8,2,Bechtel East,E19 South Path Drive,229.87,1.96,1.43
+8,3,Bechtel East,W18 Campanile Way West Entrance,1331.87,11.34,8.28
+8,4,Bechtel East,E14 Physics,151.94,1.29,0.94
+8,5,Bechtel East,E14 Physics,151.94,1.29,0.94
+8,6,Bechtel East,U16 Durant Hall,1575.3,13.4,9.79
+8,7,Bechtel East,W11 Moffitt Library @ Press,437.99,3.72,2.72
+8,8,Bechtel East,Bechtel East,0.0,0.0,0.0
+8,9,Bechtel East,001 Berkeley Way (Offsite),1209.83,10.29,7.52
+8,10,Bechtel East,W11 Moffitt Library @ Press,437.99,3.72,2.72
+8,11,Bechtel East,Bechtel East,0.0,0.0,0.0
+8,12,Bechtel East,W13 Recreational Sport Facility (LF),1673.37,14.24,10.4
+8,13,Bechtel East,E25 Cronk Gate,534.77,4.54,3.32
+8,14,Bechtel East,W02 Crescent,888.85,7.56,5.52
+8,15,Bechtel East,E06 Sutardja Dali Hall/Yali's 1,555.01,4.72,3.45
+8,16,Bechtel East,E29 Campanile East,318.98,2.71,1.98
+8,17,Bechtel East,E16 Campanile,347.85,2.96,2.16
+8,18,Bechtel East,U09 MLK Ramp,1604.01,13.65,9.97
+8,19,Bechtel East,E13 Stanley Hall,67.45,0.57,0.42
+8,20,Bechtel East,U27 Anthony Hall,1556.23,13.24,9.67
+8,21,Bechtel East,E15 Bancroft Library,202.38,1.72,1.26
+8,22,Bechtel East,U05 Cesar Chavez,1625.94,13.83,10.1
+8,23,Bechtel East,U17 Dwinelle Plaza Entry,1604.1,13.65,9.97
+8,24,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+8,25,Bechtel East,W12 VLSB/Campanile Way,1509.27,12.84,9.38
+8,26,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+8,27,Bechtel East,E05 V&A Cafe/Etcheverry,619.73,5.27,3.85
+8,28,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+8,29,Bechtel East,E07 Sutardja Dai Hall/Yali's 2,555.01,4.72,3.45
+8,30,Bechtel East,U07 Cal Book Store,1486.21,12.64,9.23
+8,31,Bechtel East,E06 Sutardja Dali Hall/Yali's 1,555.01,4.72,3.45
+8,32,Bechtel East,E03 University Library,202.38,1.72,1.26
+8,33,Bechtel East,U33 Spieker Plaza,1600.39,13.61,9.94
+8,34,Bechtel East,W17 Mulford Hall,864.36,7.35,5.37
+8,35,Bechtel East,W16 VLSB Northside,543.76,4.63,3.38
+8,36,Bechtel East,U28 Wheeler,421.81,3.59,2.62
+8,37,Bechtel East,E30 Tan Hall North Side,133.21,1.14,0.83
+8,38,Bechtel East,Hearst Gym Annex,1278.85,10.88,7.95
+8,39,Bechtel East,U03 Grade Street,1625.94,13.83,10.1
+8,40,Bechtel East,U26 A&E Sproul,1734.94,14.76,10.78
+8,41,Bechtel East,W06 West Circle,733.61,6.24,4.56
+9,0,001 Berkeley Way (Offsite),DEPOT,1124.05,9.56,6.98
+9,1,001 Berkeley Way (Offsite),W08 University Drive,680.12,5.79,4.23
+9,2,001 Berkeley Way (Offsite),E19 South Path Drive,1301.32,11.07,8.09
+9,3,001 Berkeley Way (Offsite),W18 Campanile Way West Entrance,780.8,6.64,4.85
+9,4,001 Berkeley Way (Offsite),E14 Physics,1099.94,9.35,6.83
+9,5,001 Berkeley Way (Offsite),E14 Physics,1099.94,9.35,6.83
+9,6,001 Berkeley Way (Offsite),U16 Durant Hall,1024.22,8.71,6.36
+9,7,001 Berkeley Way (Offsite),W11 Moffitt Library @ Press,823.87,7.01,5.12
+9,8,001 Berkeley Way (Offsite),Bechtel East,1209.83,10.29,7.52
+9,9,001 Berkeley Way (Offsite),001 Berkeley Way (Offsite),0.0,0.0,0.0
+9,10,001 Berkeley Way (Offsite),W11 Moffitt Library @ Press,823.87,7.01,5.12
+9,11,001 Berkeley Way (Offsite),Bechtel East,1209.83,10.29,7.52
+9,12,001 Berkeley Way (Offsite),W13 Recreational Sport Facility (LF),1129.0,9.61,7.02
+9,13,001 Berkeley Way (Offsite),E25 Cronk Gate,1504.28,12.8,9.35
+9,14,001 Berkeley Way (Offsite),W02 Crescent,409.1,3.48,2.54
+9,15,001 Berkeley Way (Offsite),E06 Sutardja Dali Hall/Yali's 1,815.05,6.93,5.06
+9,16,001 Berkeley Way (Offsite),E29 Campanile East,1124.05,9.56,6.98
+9,17,001 Berkeley Way (Offsite),E16 Campanile,1282.76,10.91,7.97
+9,18,001 Berkeley Way (Offsite),U09 MLK Ramp,1307.18,11.12,8.12
+9,19,001 Berkeley Way (Offsite),E13 Stanley Hall,1276.11,10.86,7.93
+9,20,001 Berkeley Way (Offsite),U27 Anthony Hall,1711.4,14.55,10.63
+9,21,001 Berkeley Way (Offsite),E15 Bancroft Library,1007.45,8.57,6.26
+9,22,001 Berkeley Way (Offsite),U05 Cesar Chavez,1074.87,9.14,6.68
+9,23,001 Berkeley Way (Offsite),U17 Dwinelle Plaza Entry,1053.02,8.95,6.54
+9,24,001 Berkeley Way (Offsite),E02 North Entrance Memorial Glade,871.73,7.42,5.42
+9,25,001 Berkeley Way (Offsite),W12 VLSB/Campanile Way,958.19,8.15,5.95
+9,26,001 Berkeley Way (Offsite),E02 North Entrance Memorial Glade,871.73,7.42,5.42
+9,27,001 Berkeley Way (Offsite),E05 V&A Cafe/Etcheverry,727.45,6.19,4.52
+9,28,001 Berkeley Way (Offsite),E02 North Entrance Memorial Glade,871.73,7.42,5.42
+9,29,001 Berkeley Way (Offsite),E07 Sutardja Dai Hall/Yali's 2,815.05,6.93,5.06
+9,30,001 Berkeley Way (Offsite),U07 Cal Book Store,1316.15,11.2,8.18
+9,31,001 Berkeley Way (Offsite),E06 Sutardja Dali Hall/Yali's 1,815.05,6.93,5.06
+9,32,001 Berkeley Way (Offsite),E03 University Library,1007.45,8.57,6.26
+9,33,001 Berkeley Way (Offsite),U33 Spieker Plaza,1201.97,10.23,7.47
+9,34,001 Berkeley Way (Offsite),W17 Mulford Hall,670.58,5.71,4.17
+9,35,001 Berkeley Way (Offsite),W16 VLSB Northside,718.09,6.11,4.46
+9,36,001 Berkeley Way (Offsite),U28 Wheeler,1226.88,10.43,7.62
+9,37,001 Berkeley Way (Offsite),E30 Tan Hall North Side,1205.86,10.25,7.49
+9,38,001 Berkeley Way (Offsite),Hearst Gym Annex,1523.51,12.96,9.47
+9,39,001 Berkeley Way (Offsite),U03 Grade Street,1074.87,9.14,6.68
+9,40,001 Berkeley Way (Offsite),U26 A&E Sproul,1890.11,16.07,11.74
+9,41,001 Berkeley Way (Offsite),W06 West Circle,564.34,4.81,3.51
+10,0,W11 Moffitt Library @ Press,DEPOT,352.21,3.0,2.19
+10,1,W11 Moffitt Library @ Press,W08 University Drive,179.84,1.53,1.12
+10,2,W11 Moffitt Library @ Press,E19 South Path Drive,529.48,4.5,3.29
+10,3,W11 Moffitt Library @ Press,W18 Campanile Way West Entrance,893.89,7.6,5.55
+10,4,W11 Moffitt Library @ Press,E14 Physics,328.1,2.79,2.04
+10,5,W11 Moffitt Library @ Press,E14 Physics,328.1,2.79,2.04
+10,6,W11 Moffitt Library @ Press,U16 Durant Hall,1137.31,9.68,7.07
+10,7,W11 Moffitt Library @ Press,W11 Moffitt Library @ Press,0.0,0.0,0.0
+10,8,W11 Moffitt Library @ Press,Bechtel East,437.99,3.72,2.72
+10,9,W11 Moffitt Library @ Press,001 Berkeley Way (Offsite),823.87,7.01,5.12
+10,10,W11 Moffitt Library @ Press,W11 Moffitt Library @ Press,0.0,0.0,0.0
+10,11,W11 Moffitt Library @ Press,Bechtel East,437.99,3.72,2.72
+10,12,W11 Moffitt Library @ Press,W13 Recreational Sport Facility (LF),1242.09,10.57,7.72
+10,13,W11 Moffitt Library @ Press,E25 Cronk Gate,854.87,7.27,5.31
+10,14,W11 Moffitt Library @ Press,W02 Crescent,450.87,3.83,2.8
+10,15,W11 Moffitt Library @ Press,E06 Sutardja Dali Hall/Yali's 1,316.8,2.7,1.97
+10,16,W11 Moffitt Library @ Press,E29 Campanile East,352.21,3.0,2.19
+10,17,W11 Moffitt Library @ Press,E16 Campanile,510.92,4.34,3.17
+10,18,W11 Moffitt Library @ Press,U09 MLK Ramp,1420.27,12.09,8.83
+10,19,W11 Moffitt Library @ Press,E13 Stanley Hall,504.26,4.28,3.13
+10,20,W11 Moffitt Library @ Press,U27 Anthony Hall,1824.49,15.52,11.34
+10,21,W11 Moffitt Library @ Press,E15 Bancroft Library,235.61,2.0,1.46
+10,22,W11 Moffitt Library @ Press,U05 Cesar Chavez,1187.96,10.1,7.38
+10,23,W11 Moffitt Library @ Press,U17 Dwinelle Plaza Entry,1166.11,9.93,7.25
+10,24,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+10,25,W11 Moffitt Library @ Press,W12 VLSB/Campanile Way,1071.28,9.12,6.66
+10,26,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+10,27,W11 Moffitt Library @ Press,E05 V&A Cafe/Etcheverry,355.01,3.03,2.21
+10,28,W11 Moffitt Library @ Press,E02 North Entrance Memorial Glade,99.89,0.85,0.62
+10,29,W11 Moffitt Library @ Press,E07 Sutardja Dai Hall/Yali's 2,316.8,2.7,1.97
+10,30,W11 Moffitt Library @ Press,U07 Cal Book Store,1429.24,12.16,8.88
+10,31,W11 Moffitt Library @ Press,E06 Sutardja Dali Hall/Yali's 1,316.8,2.7,1.97
+10,32,W11 Moffitt Library @ Press,E03 University Library,235.61,2.0,1.46
+10,33,W11 Moffitt Library @ Press,U33 Spieker Plaza,1315.06,11.18,8.17
+10,34,W11 Moffitt Library @ Press,W17 Mulford Hall,426.38,3.63,2.65
+10,35,W11 Moffitt Library @ Press,W16 VLSB Northside,105.78,0.9,0.66
+10,36,W11 Moffitt Library @ Press,U28 Wheeler,455.04,3.87,2.83
+10,37,W11 Moffitt Library @ Press,E30 Tan Hall North Side,434.02,3.7,2.7
+10,38,W11 Moffitt Library @ Press,Hearst Gym Annex,1598.96,13.61,9.94
+10,39,W11 Moffitt Library @ Press,U03 Grade Street,1187.96,10.1,7.38
+10,40,W11 Moffitt Library @ Press,U26 A&E Sproul,2003.2,17.04,12.45
+10,41,W11 Moffitt Library @ Press,W06 West Circle,295.62,2.52,1.84
+11,0,Bechtel East,DEPOT,318.98,2.71,1.98
+11,1,Bechtel East,W08 University Drive,617.83,5.26,3.84
+11,2,Bechtel East,E19 South Path Drive,229.87,1.96,1.43
+11,3,Bechtel East,W18 Campanile Way West Entrance,1331.87,11.34,8.28
+11,4,Bechtel East,E14 Physics,151.94,1.29,0.94
+11,5,Bechtel East,E14 Physics,151.94,1.29,0.94
+11,6,Bechtel East,U16 Durant Hall,1575.3,13.4,9.79
+11,7,Bechtel East,W11 Moffitt Library @ Press,437.99,3.72,2.72
+11,8,Bechtel East,Bechtel East,0.0,0.0,0.0
+11,9,Bechtel East,001 Berkeley Way (Offsite),1209.83,10.29,7.52
+11,10,Bechtel East,W11 Moffitt Library @ Press,437.99,3.72,2.72
+11,11,Bechtel East,Bechtel East,0.0,0.0,0.0
+11,12,Bechtel East,W13 Recreational Sport Facility (LF),1673.37,14.24,10.4
+11,13,Bechtel East,E25 Cronk Gate,534.77,4.54,3.32
+11,14,Bechtel East,W02 Crescent,888.85,7.56,5.52
+11,15,Bechtel East,E06 Sutardja Dali Hall/Yali's 1,555.01,4.72,3.45
+11,16,Bechtel East,E29 Campanile East,318.98,2.71,1.98
+11,17,Bechtel East,E16 Campanile,347.85,2.96,2.16
+11,18,Bechtel East,U09 MLK Ramp,1604.01,13.65,9.97
+11,19,Bechtel East,E13 Stanley Hall,67.45,0.57,0.42
+11,20,Bechtel East,U27 Anthony Hall,1556.23,13.24,9.67
+11,21,Bechtel East,E15 Bancroft Library,202.38,1.72,1.26
+11,22,Bechtel East,U05 Cesar Chavez,1625.94,13.83,10.1
+11,23,Bechtel East,U17 Dwinelle Plaza Entry,1604.1,13.65,9.97
+11,24,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+11,25,Bechtel East,W12 VLSB/Campanile Way,1509.27,12.84,9.38
+11,26,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+11,27,Bechtel East,E05 V&A Cafe/Etcheverry,619.73,5.27,3.85
+11,28,Bechtel East,E02 North Entrance Memorial Glade,338.1,2.87,2.1
+11,29,Bechtel East,E07 Sutardja Dai Hall/Yali's 2,555.01,4.72,3.45
+11,30,Bechtel East,U07 Cal Book Store,1486.21,12.64,9.23
+11,31,Bechtel East,E06 Sutardja Dali Hall/Yali's 1,555.01,4.72,3.45
+11,32,Bechtel East,E03 University Library,202.38,1.72,1.26
+11,33,Bechtel East,U33 Spieker Plaza,1600.39,13.61,9.94
+11,34,Bechtel East,W17 Mulford Hall,864.36,7.35,5.37
+11,35,Bechtel East,W16 VLSB Northside,543.76,4.63,3.38
+11,36,Bechtel East,U28 Wheeler,421.81,3.59,2.62
+11,37,Bechtel East,E30 Tan Hall North Side,133.21,1.14,0.83
+11,38,Bechtel East,Hearst Gym Annex,1278.85,10.88,7.95
+11,39,Bechtel East,U03 Grade Street,1625.94,13.83,10.1
+11,40,Bechtel East,U26 A&E Sproul,1734.94,14.76,10.78
+11,41,Bechtel East,W06 West Circle,733.61,6.24,4.56
+12,0,W13 Recreational Sport Facility (LF),DEPOT,1594.29,13.57,9.91
+12,1,W13 Recreational Sport Facility (LF),W08 University Drive,1062.24,9.04,6.6
+12,2,W13 Recreational Sport Facility (LF),E19 South Path Drive,1511.99,12.87,9.4
+12,3,W13 Recreational Sport Facility (LF),W18 Campanile Way West Entrance,800.91,6.82,4.98
+12,4,W13 Recreational Sport Facility (LF),E14 Physics,1570.18,13.36,9.76
+12,5,W13 Recreational Sport Facility (LF),E14 Physics,1570.18,13.36,9.76
+12,6,W13 Recreational Sport Facility (LF),U16 Durant Hall,1044.33,8.88,6.49
+12,7,W13 Recreational Sport Facility (LF),W11 Moffitt Library @ Press,1242.09,10.57,7.72
+12,8,W13 Recreational Sport Facility (LF),Bechtel East,1673.37,14.24,10.4
+12,9,W13 Recreational Sport Facility (LF),001 Berkeley Way (Offsite),1129.0,9.61,7.02
+12,10,W13 Recreational Sport Facility (LF),W11 Moffitt Library @ Press,1242.09,10.57,7.72
+12,11,W13 Recreational Sport Facility (LF),Bechtel East,1673.37,14.24,10.4
+12,12,W13 Recreational Sport Facility (LF),W13 Recreational Sport Facility (LF),0.0,0.0,0.0
+12,13,W13 Recreational Sport Facility (LF),E25 Cronk Gate,1138.6,9.68,7.07
+12,14,W13 Recreational Sport Facility (LF),W02 Crescent,806.12,6.86,5.01
+12,15,W13 Recreational Sport Facility (LF),E06 Sutardja Dali Hall/Yali's 1,1558.88,13.27,9.69
+12,16,W13 Recreational Sport Facility (LF),E29 Campanile East,1594.29,13.57,9.91
+12,17,W13 Recreational Sport Facility (LF),E16 Campanile,1629.97,13.87,10.13
+12,18,W13 Recreational Sport Facility (LF),U09 MLK Ramp,178.18,1.52,1.11
+12,19,W13 Recreational Sport Facility (LF),E13 Stanley Hall,1623.01,13.8,10.08
+12,20,W13 Recreational Sport Facility (LF),U27 Anthony Hall,582.4,4.96,3.62
+12,21,W13 Recreational Sport Facility (LF),E15 Bancroft Library,1477.69,12.57,9.18
+12,22,W13 Recreational Sport Facility (LF),U05 Cesar Chavez,1094.98,9.31,6.8
+12,23,W13 Recreational Sport Facility (LF),U17 Dwinelle Plaza Entry,1073.14,9.13,6.67
+12,24,W13 Recreational Sport Facility (LF),E02 North Entrance Memorial Glade,1341.97,11.42,8.34
+12,25,W13 Recreational Sport Facility (LF),W12 VLSB/Campanile Way,978.3,8.32,6.08
+12,26,W13 Recreational Sport Facility (LF),E02 North Entrance Memorial Glade,1341.97,11.42,8.34
+12,27,W13 Recreational Sport Facility (LF),E05 V&A Cafe/Etcheverry,1537.98,13.09,9.56
+12,28,W13 Recreational Sport Facility (LF),E02 North Entrance Memorial Glade,1341.97,11.42,8.34
+12,29,W13 Recreational Sport Facility (LF),E07 Sutardja Dai Hall/Yali's 2,1558.88,13.27,9.69
+12,30,W13 Recreational Sport Facility (LF),U07 Cal Book Store,187.15,1.59,1.16
+12,31,W13 Recreational Sport Facility (LF),E06 Sutardja Dali Hall/Yali's 1,1558.88,13.27,9.69
+12,32,W13 Recreational Sport Facility (LF),E03 University Library,1477.69,12.57,9.18
+12,33,W13 Recreational Sport Facility (LF),U33 Spieker Plaza,72.98,0.62,0.45
+12,34,W13 Recreational Sport Facility (LF),W17 Mulford Hall,1052.7,8.95,6.54
+12,35,W13 Recreational Sport Facility (LF),W16 VLSB Northside,1136.31,9.66,7.06
+12,36,W13 Recreational Sport Facility (LF),U28 Wheeler,1697.13,14.44,10.55
+12,37,W13 Recreational Sport Facility (LF),E30 Tan Hall North Side,1559.45,13.27,9.69
+12,38,W13 Recreational Sport Facility (LF),Hearst Gym Annex,394.51,3.35,2.45
+12,39,W13 Recreational Sport Facility (LF),U03 Grade Street,1094.98,9.31,6.8
+12,40,W13 Recreational Sport Facility (LF),U26 A&E Sproul,761.11,6.48,4.73
+12,41,W13 Recreational Sport Facility (LF),W06 West Circle,946.46,8.05,5.88
+13,0,E25 Cronk Gate,DEPOT,615.89,5.24,3.83
+13,1,E25 Cronk Gate,W08 University Drive,1034.72,8.8,6.43
+13,2,E25 Cronk Gate,E19 South Path Drive,373.39,3.18,2.32
+13,3,E25 Cronk Gate,W18 Campanile Way West Entrance,1748.76,14.88,10.87
+13,4,E25 Cronk Gate,E14 Physics,568.83,4.83,3.53
+13,5,E25 Cronk Gate,E14 Physics,568.83,4.83,3.53
+13,6,E25 Cronk Gate,U16 Durant Hall,1992.18,16.95,12.38
+13,7,E25 Cronk Gate,W11 Moffitt Library @ Press,854.87,7.27,5.31
+13,8,E25 Cronk Gate,Bechtel East,534.77,4.54,3.32
+13,9,E25 Cronk Gate,001 Berkeley Way (Offsite),1504.28,12.8,9.35
+13,10,E25 Cronk Gate,W11 Moffitt Library @ Press,854.87,7.27,5.31
+13,11,E25 Cronk Gate,Bechtel East,534.77,4.54,3.32
+13,12,E25 Cronk Gate,W13 Recreational Sport Facility (LF),1138.6,9.68,7.07
+13,13,E25 Cronk Gate,E25 Cronk Gate,0.0,0.0,0.0
+13,14,E25 Cronk Gate,W02 Crescent,1305.74,11.1,8.11
+13,15,E25 Cronk Gate,E06 Sutardja Dali Hall/Yali's 1,971.9,8.27,6.04
+13,16,E25 Cronk Gate,E29 Campanile East,615.89,5.24,3.83
+13,17,E25 Cronk Gate,E16 Campanile,491.37,4.18,3.05
+13,18,E25 Cronk Gate,U09 MLK Ramp,1069.24,9.09,6.64
+13,19,E25 Cronk Gate,E13 Stanley Hall,484.41,4.12,3.01
+13,20,E25 Cronk Gate,U27 Anthony Hall,1021.46,8.69,6.35
+13,21,E25 Cronk Gate,E15 Bancroft Library,619.27,5.27,3.85
+13,22,E25 Cronk Gate,U05 Cesar Chavez,2042.83,17.37,12.69
+13,23,E25 Cronk Gate,U17 Dwinelle Plaza Entry,2020.99,17.19,12.56
+13,24,E25 Cronk Gate,E02 North Entrance Memorial Glade,754.99,6.42,4.69
+13,25,E25 Cronk Gate,W12 VLSB/Campanile Way,1926.15,16.39,11.97
+13,26,E25 Cronk Gate,E02 North Entrance Memorial Glade,754.99,6.42,4.69
+13,27,E25 Cronk Gate,E05 V&A Cafe/Etcheverry,776.82,6.61,4.83
+13,28,E25 Cronk Gate,E02 North Entrance Memorial Glade,754.99,6.42,4.69
+13,29,E25 Cronk Gate,E07 Sutardja Dai Hall/Yali's 2,971.9,8.27,6.04
+13,30,E25 Cronk Gate,U07 Cal Book Store,951.44,8.09,5.91
+13,31,E25 Cronk Gate,E06 Sutardja Dali Hall/Yali's 1,971.9,8.27,6.04
+13,32,E25 Cronk Gate,E03 University Library,619.27,5.27,3.85
+13,33,E25 Cronk Gate,U33 Spieker Plaza,1065.62,9.06,6.62
+13,34,E25 Cronk Gate,W17 Mulford Hall,1281.25,10.9,7.96
+13,35,E25 Cronk Gate,W16 VLSB Northside,960.65,8.17,5.97
+13,36,E25 Cronk Gate,U28 Wheeler,600.88,5.11,3.73
+13,37,E25 Cronk Gate,E30 Tan Hall North Side,420.86,3.59,2.62
+13,38,E25 Cronk Gate,Hearst Gym Annex,744.08,6.32,4.62
+13,39,E25 Cronk Gate,U03 Grade Street,2042.83,17.37,12.69
+13,40,E25 Cronk Gate,U26 A&E Sproul,1200.17,10.21,7.46
+13,41,E25 Cronk Gate,W06 West Circle,1150.5,9.79,7.15
+14,0,W02 Crescent,DEPOT,803.07,6.83,4.99
+14,1,W02 Crescent,W08 University Drive,271.02,2.3,1.68
+14,2,W02 Crescent,E19 South Path Drive,980.34,8.34,6.09
+14,3,W02 Crescent,W18 Campanile Way West Entrance,457.92,3.9,2.85
+14,4,W02 Crescent,E14 Physics,778.96,6.63,4.84
+14,5,W02 Crescent,E14 Physics,778.96,6.63,4.84
+14,6,W02 Crescent,U16 Durant Hall,701.34,5.97,4.36
+14,7,W02 Crescent,W11 Moffitt Library @ Press,450.87,3.83,2.8
+14,8,W02 Crescent,Bechtel East,888.85,7.56,5.52
+14,9,W02 Crescent,001 Berkeley Way (Offsite),409.1,3.48,2.54
+14,10,W02 Crescent,W11 Moffitt Library @ Press,450.87,3.83,2.8
+14,11,W02 Crescent,Bechtel East,888.85,7.56,5.52
+14,12,W02 Crescent,W13 Recreational Sport Facility (LF),806.12,6.86,5.01
+14,13,W02 Crescent,E25 Cronk Gate,1305.74,11.1,8.11
+14,14,W02 Crescent,W02 Crescent,0.0,0.0,0.0
+14,15,W02 Crescent,E06 Sutardja Dali Hall/Yali's 1,767.66,6.53,4.77
+14,16,W02 Crescent,E29 Campanile East,803.07,6.83,4.99
+14,17,W02 Crescent,E16 Campanile,961.79,8.19,5.98
+14,18,W02 Crescent,U09 MLK Ramp,984.3,8.38,6.12
+14,19,W02 Crescent,E13 Stanley Hall,955.13,8.12,5.93
+14,20,W02 Crescent,U27 Anthony Hall,1388.52,11.81,8.63
+14,21,W02 Crescent,E15 Bancroft Library,686.47,5.85,4.27
+14,22,W02 Crescent,U05 Cesar Chavez,751.99,6.39,4.67
+14,23,W02 Crescent,U17 Dwinelle Plaza Entry,730.14,6.22,4.54
+14,24,W02 Crescent,E02 North Entrance Memorial Glade,550.75,4.68,3.42
+14,25,W02 Crescent,W12 VLSB/Campanile Way,635.31,5.41,3.95
+14,26,W02 Crescent,E02 North Entrance Memorial Glade,550.75,4.68,3.42
+14,27,W02 Crescent,E05 V&A Cafe/Etcheverry,746.76,6.35,4.64
+14,28,W02 Crescent,E02 North Entrance Memorial Glade,550.75,4.68,3.42
+14,29,W02 Crescent,E07 Sutardja Dai Hall/Yali's 2,767.66,6.53,4.77
+14,30,W02 Crescent,U07 Cal Book Store,993.27,8.45,6.17
+14,31,W02 Crescent,E06 Sutardja Dali Hall/Yali's 1,767.66,6.53,4.77
+14,32,W02 Crescent,E03 University Library,686.47,5.85,4.27
+14,33,W02 Crescent,U33 Spieker Plaza,879.09,7.47,5.46
+14,34,W02 Crescent,W17 Mulford Hall,261.48,2.22,1.62
+14,35,W02 Crescent,W16 VLSB Northside,345.09,2.93,2.14
+14,36,W02 Crescent,U28 Wheeler,905.91,7.71,5.63
+14,37,W02 Crescent,E30 Tan Hall North Side,884.88,7.53,5.5
+14,38,W02 Crescent,Hearst Gym Annex,1200.63,10.21,7.46
+14,39,W02 Crescent,U03 Grade Street,751.99,6.39,4.67
+14,40,W02 Crescent,U26 A&E Sproul,1567.23,13.33,9.74
+14,41,W02 Crescent,W06 West Circle,155.24,1.31,0.96
+15,0,E06 Sutardja Dali Hall/Yali's 1,DEPOT,469.23,4.0,2.92
+15,1,E06 Sutardja Dali Hall/Yali's 1,W08 University Drive,496.64,4.23,3.09
+15,2,E06 Sutardja Dali Hall/Yali's 1,E19 South Path Drive,646.5,5.5,4.02
+15,3,E06 Sutardja Dali Hall/Yali's 1,W18 Campanile Way West Entrance,1210.68,10.29,7.52
+15,4,E06 Sutardja Dali Hall/Yali's 1,E14 Physics,445.12,3.79,2.77
+15,5,E06 Sutardja Dali Hall/Yali's 1,E14 Physics,445.12,3.79,2.77
+15,6,E06 Sutardja Dali Hall/Yali's 1,U16 Durant Hall,1454.11,12.38,9.04
+15,7,E06 Sutardja Dali Hall/Yali's 1,W11 Moffitt Library @ Press,316.8,2.7,1.97
+15,8,E06 Sutardja Dali Hall/Yali's 1,Bechtel East,555.01,4.72,3.45
+15,9,E06 Sutardja Dali Hall/Yali's 1,001 Berkeley Way (Offsite),815.05,6.93,5.06
+15,10,E06 Sutardja Dali Hall/Yali's 1,W11 Moffitt Library @ Press,316.8,2.7,1.97
+15,11,E06 Sutardja Dali Hall/Yali's 1,Bechtel East,555.01,4.72,3.45
+15,12,E06 Sutardja Dali Hall/Yali's 1,W13 Recreational Sport Facility (LF),1558.88,13.27,9.69
+15,13,E06 Sutardja Dali Hall/Yali's 1,E25 Cronk Gate,971.9,8.27,6.04
+15,14,E06 Sutardja Dali Hall/Yali's 1,W02 Crescent,767.66,6.53,4.77
+15,15,E06 Sutardja Dali Hall/Yali's 1,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+15,16,E06 Sutardja Dali Hall/Yali's 1,E29 Campanile East,469.23,4.0,2.92
+15,17,E06 Sutardja Dali Hall/Yali's 1,E16 Campanile,627.95,5.34,3.9
+15,18,E06 Sutardja Dali Hall/Yali's 1,U09 MLK Ramp,1737.06,14.77,10.79
+15,19,E06 Sutardja Dali Hall/Yali's 1,E13 Stanley Hall,621.29,5.28,3.86
+15,20,E06 Sutardja Dali Hall/Yali's 1,U27 Anthony Hall,1993.36,16.96,12.39
+15,21,E06 Sutardja Dali Hall/Yali's 1,E15 Bancroft Library,352.63,3.0,2.19
+15,22,E06 Sutardja Dali Hall/Yali's 1,U05 Cesar Chavez,1504.76,12.8,9.35
+15,23,E06 Sutardja Dali Hall/Yali's 1,U17 Dwinelle Plaza Entry,1482.91,12.61,9.21
+15,24,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+15,25,E06 Sutardja Dali Hall/Yali's 1,W12 VLSB/Campanile Way,1388.08,11.81,8.63
+15,26,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+15,27,E06 Sutardja Dali Hall/Yali's 1,E05 V&A Cafe/Etcheverry,224.95,1.92,1.4
+15,28,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+15,29,E06 Sutardja Dali Hall/Yali's 1,E07 Sutardja Dai Hall/Yali's 2,0.0,0.0,0.0
+15,30,E06 Sutardja Dali Hall/Yali's 1,U07 Cal Book Store,1746.04,14.85,10.85
+15,31,E06 Sutardja Dali Hall/Yali's 1,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+15,32,E06 Sutardja Dali Hall/Yali's 1,E03 University Library,352.63,3.0,2.19
+15,33,E06 Sutardja Dali Hall/Yali's 1,U33 Spieker Plaza,1631.86,13.88,10.14
+15,34,E06 Sutardja Dali Hall/Yali's 1,W17 Mulford Hall,743.17,6.32,4.62
+15,35,E06 Sutardja Dali Hall/Yali's 1,W16 VLSB Northside,422.58,3.6,2.63
+15,36,E06 Sutardja Dali Hall/Yali's 1,U28 Wheeler,572.07,4.86,3.55
+15,37,E06 Sutardja Dali Hall/Yali's 1,E30 Tan Hall North Side,551.04,4.68,3.42
+15,38,E06 Sutardja Dali Hall/Yali's 1,Hearst Gym Annex,1715.98,14.59,10.66
+15,39,E06 Sutardja Dali Hall/Yali's 1,U03 Grade Street,1504.76,12.8,9.35
+15,40,E06 Sutardja Dali Hall/Yali's 1,U26 A&E Sproul,2172.07,18.48,13.5
+15,41,E06 Sutardja Dali Hall/Yali's 1,W06 West Circle,612.42,5.22,3.81
+16,0,E29 Campanile East,DEPOT,0.0,0.0,0.0
+16,1,E29 Campanile East,W08 University Drive,532.05,4.53,3.31
+16,2,E29 Campanile East,E19 South Path Drive,242.5,2.07,1.51
+16,3,E29 Campanile East,W18 Campanile Way West Entrance,1246.09,10.6,7.74
+16,4,E29 Campanile East,E14 Physics,209.09,1.78,1.3
+16,5,E29 Campanile East,E14 Physics,209.09,1.78,1.3
+16,6,E29 Campanile East,U16 Durant Hall,1489.52,12.68,9.26
+16,7,E29 Campanile East,W11 Moffitt Library @ Press,352.21,3.0,2.19
+16,8,E29 Campanile East,Bechtel East,318.98,2.71,1.98
+16,9,E29 Campanile East,001 Berkeley Way (Offsite),1124.05,9.56,6.98
+16,10,E29 Campanile East,W11 Moffitt Library @ Press,352.21,3.0,2.19
+16,11,E29 Campanile East,Bechtel East,318.98,2.71,1.98
+16,12,E29 Campanile East,W13 Recreational Sport Facility (LF),1594.29,13.57,9.91
+16,13,E29 Campanile East,E25 Cronk Gate,615.89,5.24,3.83
+16,14,E29 Campanile East,W02 Crescent,803.07,6.83,4.99
+16,15,E29 Campanile East,E06 Sutardja Dali Hall/Yali's 1,469.23,4.0,2.92
+16,16,E29 Campanile East,E29 Campanile East,0.0,0.0,0.0
+16,17,E29 Campanile East,E16 Campanile,158.71,1.36,0.99
+16,18,E29 Campanile East,U09 MLK Ramp,1685.13,14.33,10.47
+16,19,E29 Campanile East,E13 Stanley Hall,385.26,3.27,2.39
+16,20,E29 Campanile East,U27 Anthony Hall,1637.35,13.92,10.17
+16,21,E29 Campanile East,E15 Bancroft Library,116.6,0.99,0.72
+16,22,E29 Campanile East,U05 Cesar Chavez,1540.17,13.1,9.57
+16,23,E29 Campanile East,U17 Dwinelle Plaza Entry,1518.32,12.91,9.43
+16,24,E29 Campanile East,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+16,25,E29 Campanile East,W12 VLSB/Campanile Way,1423.49,12.12,8.85
+16,26,E29 Campanile East,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+16,27,E29 Campanile East,E05 V&A Cafe/Etcheverry,533.95,4.54,3.32
+16,28,E29 Campanile East,E02 North Entrance Memorial Glade,252.32,2.15,1.57
+16,29,E29 Campanile East,E07 Sutardja Dai Hall/Yali's 2,469.23,4.0,2.92
+16,30,E29 Campanile East,U07 Cal Book Store,1567.33,13.33,9.74
+16,31,E29 Campanile East,E06 Sutardja Dali Hall/Yali's 1,469.23,4.0,2.92
+16,32,E29 Campanile East,E03 University Library,116.6,0.99,0.72
+16,33,E29 Campanile East,U33 Spieker Plaza,1667.27,14.18,10.36
+16,34,E29 Campanile East,W17 Mulford Hall,778.58,6.63,4.84
+16,35,E29 Campanile East,W16 VLSB Northside,457.99,3.9,2.85
+16,36,E29 Campanile East,U28 Wheeler,102.83,0.88,0.64
+16,37,E29 Campanile East,E30 Tan Hall North Side,315.01,2.68,1.96
+16,38,E29 Campanile East,Hearst Gym Annex,1359.97,11.57,8.45
+16,39,E29 Campanile East,U03 Grade Street,1540.17,13.1,9.57
+16,40,E29 Campanile East,U26 A&E Sproul,1816.05,15.44,11.28
+16,41,E29 Campanile East,W06 West Circle,647.83,5.52,4.03
+17,0,E16 Campanile,DEPOT,158.71,1.36,0.99
+17,1,E16 Campanile,W08 University Drive,690.76,5.87,4.29
+17,2,E16 Campanile,E19 South Path Drive,117.98,1.0,0.73
+17,3,E16 Campanile,W18 Campanile Way West Entrance,1404.81,11.95,8.73
+17,4,E16 Campanile,E14 Physics,361.41,3.08,2.25
+17,5,E16 Campanile,E14 Physics,361.41,3.08,2.25
+17,6,E16 Campanile,U16 Durant Hall,1648.23,14.02,10.24
+17,7,E16 Campanile,W11 Moffitt Library @ Press,510.92,4.34,3.17
+17,8,E16 Campanile,Bechtel East,347.85,2.96,2.16
+17,9,E16 Campanile,001 Berkeley Way (Offsite),1282.76,10.91,7.97
+17,10,E16 Campanile,W11 Moffitt Library @ Press,510.92,4.34,3.17
+17,11,E16 Campanile,Bechtel East,347.85,2.96,2.16
+17,12,E16 Campanile,W13 Recreational Sport Facility (LF),1629.97,13.87,10.13
+17,13,E16 Campanile,E25 Cronk Gate,491.37,4.18,3.05
+17,14,E16 Campanile,W02 Crescent,961.79,8.19,5.98
+17,15,E16 Campanile,E06 Sutardja Dali Hall/Yali's 1,627.95,5.34,3.9
+17,16,E16 Campanile,E29 Campanile East,158.71,1.36,0.99
+17,17,E16 Campanile,E16 Campanile,0.0,0.0,0.0
+17,18,E16 Campanile,U09 MLK Ramp,1560.61,13.28,9.7
+17,19,E16 Campanile,E13 Stanley Hall,337.62,2.87,2.1
+17,20,E16 Campanile,U27 Anthony Hall,1512.84,12.87,9.4
+17,21,E16 Campanile,E15 Bancroft Library,275.31,2.34,1.71
+17,22,E16 Campanile,U05 Cesar Chavez,1698.88,14.46,10.56
+17,23,E16 Campanile,U17 Dwinelle Plaza Entry,1677.03,14.26,10.42
+17,24,E16 Campanile,E02 North Entrance Memorial Glade,411.03,3.49,2.55
+17,25,E16 Campanile,W12 VLSB/Campanile Way,1582.2,13.46,9.83
+17,26,E16 Campanile,E02 North Entrance Memorial Glade,411.03,3.49,2.55
+17,27,E16 Campanile,E05 V&A Cafe/Etcheverry,692.66,5.89,4.3
+17,28,E16 Campanile,E02 North Entrance Memorial Glade,411.03,3.49,2.55
+17,29,E16 Campanile,E07 Sutardja Dai Hall/Yali's 2,627.95,5.34,3.9
+17,30,E16 Campanile,U07 Cal Book Store,1442.81,12.28,8.97
+17,31,E16 Campanile,E06 Sutardja Dali Hall/Yali's 1,627.95,5.34,3.9
+17,32,E16 Campanile,E03 University Library,275.31,2.34,1.71
+17,33,E16 Campanile,U33 Spieker Plaza,1556.99,13.24,9.67
+17,34,E16 Campanile,W17 Mulford Hall,937.3,7.97,5.82
+17,35,E16 Campanile,W16 VLSB Northside,616.7,5.24,3.83
+17,36,E16 Campanile,U28 Wheeler,143.71,1.22,0.89
+17,37,E16 Campanile,E30 Tan Hall North Side,267.37,2.27,1.66
+17,38,E16 Campanile,Hearst Gym Annex,1235.45,10.51,7.68
+17,39,E16 Campanile,U03 Grade Street,1698.88,14.46,10.56
+17,40,E16 Campanile,U26 A&E Sproul,1691.54,14.39,10.51
+17,41,E16 Campanile,W06 West Circle,806.54,6.86,5.01
+18,0,U09 MLK Ramp,DEPOT,1685.13,14.33,10.47
+18,1,U09 MLK Ramp,W08 University Drive,1240.42,10.55,7.71
+18,2,U09 MLK Ramp,E19 South Path Drive,1442.63,12.27,8.96
+18,3,U09 MLK Ramp,W18 Campanile Way West Entrance,979.09,8.32,6.08
+18,4,U09 MLK Ramp,E14 Physics,1638.07,13.94,10.18
+18,5,U09 MLK Ramp,E14 Physics,1638.07,13.94,10.18
+18,6,U09 MLK Ramp,U16 Durant Hall,1222.51,10.4,7.6
+18,7,U09 MLK Ramp,W11 Moffitt Library @ Press,1420.27,12.09,8.83
+18,8,U09 MLK Ramp,Bechtel East,1604.01,13.65,9.97
+18,9,U09 MLK Ramp,001 Berkeley Way (Offsite),1307.18,11.12,8.12
+18,10,U09 MLK Ramp,W11 Moffitt Library @ Press,1420.27,12.09,8.83
+18,11,U09 MLK Ramp,Bechtel East,1604.01,13.65,9.97
+18,12,U09 MLK Ramp,W13 Recreational Sport Facility (LF),178.18,1.52,1.11
+18,13,U09 MLK Ramp,E25 Cronk Gate,1069.24,9.09,6.64
+18,14,U09 MLK Ramp,W02 Crescent,984.3,8.38,6.12
+18,15,U09 MLK Ramp,E06 Sutardja Dali Hall/Yali's 1,1737.06,14.77,10.79
+18,16,U09 MLK Ramp,E29 Campanile East,1685.13,14.33,10.47
+18,17,U09 MLK Ramp,E16 Campanile,1560.61,13.28,9.7
+18,18,U09 MLK Ramp,U09 MLK Ramp,0.0,0.0,0.0
+18,19,U09 MLK Ramp,E13 Stanley Hall,1553.65,13.21,9.65
+18,20,U09 MLK Ramp,U27 Anthony Hall,513.05,4.37,3.19
+18,21,U09 MLK Ramp,E15 Bancroft Library,1655.88,14.09,10.29
+18,22,U09 MLK Ramp,U05 Cesar Chavez,1273.16,10.83,7.91
+18,23,U09 MLK Ramp,U17 Dwinelle Plaza Entry,1251.32,10.65,7.78
+18,24,U09 MLK Ramp,E02 North Entrance Memorial Glade,1520.15,12.94,9.45
+18,25,U09 MLK Ramp,W12 VLSB/Campanile Way,1156.48,9.84,7.19
+18,26,U09 MLK Ramp,E02 North Entrance Memorial Glade,1520.15,12.94,9.45
+18,27,U09 MLK Ramp,E05 V&A Cafe/Etcheverry,1716.16,14.59,10.66
+18,28,U09 MLK Ramp,E02 North Entrance Memorial Glade,1520.15,12.94,9.45
+18,29,U09 MLK Ramp,E07 Sutardja Dai Hall/Yali's 2,1737.06,14.77,10.79
+18,30,U09 MLK Ramp,U07 Cal Book Store,117.8,1.0,0.73
+18,31,U09 MLK Ramp,E06 Sutardja Dali Hall/Yali's 1,1737.06,14.77,10.79
+18,32,U09 MLK Ramp,E03 University Library,1655.88,14.09,10.29
+18,33,U09 MLK Ramp,U33 Spieker Plaza,105.2,0.89,0.65
+18,34,U09 MLK Ramp,W17 Mulford Hall,1230.88,10.47,7.65
+18,35,U09 MLK Ramp,W16 VLSB Northside,1314.49,11.18,8.17
+18,36,U09 MLK Ramp,U28 Wheeler,1670.12,14.21,10.38
+18,37,U09 MLK Ramp,E30 Tan Hall North Side,1490.1,12.68,9.26
+18,38,U09 MLK Ramp,Hearst Gym Annex,325.16,2.77,2.02
+18,39,U09 MLK Ramp,U03 Grade Street,1273.16,10.83,7.91
+18,40,U09 MLK Ramp,U26 A&E Sproul,691.76,5.89,4.3
+18,41,U09 MLK Ramp,W06 West Circle,1124.65,9.57,6.99
+19,0,E13 Stanley Hall,DEPOT,385.26,3.27,2.39
+19,1,E13 Stanley Hall,W08 University Drive,684.11,5.82,4.25
+19,2,E13 Stanley Hall,E19 South Path Drive,219.64,1.86,1.36
+19,3,E13 Stanley Hall,W18 Campanile Way West Entrance,1398.15,11.9,8.69
+19,4,E13 Stanley Hall,E14 Physics,218.22,1.86,1.36
+19,5,E13 Stanley Hall,E14 Physics,218.22,1.86,1.36
+19,6,E13 Stanley Hall,U16 Durant Hall,1641.57,13.96,10.2
+19,7,E13 Stanley Hall,W11 Moffitt Library @ Press,504.26,4.28,3.13
+19,8,E13 Stanley Hall,Bechtel East,67.45,0.57,0.42
+19,9,E13 Stanley Hall,001 Berkeley Way (Offsite),1276.11,10.86,7.93
+19,10,E13 Stanley Hall,W11 Moffitt Library @ Press,504.26,4.28,3.13
+19,11,E13 Stanley Hall,Bechtel East,67.45,0.57,0.42
+19,12,E13 Stanley Hall,W13 Recreational Sport Facility (LF),1623.01,13.8,10.08
+19,13,E13 Stanley Hall,E25 Cronk Gate,484.41,4.12,3.01
+19,14,E13 Stanley Hall,W02 Crescent,955.13,8.12,5.93
+19,15,E13 Stanley Hall,E06 Sutardja Dali Hall/Yali's 1,621.29,5.28,3.86
+19,16,E13 Stanley Hall,E29 Campanile East,385.26,3.27,2.39
+19,17,E13 Stanley Hall,E16 Campanile,337.62,2.87,2.1
+19,18,E13 Stanley Hall,U09 MLK Ramp,1553.65,13.21,9.65
+19,19,E13 Stanley Hall,E13 Stanley Hall,0.0,0.0,0.0
+19,20,E13 Stanley Hall,U27 Anthony Hall,1505.87,12.81,9.36
+19,21,E13 Stanley Hall,E15 Bancroft Library,268.66,2.29,1.67
+19,22,E13 Stanley Hall,U05 Cesar Chavez,1692.22,14.39,10.51
+19,23,E13 Stanley Hall,U17 Dwinelle Plaza Entry,1670.38,14.21,10.38
+19,24,E13 Stanley Hall,E02 North Entrance Memorial Glade,404.38,3.44,2.51
+19,25,E13 Stanley Hall,W12 VLSB/Campanile Way,1575.54,13.4,9.79
+19,26,E13 Stanley Hall,E02 North Entrance Memorial Glade,404.38,3.44,2.51
+19,27,E13 Stanley Hall,E05 V&A Cafe/Etcheverry,631.13,5.37,3.92
+19,28,E13 Stanley Hall,E02 North Entrance Memorial Glade,404.38,3.44,2.51
+19,29,E13 Stanley Hall,E07 Sutardja Dai Hall/Yali's 2,621.29,5.28,3.86
+19,30,E13 Stanley Hall,U07 Cal Book Store,1435.85,12.21,8.92
+19,31,E13 Stanley Hall,E06 Sutardja Dali Hall/Yali's 1,621.29,5.28,3.86
+19,32,E13 Stanley Hall,E03 University Library,268.66,2.29,1.67
+19,33,E13 Stanley Hall,U33 Spieker Plaza,1550.03,13.18,9.63
+19,34,E13 Stanley Hall,W17 Mulford Hall,930.64,7.91,5.78
+19,35,E13 Stanley Hall,W16 VLSB Northside,610.04,5.19,3.79
+19,36,E13 Stanley Hall,U28 Wheeler,447.13,3.81,2.78
+19,37,E13 Stanley Hall,E30 Tan Hall North Side,82.85,0.7,0.51
+19,38,E13 Stanley Hall,Hearst Gym Annex,1228.49,10.45,7.63
+19,39,E13 Stanley Hall,U03 Grade Street,1692.22,14.39,10.51
+19,40,E13 Stanley Hall,U26 A&E Sproul,1684.58,14.33,10.47
+19,41,E13 Stanley Hall,W06 West Circle,799.89,6.8,4.97
+20,0,U27 Anthony Hall,DEPOT,1637.35,13.92,10.17
+20,1,U27 Anthony Hall,W08 University Drive,1644.65,13.99,10.22
+20,2,U27 Anthony Hall,E19 South Path Drive,1394.85,11.87,8.67
+20,3,U27 Anthony Hall,W18 Campanile Way West Entrance,1383.31,11.77,8.6
+20,4,U27 Anthony Hall,E14 Physics,1590.29,13.53,9.88
+20,5,U27 Anthony Hall,E14 Physics,1590.29,13.53,9.88
+20,6,U27 Anthony Hall,U16 Durant Hall,1626.74,13.84,10.11
+20,7,U27 Anthony Hall,W11 Moffitt Library @ Press,1824.49,15.52,11.34
+20,8,U27 Anthony Hall,Bechtel East,1556.23,13.24,9.67
+20,9,U27 Anthony Hall,001 Berkeley Way (Offsite),1711.4,14.55,10.63
+20,10,U27 Anthony Hall,W11 Moffitt Library @ Press,1824.49,15.52,11.34
+20,11,U27 Anthony Hall,Bechtel East,1556.23,13.24,9.67
+20,12,U27 Anthony Hall,W13 Recreational Sport Facility (LF),582.4,4.96,3.62
+20,13,U27 Anthony Hall,E25 Cronk Gate,1021.46,8.69,6.35
+20,14,U27 Anthony Hall,W02 Crescent,1388.52,11.81,8.63
+20,15,U27 Anthony Hall,E06 Sutardja Dali Hall/Yali's 1,1993.36,16.96,12.39
+20,16,U27 Anthony Hall,E29 Campanile East,1637.35,13.92,10.17
+20,17,U27 Anthony Hall,E16 Campanile,1512.84,12.87,9.4
+20,18,U27 Anthony Hall,U09 MLK Ramp,513.05,4.37,3.19
+20,19,U27 Anthony Hall,E13 Stanley Hall,1505.87,12.81,9.36
+20,20,U27 Anthony Hall,U27 Anthony Hall,0.0,0.0,0.0
+20,21,U27 Anthony Hall,E15 Bancroft Library,1640.73,13.96,10.2
+20,22,U27 Anthony Hall,U05 Cesar Chavez,1677.39,14.26,10.42
+20,23,U27 Anthony Hall,U17 Dwinelle Plaza Entry,1655.54,14.09,10.29
+20,24,U27 Anthony Hall,E02 North Entrance Memorial Glade,1776.45,15.11,11.04
+20,25,U27 Anthony Hall,W12 VLSB/Campanile Way,1560.71,13.28,9.7
+20,26,U27 Anthony Hall,E02 North Entrance Memorial Glade,1776.45,15.11,11.04
+20,27,U27 Anthony Hall,E05 V&A Cafe/Etcheverry,1798.28,15.29,11.17
+20,28,U27 Anthony Hall,E02 North Entrance Memorial Glade,1776.45,15.11,11.04
+20,29,U27 Anthony Hall,E07 Sutardja Dai Hall/Yali's 2,1993.36,16.96,12.39
+20,30,U27 Anthony Hall,U07 Cal Book Store,395.25,3.37,2.46
+20,31,U27 Anthony Hall,E06 Sutardja Dali Hall/Yali's 1,1993.36,16.96,12.39
+20,32,U27 Anthony Hall,E03 University Library,1640.73,13.96,10.2
+20,33,U27 Anthony Hall,U33 Spieker Plaza,509.43,4.34,3.17
+20,34,U27 Anthony Hall,W17 Mulford Hall,1635.11,13.91,10.16
+20,35,U27 Anthony Hall,W16 VLSB Northside,1718.71,14.62,10.68
+20,36,U27 Anthony Hall,U28 Wheeler,1622.34,13.8,10.08
+20,37,U27 Anthony Hall,E30 Tan Hall North Side,1442.32,12.27,8.96
+20,38,U27 Anthony Hall,Hearst Gym Annex,277.38,2.35,1.72
+20,39,U27 Anthony Hall,U03 Grade Street,1677.39,14.26,10.42
+20,40,U27 Anthony Hall,U26 A&E Sproul,178.71,1.52,1.11
+20,41,U27 Anthony Hall,W06 West Circle,1528.87,13.01,9.5
+21,0,E15 Bancroft Library,DEPOT,116.6,0.99,0.72
+21,1,E15 Bancroft Library,W08 University Drive,415.45,3.53,2.58
+21,2,E15 Bancroft Library,E19 South Path Drive,293.87,2.51,1.83
+21,3,E15 Bancroft Library,W18 Campanile Way West Entrance,1129.49,9.61,7.02
+21,4,E15 Bancroft Library,E14 Physics,92.49,0.78,0.57
+21,5,E15 Bancroft Library,E14 Physics,92.49,0.78,0.57
+21,6,E15 Bancroft Library,U16 Durant Hall,1372.92,11.68,8.53
+21,7,E15 Bancroft Library,W11 Moffitt Library @ Press,235.61,2.0,1.46
+21,8,E15 Bancroft Library,Bechtel East,202.38,1.72,1.26
+21,9,E15 Bancroft Library,001 Berkeley Way (Offsite),1007.45,8.57,6.26
+21,10,E15 Bancroft Library,W11 Moffitt Library @ Press,235.61,2.0,1.46
+21,11,E15 Bancroft Library,Bechtel East,202.38,1.72,1.26
+21,12,E15 Bancroft Library,W13 Recreational Sport Facility (LF),1477.69,12.57,9.18
+21,13,E15 Bancroft Library,E25 Cronk Gate,619.27,5.27,3.85
+21,14,E15 Bancroft Library,W02 Crescent,686.47,5.85,4.27
+21,15,E15 Bancroft Library,E06 Sutardja Dali Hall/Yali's 1,352.63,3.0,2.19
+21,16,E15 Bancroft Library,E29 Campanile East,116.6,0.99,0.72
+21,17,E15 Bancroft Library,E16 Campanile,275.31,2.34,1.71
+21,18,E15 Bancroft Library,U09 MLK Ramp,1655.88,14.09,10.29
+21,19,E15 Bancroft Library,E13 Stanley Hall,268.66,2.29,1.67
+21,20,E15 Bancroft Library,U27 Anthony Hall,1640.73,13.96,10.2
+21,21,E15 Bancroft Library,E15 Bancroft Library,0.0,0.0,0.0
+21,22,E15 Bancroft Library,U05 Cesar Chavez,1423.57,12.12,8.85
+21,23,E15 Bancroft Library,U17 Dwinelle Plaza Entry,1401.72,11.92,8.71
+21,24,E15 Bancroft Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+21,25,E15 Bancroft Library,W12 VLSB/Campanile Way,1306.89,11.12,8.12
+21,26,E15 Bancroft Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+21,27,E15 Bancroft Library,E05 V&A Cafe/Etcheverry,417.35,3.55,2.59
+21,28,E15 Bancroft Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+21,29,E15 Bancroft Library,E07 Sutardja Dai Hall/Yali's 2,352.63,3.0,2.19
+21,30,E15 Bancroft Library,U07 Cal Book Store,1570.71,13.36,9.76
+21,31,E15 Bancroft Library,E06 Sutardja Dali Hall/Yali's 1,352.63,3.0,2.19
+21,32,E15 Bancroft Library,E03 University Library,0.0,0.0,0.0
+21,33,E15 Bancroft Library,U33 Spieker Plaza,1550.67,13.2,9.64
+21,34,E15 Bancroft Library,W17 Mulford Hall,661.99,5.63,4.11
+21,35,E15 Bancroft Library,W16 VLSB Northside,341.39,2.9,2.12
+21,36,E15 Bancroft Library,U28 Wheeler,219.43,1.86,1.36
+21,37,E15 Bancroft Library,E30 Tan Hall North Side,198.41,1.68,1.23
+21,38,E15 Bancroft Library,Hearst Gym Annex,1363.35,11.6,8.47
+21,39,E15 Bancroft Library,U03 Grade Street,1423.57,12.12,8.85
+21,40,E15 Bancroft Library,U26 A&E Sproul,1819.44,15.48,11.31
+21,41,E15 Bancroft Library,W06 West Circle,531.23,4.52,3.3
+22,0,U05 Cesar Chavez,DEPOT,1540.17,13.1,9.57
+22,1,U05 Cesar Chavez,W08 University Drive,1008.12,8.57,6.26
+22,2,U05 Cesar Chavez,E19 South Path Drive,1717.44,14.61,10.67
+22,3,U05 Cesar Chavez,W18 Campanile Way West Entrance,294.07,2.51,1.83
+22,4,U05 Cesar Chavez,E14 Physics,1516.06,12.9,9.42
+22,5,U05 Cesar Chavez,E14 Physics,1516.06,12.9,9.42
+22,6,U05 Cesar Chavez,U16 Durant Hall,50.65,0.42,0.31
+22,7,U05 Cesar Chavez,W11 Moffitt Library @ Press,1187.96,10.1,7.38
+22,8,U05 Cesar Chavez,Bechtel East,1625.94,13.83,10.1
+22,9,U05 Cesar Chavez,001 Berkeley Way (Offsite),1074.87,9.14,6.68
+22,10,U05 Cesar Chavez,W11 Moffitt Library @ Press,1187.96,10.1,7.38
+22,11,U05 Cesar Chavez,Bechtel East,1625.94,13.83,10.1
+22,12,U05 Cesar Chavez,W13 Recreational Sport Facility (LF),1094.98,9.31,6.8
+22,13,U05 Cesar Chavez,E25 Cronk Gate,2042.83,17.37,12.69
+22,14,U05 Cesar Chavez,W02 Crescent,751.99,6.39,4.67
+22,15,U05 Cesar Chavez,E06 Sutardja Dali Hall/Yali's 1,1504.76,12.8,9.35
+22,16,U05 Cesar Chavez,E29 Campanile East,1540.17,13.1,9.57
+22,17,U05 Cesar Chavez,E16 Campanile,1698.88,14.46,10.56
+22,18,U05 Cesar Chavez,U09 MLK Ramp,1273.16,10.83,7.91
+22,19,U05 Cesar Chavez,E13 Stanley Hall,1692.22,14.39,10.51
+22,20,U05 Cesar Chavez,U27 Anthony Hall,1677.39,14.26,10.42
+22,21,U05 Cesar Chavez,E15 Bancroft Library,1423.57,12.12,8.85
+22,22,U05 Cesar Chavez,U05 Cesar Chavez,0.0,0.0,0.0
+22,23,U05 Cesar Chavez,U17 Dwinelle Plaza Entry,21.85,0.19,0.14
+22,24,U05 Cesar Chavez,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+22,25,U05 Cesar Chavez,W12 VLSB/Campanile Way,130.22,1.11,0.81
+22,26,U05 Cesar Chavez,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+22,27,U05 Cesar Chavez,E05 V&A Cafe/Etcheverry,1483.85,12.62,9.22
+22,28,U05 Cesar Chavez,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+22,29,U05 Cesar Chavez,E07 Sutardja Dai Hall/Yali's 2,1504.76,12.8,9.35
+22,30,U05 Cesar Chavez,U07 Cal Book Store,1282.14,10.91,7.97
+22,31,U05 Cesar Chavez,E06 Sutardja Dali Hall/Yali's 1,1504.76,12.8,9.35
+22,32,U05 Cesar Chavez,E03 University Library,1423.57,12.12,8.85
+22,33,U05 Cesar Chavez,U33 Spieker Plaza,1167.96,9.94,7.26
+22,34,U05 Cesar Chavez,W17 Mulford Hall,998.58,8.49,6.2
+22,35,U05 Cesar Chavez,W16 VLSB Northside,1082.18,9.2,6.72
+22,36,U05 Cesar Chavez,U28 Wheeler,1643.0,13.98,10.21
+22,37,U05 Cesar Chavez,E30 Tan Hall North Side,1621.98,13.8,10.08
+22,38,U05 Cesar Chavez,Hearst Gym Annex,1489.5,12.68,9.26
+22,39,U05 Cesar Chavez,U03 Grade Street,0.0,0.0,0.0
+22,40,U05 Cesar Chavez,U26 A&E Sproul,1856.09,15.78,11.53
+22,41,U05 Cesar Chavez,W06 West Circle,892.34,7.58,5.54
+23,0,U17 Dwinelle Plaza Entry,DEPOT,1518.32,12.91,9.43
+23,1,U17 Dwinelle Plaza Entry,W08 University Drive,986.27,8.39,6.13
+23,2,U17 Dwinelle Plaza Entry,E19 South Path Drive,1695.59,14.43,10.54
+23,3,U17 Dwinelle Plaza Entry,W18 Campanile Way West Entrance,272.23,2.31,1.69
+23,4,U17 Dwinelle Plaza Entry,E14 Physics,1494.21,12.7,9.28
+23,5,U17 Dwinelle Plaza Entry,E14 Physics,1494.21,12.7,9.28
+23,6,U17 Dwinelle Plaza Entry,U16 Durant Hall,28.8,0.25,0.18
+23,7,U17 Dwinelle Plaza Entry,W11 Moffitt Library @ Press,1166.11,9.93,7.25
+23,8,U17 Dwinelle Plaza Entry,Bechtel East,1604.1,13.65,9.97
+23,9,U17 Dwinelle Plaza Entry,001 Berkeley Way (Offsite),1053.02,8.95,6.54
+23,10,U17 Dwinelle Plaza Entry,W11 Moffitt Library @ Press,1166.11,9.93,7.25
+23,11,U17 Dwinelle Plaza Entry,Bechtel East,1604.1,13.65,9.97
+23,12,U17 Dwinelle Plaza Entry,W13 Recreational Sport Facility (LF),1073.14,9.13,6.67
+23,13,U17 Dwinelle Plaza Entry,E25 Cronk Gate,2020.99,17.19,12.56
+23,14,U17 Dwinelle Plaza Entry,W02 Crescent,730.14,6.22,4.54
+23,15,U17 Dwinelle Plaza Entry,E06 Sutardja Dali Hall/Yali's 1,1482.91,12.61,9.21
+23,16,U17 Dwinelle Plaza Entry,E29 Campanile East,1518.32,12.91,9.43
+23,17,U17 Dwinelle Plaza Entry,E16 Campanile,1677.03,14.26,10.42
+23,18,U17 Dwinelle Plaza Entry,U09 MLK Ramp,1251.32,10.65,7.78
+23,19,U17 Dwinelle Plaza Entry,E13 Stanley Hall,1670.38,14.21,10.38
+23,20,U17 Dwinelle Plaza Entry,U27 Anthony Hall,1655.54,14.09,10.29
+23,21,U17 Dwinelle Plaza Entry,E15 Bancroft Library,1401.72,11.92,8.71
+23,22,U17 Dwinelle Plaza Entry,U05 Cesar Chavez,21.85,0.19,0.14
+23,23,U17 Dwinelle Plaza Entry,U17 Dwinelle Plaza Entry,0.0,0.0,0.0
+23,24,U17 Dwinelle Plaza Entry,E02 North Entrance Memorial Glade,1266.0,10.77,7.87
+23,25,U17 Dwinelle Plaza Entry,W12 VLSB/Campanile Way,108.37,0.92,0.67
+23,26,U17 Dwinelle Plaza Entry,E02 North Entrance Memorial Glade,1266.0,10.77,7.87
+23,27,U17 Dwinelle Plaza Entry,E05 V&A Cafe/Etcheverry,1462.01,12.43,9.08
+23,28,U17 Dwinelle Plaza Entry,E02 North Entrance Memorial Glade,1266.0,10.77,7.87
+23,29,U17 Dwinelle Plaza Entry,E07 Sutardja Dai Hall/Yali's 2,1482.91,12.61,9.21
+23,30,U17 Dwinelle Plaza Entry,U07 Cal Book Store,1260.29,10.72,7.83
+23,31,U17 Dwinelle Plaza Entry,E06 Sutardja Dali Hall/Yali's 1,1482.91,12.61,9.21
+23,32,U17 Dwinelle Plaza Entry,E03 University Library,1401.72,11.92,8.71
+23,33,U17 Dwinelle Plaza Entry,U33 Spieker Plaza,1146.11,9.75,7.12
+23,34,U17 Dwinelle Plaza Entry,W17 Mulford Hall,976.73,8.31,6.07
+23,35,U17 Dwinelle Plaza Entry,W16 VLSB Northside,1060.33,9.02,6.59
+23,36,U17 Dwinelle Plaza Entry,U28 Wheeler,1621.15,13.79,10.07
+23,37,U17 Dwinelle Plaza Entry,E30 Tan Hall North Side,1600.13,13.61,9.94
+23,38,U17 Dwinelle Plaza Entry,Hearst Gym Annex,1467.65,12.48,9.12
+23,39,U17 Dwinelle Plaza Entry,U03 Grade Street,21.85,0.19,0.14
+23,40,U17 Dwinelle Plaza Entry,U26 A&E Sproul,1834.25,15.61,11.4
+23,41,U17 Dwinelle Plaza Entry,W06 West Circle,870.49,7.41,5.41
+24,0,E02 North Entrance Memorial Glade,DEPOT,252.32,2.15,1.57
+24,1,E02 North Entrance Memorial Glade,W08 University Drive,279.73,2.38,1.74
+24,2,E02 North Entrance Memorial Glade,E19 South Path Drive,429.59,3.66,2.67
+24,3,E02 North Entrance Memorial Glade,W18 Campanile Way West Entrance,993.77,8.46,6.18
+24,4,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+24,5,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+24,6,E02 North Entrance Memorial Glade,U16 Durant Hall,1237.2,10.53,7.69
+24,7,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+24,8,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+24,9,E02 North Entrance Memorial Glade,001 Berkeley Way (Offsite),871.73,7.42,5.42
+24,10,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+24,11,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+24,12,E02 North Entrance Memorial Glade,W13 Recreational Sport Facility (LF),1341.97,11.42,8.34
+24,13,E02 North Entrance Memorial Glade,E25 Cronk Gate,754.99,6.42,4.69
+24,14,E02 North Entrance Memorial Glade,W02 Crescent,550.75,4.68,3.42
+24,15,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+24,16,E02 North Entrance Memorial Glade,E29 Campanile East,252.32,2.15,1.57
+24,17,E02 North Entrance Memorial Glade,E16 Campanile,411.03,3.49,2.55
+24,18,E02 North Entrance Memorial Glade,U09 MLK Ramp,1520.15,12.94,9.45
+24,19,E02 North Entrance Memorial Glade,E13 Stanley Hall,404.38,3.44,2.51
+24,20,E02 North Entrance Memorial Glade,U27 Anthony Hall,1776.45,15.11,11.04
+24,21,E02 North Entrance Memorial Glade,E15 Bancroft Library,135.72,1.15,0.84
+24,22,E02 North Entrance Memorial Glade,U05 Cesar Chavez,1287.84,10.95,8.0
+24,23,E02 North Entrance Memorial Glade,U17 Dwinelle Plaza Entry,1266.0,10.77,7.87
+24,24,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+24,25,E02 North Entrance Memorial Glade,W12 VLSB/Campanile Way,1171.17,9.97,7.28
+24,26,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+24,27,E02 North Entrance Memorial Glade,E05 V&A Cafe/Etcheverry,281.63,2.4,1.75
+24,28,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+24,29,E02 North Entrance Memorial Glade,E07 Sutardja Dai Hall/Yali's 2,216.91,1.85,1.35
+24,30,E02 North Entrance Memorial Glade,U07 Cal Book Store,1529.13,13.01,9.5
+24,31,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+24,32,E02 North Entrance Memorial Glade,E03 University Library,135.72,1.15,0.84
+24,33,E02 North Entrance Memorial Glade,U33 Spieker Plaza,1414.95,12.03,8.79
+24,34,E02 North Entrance Memorial Glade,W17 Mulford Hall,526.26,4.48,3.27
+24,35,E02 North Entrance Memorial Glade,W16 VLSB Northside,205.67,1.75,1.28
+24,36,E02 North Entrance Memorial Glade,U28 Wheeler,355.16,3.03,2.21
+24,37,E02 North Entrance Memorial Glade,E30 Tan Hall North Side,334.13,2.85,2.08
+24,38,E02 North Entrance Memorial Glade,Hearst Gym Annex,1499.07,12.75,9.31
+24,39,E02 North Entrance Memorial Glade,U03 Grade Street,1287.84,10.95,8.0
+24,40,E02 North Entrance Memorial Glade,U26 A&E Sproul,1955.16,16.63,12.15
+24,41,E02 North Entrance Memorial Glade,W06 West Circle,395.51,3.37,2.46
+25,0,W12 VLSB/Campanile Way,DEPOT,1423.49,12.12,8.85
+25,1,W12 VLSB/Campanile Way,W08 University Drive,891.44,7.58,5.54
+25,2,W12 VLSB/Campanile Way,E19 South Path Drive,1600.76,13.62,9.95
+25,3,W12 VLSB/Campanile Way,W18 Campanile Way West Entrance,177.39,1.51,1.1
+25,4,W12 VLSB/Campanile Way,E14 Physics,1399.38,11.91,8.7
+25,5,W12 VLSB/Campanile Way,E14 Physics,1399.38,11.91,8.7
+25,6,W12 VLSB/Campanile Way,U16 Durant Hall,79.57,0.67,0.49
+25,7,W12 VLSB/Campanile Way,W11 Moffitt Library @ Press,1071.28,9.12,6.66
+25,8,W12 VLSB/Campanile Way,Bechtel East,1509.27,12.84,9.38
+25,9,W12 VLSB/Campanile Way,001 Berkeley Way (Offsite),958.19,8.15,5.95
+25,10,W12 VLSB/Campanile Way,W11 Moffitt Library @ Press,1071.28,9.12,6.66
+25,11,W12 VLSB/Campanile Way,Bechtel East,1509.27,12.84,9.38
+25,12,W12 VLSB/Campanile Way,W13 Recreational Sport Facility (LF),978.3,8.32,6.08
+25,13,W12 VLSB/Campanile Way,E25 Cronk Gate,1926.15,16.39,11.97
+25,14,W12 VLSB/Campanile Way,W02 Crescent,635.31,5.41,3.95
+25,15,W12 VLSB/Campanile Way,E06 Sutardja Dali Hall/Yali's 1,1388.08,11.81,8.63
+25,16,W12 VLSB/Campanile Way,E29 Campanile East,1423.49,12.12,8.85
+25,17,W12 VLSB/Campanile Way,E16 Campanile,1582.2,13.46,9.83
+25,18,W12 VLSB/Campanile Way,U09 MLK Ramp,1156.48,9.84,7.19
+25,19,W12 VLSB/Campanile Way,E13 Stanley Hall,1575.54,13.4,9.79
+25,20,W12 VLSB/Campanile Way,U27 Anthony Hall,1560.71,13.28,9.7
+25,21,W12 VLSB/Campanile Way,E15 Bancroft Library,1306.89,11.12,8.12
+25,22,W12 VLSB/Campanile Way,U05 Cesar Chavez,130.22,1.11,0.81
+25,23,W12 VLSB/Campanile Way,U17 Dwinelle Plaza Entry,108.37,0.92,0.67
+25,24,W12 VLSB/Campanile Way,E02 North Entrance Memorial Glade,1171.17,9.97,7.28
+25,25,W12 VLSB/Campanile Way,W12 VLSB/Campanile Way,0.0,0.0,0.0
+25,26,W12 VLSB/Campanile Way,E02 North Entrance Memorial Glade,1171.17,9.97,7.28
+25,27,W12 VLSB/Campanile Way,E05 V&A Cafe/Etcheverry,1367.17,11.64,8.5
+25,28,W12 VLSB/Campanile Way,E02 North Entrance Memorial Glade,1171.17,9.97,7.28
+25,29,W12 VLSB/Campanile Way,E07 Sutardja Dai Hall/Yali's 2,1388.08,11.81,8.63
+25,30,W12 VLSB/Campanile Way,U07 Cal Book Store,1165.46,9.91,7.24
+25,31,W12 VLSB/Campanile Way,E06 Sutardja Dali Hall/Yali's 1,1388.08,11.81,8.63
+25,32,W12 VLSB/Campanile Way,E03 University Library,1306.89,11.12,8.12
+25,33,W12 VLSB/Campanile Way,U33 Spieker Plaza,1051.28,8.94,6.53
+25,34,W12 VLSB/Campanile Way,W17 Mulford Hall,881.9,7.5,5.48
+25,35,W12 VLSB/Campanile Way,W16 VLSB Northside,965.5,8.21,6.0
+25,36,W12 VLSB/Campanile Way,U28 Wheeler,1526.32,12.98,9.48
+25,37,W12 VLSB/Campanile Way,E30 Tan Hall North Side,1505.3,12.8,9.35
+25,38,W12 VLSB/Campanile Way,Hearst Gym Annex,1372.82,11.68,8.53
+25,39,W12 VLSB/Campanile Way,U03 Grade Street,130.22,1.11,0.81
+25,40,W12 VLSB/Campanile Way,U26 A&E Sproul,1739.41,14.8,10.81
+25,41,W12 VLSB/Campanile Way,W06 West Circle,775.66,6.6,4.82
+26,0,E02 North Entrance Memorial Glade,DEPOT,252.32,2.15,1.57
+26,1,E02 North Entrance Memorial Glade,W08 University Drive,279.73,2.38,1.74
+26,2,E02 North Entrance Memorial Glade,E19 South Path Drive,429.59,3.66,2.67
+26,3,E02 North Entrance Memorial Glade,W18 Campanile Way West Entrance,993.77,8.46,6.18
+26,4,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+26,5,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+26,6,E02 North Entrance Memorial Glade,U16 Durant Hall,1237.2,10.53,7.69
+26,7,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+26,8,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+26,9,E02 North Entrance Memorial Glade,001 Berkeley Way (Offsite),871.73,7.42,5.42
+26,10,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+26,11,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+26,12,E02 North Entrance Memorial Glade,W13 Recreational Sport Facility (LF),1341.97,11.42,8.34
+26,13,E02 North Entrance Memorial Glade,E25 Cronk Gate,754.99,6.42,4.69
+26,14,E02 North Entrance Memorial Glade,W02 Crescent,550.75,4.68,3.42
+26,15,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+26,16,E02 North Entrance Memorial Glade,E29 Campanile East,252.32,2.15,1.57
+26,17,E02 North Entrance Memorial Glade,E16 Campanile,411.03,3.49,2.55
+26,18,E02 North Entrance Memorial Glade,U09 MLK Ramp,1520.15,12.94,9.45
+26,19,E02 North Entrance Memorial Glade,E13 Stanley Hall,404.38,3.44,2.51
+26,20,E02 North Entrance Memorial Glade,U27 Anthony Hall,1776.45,15.11,11.04
+26,21,E02 North Entrance Memorial Glade,E15 Bancroft Library,135.72,1.15,0.84
+26,22,E02 North Entrance Memorial Glade,U05 Cesar Chavez,1287.84,10.95,8.0
+26,23,E02 North Entrance Memorial Glade,U17 Dwinelle Plaza Entry,1266.0,10.77,7.87
+26,24,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+26,25,E02 North Entrance Memorial Glade,W12 VLSB/Campanile Way,1171.17,9.97,7.28
+26,26,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+26,27,E02 North Entrance Memorial Glade,E05 V&A Cafe/Etcheverry,281.63,2.4,1.75
+26,28,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+26,29,E02 North Entrance Memorial Glade,E07 Sutardja Dai Hall/Yali's 2,216.91,1.85,1.35
+26,30,E02 North Entrance Memorial Glade,U07 Cal Book Store,1529.13,13.01,9.5
+26,31,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+26,32,E02 North Entrance Memorial Glade,E03 University Library,135.72,1.15,0.84
+26,33,E02 North Entrance Memorial Glade,U33 Spieker Plaza,1414.95,12.03,8.79
+26,34,E02 North Entrance Memorial Glade,W17 Mulford Hall,526.26,4.48,3.27
+26,35,E02 North Entrance Memorial Glade,W16 VLSB Northside,205.67,1.75,1.28
+26,36,E02 North Entrance Memorial Glade,U28 Wheeler,355.16,3.03,2.21
+26,37,E02 North Entrance Memorial Glade,E30 Tan Hall North Side,334.13,2.85,2.08
+26,38,E02 North Entrance Memorial Glade,Hearst Gym Annex,1499.07,12.75,9.31
+26,39,E02 North Entrance Memorial Glade,U03 Grade Street,1287.84,10.95,8.0
+26,40,E02 North Entrance Memorial Glade,U26 A&E Sproul,1955.16,16.63,12.15
+26,41,E02 North Entrance Memorial Glade,W06 West Circle,395.51,3.37,2.46
+27,0,E05 V&A Cafe/Etcheverry,DEPOT,533.95,4.54,3.32
+27,1,E05 V&A Cafe/Etcheverry,W08 University Drive,475.74,4.05,2.96
+27,2,E05 V&A Cafe/Etcheverry,E19 South Path Drive,711.22,6.05,4.42
+27,3,E05 V&A Cafe/Etcheverry,W18 Campanile Way West Entrance,1189.78,10.12,7.39
+27,4,E05 V&A Cafe/Etcheverry,E14 Physics,509.84,4.34,3.17
+27,5,E05 V&A Cafe/Etcheverry,E14 Physics,509.84,4.34,3.17
+27,6,E05 V&A Cafe/Etcheverry,U16 Durant Hall,1433.2,12.2,8.91
+27,7,E05 V&A Cafe/Etcheverry,W11 Moffitt Library @ Press,355.01,3.03,2.21
+27,8,E05 V&A Cafe/Etcheverry,Bechtel East,619.73,5.27,3.85
+27,9,E05 V&A Cafe/Etcheverry,001 Berkeley Way (Offsite),727.45,6.19,4.52
+27,10,E05 V&A Cafe/Etcheverry,W11 Moffitt Library @ Press,355.01,3.03,2.21
+27,11,E05 V&A Cafe/Etcheverry,Bechtel East,619.73,5.27,3.85
+27,12,E05 V&A Cafe/Etcheverry,W13 Recreational Sport Facility (LF),1537.98,13.09,9.56
+27,13,E05 V&A Cafe/Etcheverry,E25 Cronk Gate,776.82,6.61,4.83
+27,14,E05 V&A Cafe/Etcheverry,W02 Crescent,746.76,6.35,4.64
+27,15,E05 V&A Cafe/Etcheverry,E06 Sutardja Dali Hall/Yali's 1,224.95,1.92,1.4
+27,16,E05 V&A Cafe/Etcheverry,E29 Campanile East,533.95,4.54,3.32
+27,17,E05 V&A Cafe/Etcheverry,E16 Campanile,692.66,5.89,4.3
+27,18,E05 V&A Cafe/Etcheverry,U09 MLK Ramp,1716.16,14.59,10.66
+27,19,E05 V&A Cafe/Etcheverry,E13 Stanley Hall,631.13,5.37,3.92
+27,20,E05 V&A Cafe/Etcheverry,U27 Anthony Hall,1798.28,15.29,11.17
+27,21,E05 V&A Cafe/Etcheverry,E15 Bancroft Library,417.35,3.55,2.59
+27,22,E05 V&A Cafe/Etcheverry,U05 Cesar Chavez,1483.85,12.62,9.22
+27,23,E05 V&A Cafe/Etcheverry,U17 Dwinelle Plaza Entry,1462.01,12.43,9.08
+27,24,E05 V&A Cafe/Etcheverry,E02 North Entrance Memorial Glade,281.63,2.4,1.75
+27,25,E05 V&A Cafe/Etcheverry,W12 VLSB/Campanile Way,1367.17,11.64,8.5
+27,26,E05 V&A Cafe/Etcheverry,E02 North Entrance Memorial Glade,281.63,2.4,1.75
+27,27,E05 V&A Cafe/Etcheverry,E05 V&A Cafe/Etcheverry,0.0,0.0,0.0
+27,28,E05 V&A Cafe/Etcheverry,E02 North Entrance Memorial Glade,281.63,2.4,1.75
+27,29,E05 V&A Cafe/Etcheverry,E07 Sutardja Dai Hall/Yali's 2,224.95,1.92,1.4
+27,30,E05 V&A Cafe/Etcheverry,U07 Cal Book Store,1725.13,14.68,10.72
+27,31,E05 V&A Cafe/Etcheverry,E06 Sutardja Dali Hall/Yali's 1,224.95,1.92,1.4
+27,32,E05 V&A Cafe/Etcheverry,E03 University Library,417.35,3.55,2.59
+27,33,E05 V&A Cafe/Etcheverry,U33 Spieker Plaza,1610.96,13.7,10.01
+27,34,E05 V&A Cafe/Etcheverry,W17 Mulford Hall,722.27,6.15,4.49
+27,35,E05 V&A Cafe/Etcheverry,W16 VLSB Northside,401.67,3.42,2.5
+27,36,E05 V&A Cafe/Etcheverry,U28 Wheeler,636.78,5.42,3.96
+27,37,E05 V&A Cafe/Etcheverry,E30 Tan Hall North Side,567.57,4.83,3.53
+27,38,E05 V&A Cafe/Etcheverry,Hearst Gym Annex,1520.9,12.94,9.45
+27,39,E05 V&A Cafe/Etcheverry,U03 Grade Street,1483.85,12.62,9.22
+27,40,E05 V&A Cafe/Etcheverry,U26 A&E Sproul,1976.99,16.81,12.28
+27,41,E05 V&A Cafe/Etcheverry,W06 West Circle,591.52,5.04,3.68
+28,0,E02 North Entrance Memorial Glade,DEPOT,252.32,2.15,1.57
+28,1,E02 North Entrance Memorial Glade,W08 University Drive,279.73,2.38,1.74
+28,2,E02 North Entrance Memorial Glade,E19 South Path Drive,429.59,3.66,2.67
+28,3,E02 North Entrance Memorial Glade,W18 Campanile Way West Entrance,993.77,8.46,6.18
+28,4,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+28,5,E02 North Entrance Memorial Glade,E14 Physics,228.21,1.94,1.42
+28,6,E02 North Entrance Memorial Glade,U16 Durant Hall,1237.2,10.53,7.69
+28,7,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+28,8,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+28,9,E02 North Entrance Memorial Glade,001 Berkeley Way (Offsite),871.73,7.42,5.42
+28,10,E02 North Entrance Memorial Glade,W11 Moffitt Library @ Press,99.89,0.85,0.62
+28,11,E02 North Entrance Memorial Glade,Bechtel East,338.1,2.87,2.1
+28,12,E02 North Entrance Memorial Glade,W13 Recreational Sport Facility (LF),1341.97,11.42,8.34
+28,13,E02 North Entrance Memorial Glade,E25 Cronk Gate,754.99,6.42,4.69
+28,14,E02 North Entrance Memorial Glade,W02 Crescent,550.75,4.68,3.42
+28,15,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+28,16,E02 North Entrance Memorial Glade,E29 Campanile East,252.32,2.15,1.57
+28,17,E02 North Entrance Memorial Glade,E16 Campanile,411.03,3.49,2.55
+28,18,E02 North Entrance Memorial Glade,U09 MLK Ramp,1520.15,12.94,9.45
+28,19,E02 North Entrance Memorial Glade,E13 Stanley Hall,404.38,3.44,2.51
+28,20,E02 North Entrance Memorial Glade,U27 Anthony Hall,1776.45,15.11,11.04
+28,21,E02 North Entrance Memorial Glade,E15 Bancroft Library,135.72,1.15,0.84
+28,22,E02 North Entrance Memorial Glade,U05 Cesar Chavez,1287.84,10.95,8.0
+28,23,E02 North Entrance Memorial Glade,U17 Dwinelle Plaza Entry,1266.0,10.77,7.87
+28,24,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+28,25,E02 North Entrance Memorial Glade,W12 VLSB/Campanile Way,1171.17,9.97,7.28
+28,26,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+28,27,E02 North Entrance Memorial Glade,E05 V&A Cafe/Etcheverry,281.63,2.4,1.75
+28,28,E02 North Entrance Memorial Glade,E02 North Entrance Memorial Glade,0.0,0.0,0.0
+28,29,E02 North Entrance Memorial Glade,E07 Sutardja Dai Hall/Yali's 2,216.91,1.85,1.35
+28,30,E02 North Entrance Memorial Glade,U07 Cal Book Store,1529.13,13.01,9.5
+28,31,E02 North Entrance Memorial Glade,E06 Sutardja Dali Hall/Yali's 1,216.91,1.85,1.35
+28,32,E02 North Entrance Memorial Glade,E03 University Library,135.72,1.15,0.84
+28,33,E02 North Entrance Memorial Glade,U33 Spieker Plaza,1414.95,12.03,8.79
+28,34,E02 North Entrance Memorial Glade,W17 Mulford Hall,526.26,4.48,3.27
+28,35,E02 North Entrance Memorial Glade,W16 VLSB Northside,205.67,1.75,1.28
+28,36,E02 North Entrance Memorial Glade,U28 Wheeler,355.16,3.03,2.21
+28,37,E02 North Entrance Memorial Glade,E30 Tan Hall North Side,334.13,2.85,2.08
+28,38,E02 North Entrance Memorial Glade,Hearst Gym Annex,1499.07,12.75,9.31
+28,39,E02 North Entrance Memorial Glade,U03 Grade Street,1287.84,10.95,8.0
+28,40,E02 North Entrance Memorial Glade,U26 A&E Sproul,1955.16,16.63,12.15
+28,41,E02 North Entrance Memorial Glade,W06 West Circle,395.51,3.37,2.46
+29,0,E07 Sutardja Dai Hall/Yali's 2,DEPOT,469.23,4.0,2.92
+29,1,E07 Sutardja Dai Hall/Yali's 2,W08 University Drive,496.64,4.23,3.09
+29,2,E07 Sutardja Dai Hall/Yali's 2,E19 South Path Drive,646.5,5.5,4.02
+29,3,E07 Sutardja Dai Hall/Yali's 2,W18 Campanile Way West Entrance,1210.68,10.29,7.52
+29,4,E07 Sutardja Dai Hall/Yali's 2,E14 Physics,445.12,3.79,2.77
+29,5,E07 Sutardja Dai Hall/Yali's 2,E14 Physics,445.12,3.79,2.77
+29,6,E07 Sutardja Dai Hall/Yali's 2,U16 Durant Hall,1454.11,12.38,9.04
+29,7,E07 Sutardja Dai Hall/Yali's 2,W11 Moffitt Library @ Press,316.8,2.7,1.97
+29,8,E07 Sutardja Dai Hall/Yali's 2,Bechtel East,555.01,4.72,3.45
+29,9,E07 Sutardja Dai Hall/Yali's 2,001 Berkeley Way (Offsite),815.05,6.93,5.06
+29,10,E07 Sutardja Dai Hall/Yali's 2,W11 Moffitt Library @ Press,316.8,2.7,1.97
+29,11,E07 Sutardja Dai Hall/Yali's 2,Bechtel East,555.01,4.72,3.45
+29,12,E07 Sutardja Dai Hall/Yali's 2,W13 Recreational Sport Facility (LF),1558.88,13.27,9.69
+29,13,E07 Sutardja Dai Hall/Yali's 2,E25 Cronk Gate,971.9,8.27,6.04
+29,14,E07 Sutardja Dai Hall/Yali's 2,W02 Crescent,767.66,6.53,4.77
+29,15,E07 Sutardja Dai Hall/Yali's 2,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+29,16,E07 Sutardja Dai Hall/Yali's 2,E29 Campanile East,469.23,4.0,2.92
+29,17,E07 Sutardja Dai Hall/Yali's 2,E16 Campanile,627.95,5.34,3.9
+29,18,E07 Sutardja Dai Hall/Yali's 2,U09 MLK Ramp,1737.06,14.77,10.79
+29,19,E07 Sutardja Dai Hall/Yali's 2,E13 Stanley Hall,621.29,5.28,3.86
+29,20,E07 Sutardja Dai Hall/Yali's 2,U27 Anthony Hall,1993.36,16.96,12.39
+29,21,E07 Sutardja Dai Hall/Yali's 2,E15 Bancroft Library,352.63,3.0,2.19
+29,22,E07 Sutardja Dai Hall/Yali's 2,U05 Cesar Chavez,1504.76,12.8,9.35
+29,23,E07 Sutardja Dai Hall/Yali's 2,U17 Dwinelle Plaza Entry,1482.91,12.61,9.21
+29,24,E07 Sutardja Dai Hall/Yali's 2,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+29,25,E07 Sutardja Dai Hall/Yali's 2,W12 VLSB/Campanile Way,1388.08,11.81,8.63
+29,26,E07 Sutardja Dai Hall/Yali's 2,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+29,27,E07 Sutardja Dai Hall/Yali's 2,E05 V&A Cafe/Etcheverry,224.95,1.92,1.4
+29,28,E07 Sutardja Dai Hall/Yali's 2,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+29,29,E07 Sutardja Dai Hall/Yali's 2,E07 Sutardja Dai Hall/Yali's 2,0.0,0.0,0.0
+29,30,E07 Sutardja Dai Hall/Yali's 2,U07 Cal Book Store,1746.04,14.85,10.85
+29,31,E07 Sutardja Dai Hall/Yali's 2,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+29,32,E07 Sutardja Dai Hall/Yali's 2,E03 University Library,352.63,3.0,2.19
+29,33,E07 Sutardja Dai Hall/Yali's 2,U33 Spieker Plaza,1631.86,13.88,10.14
+29,34,E07 Sutardja Dai Hall/Yali's 2,W17 Mulford Hall,743.17,6.32,4.62
+29,35,E07 Sutardja Dai Hall/Yali's 2,W16 VLSB Northside,422.58,3.6,2.63
+29,36,E07 Sutardja Dai Hall/Yali's 2,U28 Wheeler,572.07,4.86,3.55
+29,37,E07 Sutardja Dai Hall/Yali's 2,E30 Tan Hall North Side,551.04,4.68,3.42
+29,38,E07 Sutardja Dai Hall/Yali's 2,Hearst Gym Annex,1715.98,14.59,10.66
+29,39,E07 Sutardja Dai Hall/Yali's 2,U03 Grade Street,1504.76,12.8,9.35
+29,40,E07 Sutardja Dai Hall/Yali's 2,U26 A&E Sproul,2172.07,18.48,13.5
+29,41,E07 Sutardja Dai Hall/Yali's 2,W06 West Circle,612.42,5.22,3.81
+30,0,U07 Cal Book Store,DEPOT,1567.33,13.33,9.74
+30,1,U07 Cal Book Store,W08 University Drive,1249.4,10.62,7.76
+30,2,U07 Cal Book Store,E19 South Path Drive,1324.83,11.27,8.23
+30,3,U07 Cal Book Store,W18 Campanile Way West Entrance,988.06,8.41,6.14
+30,4,U07 Cal Book Store,E14 Physics,1520.27,12.94,9.45
+30,5,U07 Cal Book Store,E14 Physics,1520.27,12.94,9.45
+30,6,U07 Cal Book Store,U16 Durant Hall,1231.49,10.47,7.65
+30,7,U07 Cal Book Store,W11 Moffitt Library @ Press,1429.24,12.16,8.88
+30,8,U07 Cal Book Store,Bechtel East,1486.21,12.64,9.23
+30,9,U07 Cal Book Store,001 Berkeley Way (Offsite),1316.15,11.2,8.18
+30,10,U07 Cal Book Store,W11 Moffitt Library @ Press,1429.24,12.16,8.88
+30,11,U07 Cal Book Store,Bechtel East,1486.21,12.64,9.23
+30,12,U07 Cal Book Store,W13 Recreational Sport Facility (LF),187.15,1.59,1.16
+30,13,U07 Cal Book Store,E25 Cronk Gate,951.44,8.09,5.91
+30,14,U07 Cal Book Store,W02 Crescent,993.27,8.45,6.17
+30,15,U07 Cal Book Store,E06 Sutardja Dali Hall/Yali's 1,1746.04,14.85,10.85
+30,16,U07 Cal Book Store,E29 Campanile East,1567.33,13.33,9.74
+30,17,U07 Cal Book Store,E16 Campanile,1442.81,12.28,8.97
+30,18,U07 Cal Book Store,U09 MLK Ramp,117.8,1.0,0.73
+30,19,U07 Cal Book Store,E13 Stanley Hall,1435.85,12.21,8.92
+30,20,U07 Cal Book Store,U27 Anthony Hall,395.25,3.37,2.46
+30,21,U07 Cal Book Store,E15 Bancroft Library,1570.71,13.36,9.76
+30,22,U07 Cal Book Store,U05 Cesar Chavez,1282.14,10.91,7.97
+30,23,U07 Cal Book Store,U17 Dwinelle Plaza Entry,1260.29,10.72,7.83
+30,24,U07 Cal Book Store,E02 North Entrance Memorial Glade,1529.13,13.01,9.5
+30,25,U07 Cal Book Store,W12 VLSB/Campanile Way,1165.46,9.91,7.24
+30,26,U07 Cal Book Store,E02 North Entrance Memorial Glade,1529.13,13.01,9.5
+30,27,U07 Cal Book Store,E05 V&A Cafe/Etcheverry,1725.13,14.68,10.72
+30,28,U07 Cal Book Store,E02 North Entrance Memorial Glade,1529.13,13.01,9.5
+30,29,U07 Cal Book Store,E07 Sutardja Dai Hall/Yali's 2,1746.04,14.85,10.85
+30,30,U07 Cal Book Store,U07 Cal Book Store,0.0,0.0,0.0
+30,31,U07 Cal Book Store,E06 Sutardja Dali Hall/Yali's 1,1746.04,14.85,10.85
+30,32,U07 Cal Book Store,E03 University Library,1570.71,13.36,9.76
+30,33,U07 Cal Book Store,U33 Spieker Plaza,114.18,0.97,0.71
+30,34,U07 Cal Book Store,W17 Mulford Hall,1239.86,10.54,7.7
+30,35,U07 Cal Book Store,W16 VLSB Northside,1323.46,11.25,8.22
+30,36,U07 Cal Book Store,U28 Wheeler,1552.32,13.21,9.65
+30,37,U07 Cal Book Store,E30 Tan Hall North Side,1372.3,11.68,8.53
+30,38,U07 Cal Book Store,Hearst Gym Annex,207.36,1.77,1.29
+30,39,U07 Cal Book Store,U03 Grade Street,1282.14,10.91,7.97
+30,40,U07 Cal Book Store,U26 A&E Sproul,573.96,4.89,3.57
+30,41,U07 Cal Book Store,W06 West Circle,1133.62,9.64,7.04
+31,0,E06 Sutardja Dali Hall/Yali's 1,DEPOT,469.23,4.0,2.92
+31,1,E06 Sutardja Dali Hall/Yali's 1,W08 University Drive,496.64,4.23,3.09
+31,2,E06 Sutardja Dali Hall/Yali's 1,E19 South Path Drive,646.5,5.5,4.02
+31,3,E06 Sutardja Dali Hall/Yali's 1,W18 Campanile Way West Entrance,1210.68,10.29,7.52
+31,4,E06 Sutardja Dali Hall/Yali's 1,E14 Physics,445.12,3.79,2.77
+31,5,E06 Sutardja Dali Hall/Yali's 1,E14 Physics,445.12,3.79,2.77
+31,6,E06 Sutardja Dali Hall/Yali's 1,U16 Durant Hall,1454.11,12.38,9.04
+31,7,E06 Sutardja Dali Hall/Yali's 1,W11 Moffitt Library @ Press,316.8,2.7,1.97
+31,8,E06 Sutardja Dali Hall/Yali's 1,Bechtel East,555.01,4.72,3.45
+31,9,E06 Sutardja Dali Hall/Yali's 1,001 Berkeley Way (Offsite),815.05,6.93,5.06
+31,10,E06 Sutardja Dali Hall/Yali's 1,W11 Moffitt Library @ Press,316.8,2.7,1.97
+31,11,E06 Sutardja Dali Hall/Yali's 1,Bechtel East,555.01,4.72,3.45
+31,12,E06 Sutardja Dali Hall/Yali's 1,W13 Recreational Sport Facility (LF),1558.88,13.27,9.69
+31,13,E06 Sutardja Dali Hall/Yali's 1,E25 Cronk Gate,971.9,8.27,6.04
+31,14,E06 Sutardja Dali Hall/Yali's 1,W02 Crescent,767.66,6.53,4.77
+31,15,E06 Sutardja Dali Hall/Yali's 1,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+31,16,E06 Sutardja Dali Hall/Yali's 1,E29 Campanile East,469.23,4.0,2.92
+31,17,E06 Sutardja Dali Hall/Yali's 1,E16 Campanile,627.95,5.34,3.9
+31,18,E06 Sutardja Dali Hall/Yali's 1,U09 MLK Ramp,1737.06,14.77,10.79
+31,19,E06 Sutardja Dali Hall/Yali's 1,E13 Stanley Hall,621.29,5.28,3.86
+31,20,E06 Sutardja Dali Hall/Yali's 1,U27 Anthony Hall,1993.36,16.96,12.39
+31,21,E06 Sutardja Dali Hall/Yali's 1,E15 Bancroft Library,352.63,3.0,2.19
+31,22,E06 Sutardja Dali Hall/Yali's 1,U05 Cesar Chavez,1504.76,12.8,9.35
+31,23,E06 Sutardja Dali Hall/Yali's 1,U17 Dwinelle Plaza Entry,1482.91,12.61,9.21
+31,24,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+31,25,E06 Sutardja Dali Hall/Yali's 1,W12 VLSB/Campanile Way,1388.08,11.81,8.63
+31,26,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+31,27,E06 Sutardja Dali Hall/Yali's 1,E05 V&A Cafe/Etcheverry,224.95,1.92,1.4
+31,28,E06 Sutardja Dali Hall/Yali's 1,E02 North Entrance Memorial Glade,216.91,1.85,1.35
+31,29,E06 Sutardja Dali Hall/Yali's 1,E07 Sutardja Dai Hall/Yali's 2,0.0,0.0,0.0
+31,30,E06 Sutardja Dali Hall/Yali's 1,U07 Cal Book Store,1746.04,14.85,10.85
+31,31,E06 Sutardja Dali Hall/Yali's 1,E06 Sutardja Dali Hall/Yali's 1,0.0,0.0,0.0
+31,32,E06 Sutardja Dali Hall/Yali's 1,E03 University Library,352.63,3.0,2.19
+31,33,E06 Sutardja Dali Hall/Yali's 1,U33 Spieker Plaza,1631.86,13.88,10.14
+31,34,E06 Sutardja Dali Hall/Yali's 1,W17 Mulford Hall,743.17,6.32,4.62
+31,35,E06 Sutardja Dali Hall/Yali's 1,W16 VLSB Northside,422.58,3.6,2.63
+31,36,E06 Sutardja Dali Hall/Yali's 1,U28 Wheeler,572.07,4.86,3.55
+31,37,E06 Sutardja Dali Hall/Yali's 1,E30 Tan Hall North Side,551.04,4.68,3.42
+31,38,E06 Sutardja Dali Hall/Yali's 1,Hearst Gym Annex,1715.98,14.59,10.66
+31,39,E06 Sutardja Dali Hall/Yali's 1,U03 Grade Street,1504.76,12.8,9.35
+31,40,E06 Sutardja Dali Hall/Yali's 1,U26 A&E Sproul,2172.07,18.48,13.5
+31,41,E06 Sutardja Dali Hall/Yali's 1,W06 West Circle,612.42,5.22,3.81
+32,0,E03 University Library,DEPOT,116.6,0.99,0.72
+32,1,E03 University Library,W08 University Drive,415.45,3.53,2.58
+32,2,E03 University Library,E19 South Path Drive,293.87,2.51,1.83
+32,3,E03 University Library,W18 Campanile Way West Entrance,1129.49,9.61,7.02
+32,4,E03 University Library,E14 Physics,92.49,0.78,0.57
+32,5,E03 University Library,E14 Physics,92.49,0.78,0.57
+32,6,E03 University Library,U16 Durant Hall,1372.92,11.68,8.53
+32,7,E03 University Library,W11 Moffitt Library @ Press,235.61,2.0,1.46
+32,8,E03 University Library,Bechtel East,202.38,1.72,1.26
+32,9,E03 University Library,001 Berkeley Way (Offsite),1007.45,8.57,6.26
+32,10,E03 University Library,W11 Moffitt Library @ Press,235.61,2.0,1.46
+32,11,E03 University Library,Bechtel East,202.38,1.72,1.26
+32,12,E03 University Library,W13 Recreational Sport Facility (LF),1477.69,12.57,9.18
+32,13,E03 University Library,E25 Cronk Gate,619.27,5.27,3.85
+32,14,E03 University Library,W02 Crescent,686.47,5.85,4.27
+32,15,E03 University Library,E06 Sutardja Dali Hall/Yali's 1,352.63,3.0,2.19
+32,16,E03 University Library,E29 Campanile East,116.6,0.99,0.72
+32,17,E03 University Library,E16 Campanile,275.31,2.34,1.71
+32,18,E03 University Library,U09 MLK Ramp,1655.88,14.09,10.29
+32,19,E03 University Library,E13 Stanley Hall,268.66,2.29,1.67
+32,20,E03 University Library,U27 Anthony Hall,1640.73,13.96,10.2
+32,21,E03 University Library,E15 Bancroft Library,0.0,0.0,0.0
+32,22,E03 University Library,U05 Cesar Chavez,1423.57,12.12,8.85
+32,23,E03 University Library,U17 Dwinelle Plaza Entry,1401.72,11.92,8.71
+32,24,E03 University Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+32,25,E03 University Library,W12 VLSB/Campanile Way,1306.89,11.12,8.12
+32,26,E03 University Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+32,27,E03 University Library,E05 V&A Cafe/Etcheverry,417.35,3.55,2.59
+32,28,E03 University Library,E02 North Entrance Memorial Glade,135.72,1.15,0.84
+32,29,E03 University Library,E07 Sutardja Dai Hall/Yali's 2,352.63,3.0,2.19
+32,30,E03 University Library,U07 Cal Book Store,1570.71,13.36,9.76
+32,31,E03 University Library,E06 Sutardja Dali Hall/Yali's 1,352.63,3.0,2.19
+32,32,E03 University Library,E03 University Library,0.0,0.0,0.0
+32,33,E03 University Library,U33 Spieker Plaza,1550.67,13.2,9.64
+32,34,E03 University Library,W17 Mulford Hall,661.99,5.63,4.11
+32,35,E03 University Library,W16 VLSB Northside,341.39,2.9,2.12
+32,36,E03 University Library,U28 Wheeler,219.43,1.86,1.36
+32,37,E03 University Library,E30 Tan Hall North Side,198.41,1.68,1.23
+32,38,E03 University Library,Hearst Gym Annex,1363.35,11.6,8.47
+32,39,E03 University Library,U03 Grade Street,1423.57,12.12,8.85
+32,40,E03 University Library,U26 A&E Sproul,1819.44,15.48,11.31
+32,41,E03 University Library,W06 West Circle,531.23,4.52,3.3
+33,0,U33 Spieker Plaza,DEPOT,1667.27,14.18,10.36
+33,1,U33 Spieker Plaza,W08 University Drive,1135.22,9.65,7.05
+33,2,U33 Spieker Plaza,E19 South Path Drive,1439.01,12.24,8.94
+33,3,U33 Spieker Plaza,W18 Campanile Way West Entrance,873.89,7.43,5.43
+33,4,U33 Spieker Plaza,E14 Physics,1634.45,13.91,10.16
+33,5,U33 Spieker Plaza,E14 Physics,1634.45,13.91,10.16
+33,6,U33 Spieker Plaza,U16 Durant Hall,1117.31,9.5,6.94
+33,7,U33 Spieker Plaza,W11 Moffitt Library @ Press,1315.06,11.18,8.17
+33,8,U33 Spieker Plaza,Bechtel East,1600.39,13.61,9.94
+33,9,U33 Spieker Plaza,001 Berkeley Way (Offsite),1201.97,10.23,7.47
+33,10,U33 Spieker Plaza,W11 Moffitt Library @ Press,1315.06,11.18,8.17
+33,11,U33 Spieker Plaza,Bechtel East,1600.39,13.61,9.94
+33,12,U33 Spieker Plaza,W13 Recreational Sport Facility (LF),72.98,0.62,0.45
+33,13,U33 Spieker Plaza,E25 Cronk Gate,1065.62,9.06,6.62
+33,14,U33 Spieker Plaza,W02 Crescent,879.09,7.47,5.46
+33,15,U33 Spieker Plaza,E06 Sutardja Dali Hall/Yali's 1,1631.86,13.88,10.14
+33,16,U33 Spieker Plaza,E29 Campanile East,1667.27,14.18,10.36
+33,17,U33 Spieker Plaza,E16 Campanile,1556.99,13.24,9.67
+33,18,U33 Spieker Plaza,U09 MLK Ramp,105.2,0.89,0.65
+33,19,U33 Spieker Plaza,E13 Stanley Hall,1550.03,13.18,9.63
+33,20,U33 Spieker Plaza,U27 Anthony Hall,509.43,4.34,3.17
+33,21,U33 Spieker Plaza,E15 Bancroft Library,1550.67,13.2,9.64
+33,22,U33 Spieker Plaza,U05 Cesar Chavez,1167.96,9.94,7.26
+33,23,U33 Spieker Plaza,U17 Dwinelle Plaza Entry,1146.11,9.75,7.12
+33,24,U33 Spieker Plaza,E02 North Entrance Memorial Glade,1414.95,12.03,8.79
+33,25,U33 Spieker Plaza,W12 VLSB/Campanile Way,1051.28,8.94,6.53
+33,26,U33 Spieker Plaza,E02 North Entrance Memorial Glade,1414.95,12.03,8.79
+33,27,U33 Spieker Plaza,E05 V&A Cafe/Etcheverry,1610.96,13.7,10.01
+33,28,U33 Spieker Plaza,E02 North Entrance Memorial Glade,1414.95,12.03,8.79
+33,29,U33 Spieker Plaza,E07 Sutardja Dai Hall/Yali's 2,1631.86,13.88,10.14
+33,30,U33 Spieker Plaza,U07 Cal Book Store,114.18,0.97,0.71
+33,31,U33 Spieker Plaza,E06 Sutardja Dali Hall/Yali's 1,1631.86,13.88,10.14
+33,32,U33 Spieker Plaza,E03 University Library,1550.67,13.2,9.64
+33,33,U33 Spieker Plaza,U33 Spieker Plaza,0.0,0.0,0.0
+33,34,U33 Spieker Plaza,W17 Mulford Hall,1125.68,9.57,6.99
+33,35,U33 Spieker Plaza,W16 VLSB Northside,1209.28,10.28,7.51
+33,36,U33 Spieker Plaza,U28 Wheeler,1666.5,14.18,10.36
+33,37,U33 Spieker Plaza,E30 Tan Hall North Side,1486.47,12.65,9.24
+33,38,U33 Spieker Plaza,Hearst Gym Annex,321.54,2.74,2.0
+33,39,U33 Spieker Plaza,U03 Grade Street,1167.96,9.94,7.26
+33,40,U33 Spieker Plaza,U26 A&E Sproul,688.13,5.86,4.28
+33,41,U33 Spieker Plaza,W06 West Circle,1019.44,8.67,6.33
+34,0,W17 Mulford Hall,DEPOT,778.58,6.63,4.84
+34,1,W17 Mulford Hall,W08 University Drive,246.53,2.09,1.53
+34,2,W17 Mulford Hall,E19 South Path Drive,955.86,8.13,5.94
+34,3,W17 Mulford Hall,W18 Campanile Way West Entrance,704.5,6.0,4.38
+34,4,W17 Mulford Hall,E14 Physics,754.48,6.42,4.69
+34,5,W17 Mulford Hall,E14 Physics,754.48,6.42,4.69
+34,6,W17 Mulford Hall,U16 Durant Hall,947.93,8.06,5.89
+34,7,W17 Mulford Hall,W11 Moffitt Library @ Press,426.38,3.63,2.65
+34,8,W17 Mulford Hall,Bechtel East,864.36,7.35,5.37
+34,9,W17 Mulford Hall,001 Berkeley Way (Offsite),670.58,5.71,4.17
+34,10,W17 Mulford Hall,W11 Moffitt Library @ Press,426.38,3.63,2.65
+34,11,W17 Mulford Hall,Bechtel East,864.36,7.35,5.37
+34,12,W17 Mulford Hall,W13 Recreational Sport Facility (LF),1052.7,8.95,6.54
+34,13,W17 Mulford Hall,E25 Cronk Gate,1281.25,10.9,7.96
+34,14,W17 Mulford Hall,W02 Crescent,261.48,2.22,1.62
+34,15,W17 Mulford Hall,E06 Sutardja Dali Hall/Yali's 1,743.17,6.32,4.62
+34,16,W17 Mulford Hall,E29 Campanile East,778.58,6.63,4.84
+34,17,W17 Mulford Hall,E16 Campanile,937.3,7.97,5.82
+34,18,W17 Mulford Hall,U09 MLK Ramp,1230.88,10.47,7.65
+34,19,W17 Mulford Hall,E13 Stanley Hall,930.64,7.91,5.78
+34,20,W17 Mulford Hall,U27 Anthony Hall,1635.11,13.91,10.16
+34,21,W17 Mulford Hall,E15 Bancroft Library,661.99,5.63,4.11
+34,22,W17 Mulford Hall,U05 Cesar Chavez,998.58,8.49,6.2
+34,23,W17 Mulford Hall,U17 Dwinelle Plaza Entry,976.73,8.31,6.07
+34,24,W17 Mulford Hall,E02 North Entrance Memorial Glade,526.26,4.48,3.27
+34,25,W17 Mulford Hall,W12 VLSB/Campanile Way,881.9,7.5,5.48
+34,26,W17 Mulford Hall,E02 North Entrance Memorial Glade,526.26,4.48,3.27
+34,27,W17 Mulford Hall,E05 V&A Cafe/Etcheverry,722.27,6.15,4.49
+34,28,W17 Mulford Hall,E02 North Entrance Memorial Glade,526.26,4.48,3.27
+34,29,W17 Mulford Hall,E07 Sutardja Dai Hall/Yali's 2,743.17,6.32,4.62
+34,30,W17 Mulford Hall,U07 Cal Book Store,1239.86,10.54,7.7
+34,31,W17 Mulford Hall,E06 Sutardja Dali Hall/Yali's 1,743.17,6.32,4.62
+34,32,W17 Mulford Hall,E03 University Library,661.99,5.63,4.11
+34,33,W17 Mulford Hall,U33 Spieker Plaza,1125.68,9.57,6.99
+34,34,W17 Mulford Hall,W17 Mulford Hall,0.0,0.0,0.0
+34,35,W17 Mulford Hall,W16 VLSB Northside,320.6,2.72,1.99
+34,36,W17 Mulford Hall,U28 Wheeler,881.42,7.5,5.48
+34,37,W17 Mulford Hall,E30 Tan Hall North Side,860.4,7.32,5.35
+34,38,W17 Mulford Hall,Hearst Gym Annex,1447.22,12.31,8.99
+34,39,W17 Mulford Hall,U03 Grade Street,998.58,8.49,6.2
+34,40,W17 Mulford Hall,U26 A&E Sproul,1813.81,15.43,11.27
+34,41,W17 Mulford Hall,W06 West Circle,130.76,1.11,0.81
+35,0,W16 VLSB Northside,DEPOT,457.99,3.9,2.85
+35,1,W16 VLSB Northside,W08 University Drive,74.06,0.63,0.46
+35,2,W16 VLSB Northside,E19 South Path Drive,635.26,5.41,3.95
+35,3,W16 VLSB Northside,W18 Campanile Way West Entrance,788.11,6.71,4.9
+35,4,W16 VLSB Northside,E14 Physics,433.88,3.7,2.7
+35,5,W16 VLSB Northside,E14 Physics,433.88,3.7,2.7
+35,6,W16 VLSB Northside,U16 Durant Hall,1031.53,8.78,6.41
+35,7,W16 VLSB Northside,W11 Moffitt Library @ Press,105.78,0.9,0.66
+35,8,W16 VLSB Northside,Bechtel East,543.76,4.63,3.38
+35,9,W16 VLSB Northside,001 Berkeley Way (Offsite),718.09,6.11,4.46
+35,10,W16 VLSB Northside,W11 Moffitt Library @ Press,105.78,0.9,0.66
+35,11,W16 VLSB Northside,Bechtel East,543.76,4.63,3.38
+35,12,W16 VLSB Northside,W13 Recreational Sport Facility (LF),1136.31,9.66,7.06
+35,13,W16 VLSB Northside,E25 Cronk Gate,960.65,8.17,5.97
+35,14,W16 VLSB Northside,W02 Crescent,345.09,2.93,2.14
+35,15,W16 VLSB Northside,E06 Sutardja Dali Hall/Yali's 1,422.58,3.6,2.63
+35,16,W16 VLSB Northside,E29 Campanile East,457.99,3.9,2.85
+35,17,W16 VLSB Northside,E16 Campanile,616.7,5.24,3.83
+35,18,W16 VLSB Northside,U09 MLK Ramp,1314.49,11.18,8.17
+35,19,W16 VLSB Northside,E13 Stanley Hall,610.04,5.19,3.79
+35,20,W16 VLSB Northside,U27 Anthony Hall,1718.71,14.62,10.68
+35,21,W16 VLSB Northside,E15 Bancroft Library,341.39,2.9,2.12
+35,22,W16 VLSB Northside,U05 Cesar Chavez,1082.18,9.2,6.72
+35,23,W16 VLSB Northside,U17 Dwinelle Plaza Entry,1060.33,9.02,6.59
+35,24,W16 VLSB Northside,E02 North Entrance Memorial Glade,205.67,1.75,1.28
+35,25,W16 VLSB Northside,W12 VLSB/Campanile Way,965.5,8.21,6.0
+35,26,W16 VLSB Northside,E02 North Entrance Memorial Glade,205.67,1.75,1.28
+35,27,W16 VLSB Northside,E05 V&A Cafe/Etcheverry,401.67,3.42,2.5
+35,28,W16 VLSB Northside,E02 North Entrance Memorial Glade,205.67,1.75,1.28
+35,29,W16 VLSB Northside,E07 Sutardja Dai Hall/Yali's 2,422.58,3.6,2.63
+35,30,W16 VLSB Northside,U07 Cal Book Store,1323.46,11.25,8.22
+35,31,W16 VLSB Northside,E06 Sutardja Dali Hall/Yali's 1,422.58,3.6,2.63
+35,32,W16 VLSB Northside,E03 University Library,341.39,2.9,2.12
+35,33,W16 VLSB Northside,U33 Spieker Plaza,1209.28,10.28,7.51
+35,34,W16 VLSB Northside,W17 Mulford Hall,320.6,2.72,1.99
+35,35,W16 VLSB Northside,W16 VLSB Northside,0.0,0.0,0.0
+35,36,W16 VLSB Northside,U28 Wheeler,560.82,4.76,3.48
+35,37,W16 VLSB Northside,E30 Tan Hall North Side,539.8,4.59,3.35
+35,38,W16 VLSB Northside,Hearst Gym Annex,1530.82,13.02,9.51
+35,39,W16 VLSB Northside,U03 Grade Street,1082.18,9.2,6.72
+35,40,W16 VLSB Northside,U26 A&E Sproul,1897.42,16.14,11.79
+35,41,W16 VLSB Northside,W06 West Circle,189.84,1.62,1.18
+36,0,U28 Wheeler,DEPOT,102.83,0.88,0.64
+36,1,U28 Wheeler,W08 University Drive,634.88,5.39,3.94
+36,2,U28 Wheeler,E19 South Path Drive,227.49,1.93,1.41
+36,3,U28 Wheeler,W18 Campanile Way West Entrance,1348.93,11.47,8.38
+36,4,U28 Wheeler,E14 Physics,311.92,2.66,1.94
+36,5,U28 Wheeler,E14 Physics,311.92,2.66,1.94
+36,6,U28 Wheeler,U16 Durant Hall,1592.35,13.54,9.89
+36,7,U28 Wheeler,W11 Moffitt Library @ Press,455.04,3.87,2.83
+36,8,U28 Wheeler,Bechtel East,421.81,3.59,2.62
+36,9,U28 Wheeler,001 Berkeley Way (Offsite),1226.88,10.43,7.62
+36,10,U28 Wheeler,W11 Moffitt Library @ Press,455.04,3.87,2.83
+36,11,U28 Wheeler,Bechtel East,421.81,3.59,2.62
+36,12,U28 Wheeler,W13 Recreational Sport Facility (LF),1697.13,14.44,10.55
+36,13,U28 Wheeler,E25 Cronk Gate,600.88,5.11,3.73
+36,14,U28 Wheeler,W02 Crescent,905.91,7.71,5.63
+36,15,U28 Wheeler,E06 Sutardja Dali Hall/Yali's 1,572.07,4.86,3.55
+36,16,U28 Wheeler,E29 Campanile East,102.83,0.88,0.64
+36,17,U28 Wheeler,E16 Campanile,143.71,1.22,0.89
+36,18,U28 Wheeler,U09 MLK Ramp,1670.12,14.21,10.38
+36,19,U28 Wheeler,E13 Stanley Hall,447.13,3.81,2.78
+36,20,U28 Wheeler,U27 Anthony Hall,1622.34,13.8,10.08
+36,21,U28 Wheeler,E15 Bancroft Library,219.43,1.86,1.36
+36,22,U28 Wheeler,U05 Cesar Chavez,1643.0,13.98,10.21
+36,23,U28 Wheeler,U17 Dwinelle Plaza Entry,1621.15,13.79,10.07
+36,24,U28 Wheeler,E02 North Entrance Memorial Glade,355.16,3.03,2.21
+36,25,U28 Wheeler,W12 VLSB/Campanile Way,1526.32,12.98,9.48
+36,26,U28 Wheeler,E02 North Entrance Memorial Glade,355.16,3.03,2.21
+36,27,U28 Wheeler,E05 V&A Cafe/Etcheverry,636.78,5.42,3.96
+36,28,U28 Wheeler,E02 North Entrance Memorial Glade,355.16,3.03,2.21
+36,29,U28 Wheeler,E07 Sutardja Dai Hall/Yali's 2,572.07,4.86,3.55
+36,30,U28 Wheeler,U07 Cal Book Store,1552.32,13.21,9.65
+36,31,U28 Wheeler,E06 Sutardja Dali Hall/Yali's 1,572.07,4.86,3.55
+36,32,U28 Wheeler,E03 University Library,219.43,1.86,1.36
+36,33,U28 Wheeler,U33 Spieker Plaza,1666.5,14.18,10.36
+36,34,U28 Wheeler,W17 Mulford Hall,881.42,7.5,5.48
+36,35,U28 Wheeler,W16 VLSB Northside,560.82,4.76,3.48
+36,36,U28 Wheeler,U28 Wheeler,0.0,0.0,0.0
+36,37,U28 Wheeler,E30 Tan Hall North Side,376.88,3.2,2.34
+36,38,U28 Wheeler,Hearst Gym Annex,1344.96,11.44,8.36
+36,39,U28 Wheeler,U03 Grade Street,1643.0,13.98,10.21
+36,40,U28 Wheeler,U26 A&E Sproul,1801.05,15.32,11.19
+36,41,U28 Wheeler,W06 West Circle,750.66,6.38,4.66
+37,0,E30 Tan Hall North Side,DEPOT,315.01,2.68,1.96
+37,1,E30 Tan Hall North Side,W08 University Drive,613.86,5.22,3.81
+37,2,E30 Tan Hall North Side,E19 South Path Drive,149.39,1.27,0.93
+37,3,E30 Tan Hall North Side,W18 Campanile Way West Entrance,1327.91,11.29,8.25
+37,4,E30 Tan Hall North Side,E14 Physics,147.97,1.26,0.92
+37,5,E30 Tan Hall North Side,E14 Physics,147.97,1.26,0.92
+37,6,E30 Tan Hall North Side,U16 Durant Hall,1571.33,13.36,9.76
+37,7,E30 Tan Hall North Side,W11 Moffitt Library @ Press,434.02,3.7,2.7
+37,8,E30 Tan Hall North Side,Bechtel East,133.21,1.14,0.83
+37,9,E30 Tan Hall North Side,001 Berkeley Way (Offsite),1205.86,10.25,7.49
+37,10,E30 Tan Hall North Side,W11 Moffitt Library @ Press,434.02,3.7,2.7
+37,11,E30 Tan Hall North Side,Bechtel East,133.21,1.14,0.83
+37,12,E30 Tan Hall North Side,W13 Recreational Sport Facility (LF),1559.45,13.27,9.69
+37,13,E30 Tan Hall North Side,E25 Cronk Gate,420.86,3.59,2.62
+37,14,E30 Tan Hall North Side,W02 Crescent,884.88,7.53,5.5
+37,15,E30 Tan Hall North Side,E06 Sutardja Dali Hall/Yali's 1,551.04,4.68,3.42
+37,16,E30 Tan Hall North Side,E29 Campanile East,315.01,2.68,1.96
+37,17,E30 Tan Hall North Side,E16 Campanile,267.37,2.27,1.66
+37,18,E30 Tan Hall North Side,U09 MLK Ramp,1490.1,12.68,9.26
+37,19,E30 Tan Hall North Side,E13 Stanley Hall,82.85,0.7,0.51
+37,20,E30 Tan Hall North Side,U27 Anthony Hall,1442.32,12.27,8.96
+37,21,E30 Tan Hall North Side,E15 Bancroft Library,198.41,1.68,1.23
+37,22,E30 Tan Hall North Side,U05 Cesar Chavez,1621.98,13.8,10.08
+37,23,E30 Tan Hall North Side,U17 Dwinelle Plaza Entry,1600.13,13.61,9.94
+37,24,E30 Tan Hall North Side,E02 North Entrance Memorial Glade,334.13,2.85,2.08
+37,25,E30 Tan Hall North Side,W12 VLSB/Campanile Way,1505.3,12.8,9.35
+37,26,E30 Tan Hall North Side,E02 North Entrance Memorial Glade,334.13,2.85,2.08
+37,27,E30 Tan Hall North Side,E05 V&A Cafe/Etcheverry,567.57,4.83,3.53
+37,28,E30 Tan Hall North Side,E02 North Entrance Memorial Glade,334.13,2.85,2.08
+37,29,E30 Tan Hall North Side,E07 Sutardja Dai Hall/Yali's 2,551.04,4.68,3.42
+37,30,E30 Tan Hall North Side,U07 Cal Book Store,1372.3,11.68,8.53
+37,31,E30 Tan Hall North Side,E06 Sutardja Dali Hall/Yali's 1,551.04,4.68,3.42
+37,32,E30 Tan Hall North Side,E03 University Library,198.41,1.68,1.23
+37,33,E30 Tan Hall North Side,U33 Spieker Plaza,1486.47,12.65,9.24
+37,34,E30 Tan Hall North Side,W17 Mulford Hall,860.4,7.32,5.35
+37,35,E30 Tan Hall North Side,W16 VLSB Northside,539.8,4.59,3.35
+37,36,E30 Tan Hall North Side,U28 Wheeler,376.88,3.2,2.34
+37,37,E30 Tan Hall North Side,E30 Tan Hall North Side,0.0,0.0,0.0
+37,38,E30 Tan Hall North Side,Hearst Gym Annex,1164.94,9.91,7.24
+37,39,E30 Tan Hall North Side,U03 Grade Street,1621.98,13.8,10.08
+37,40,E30 Tan Hall North Side,U26 A&E Sproul,1621.03,13.79,10.07
+37,41,E30 Tan Hall North Side,W06 West Circle,729.64,6.2,4.53
+38,0,Hearst Gym Annex,DEPOT,1359.97,11.57,8.45
+38,1,Hearst Gym Annex,W08 University Drive,1456.76,12.39,9.05
+38,2,Hearst Gym Annex,E19 South Path Drive,1117.47,9.5,6.94
+38,3,Hearst Gym Annex,W18 Campanile Way West Entrance,1195.42,10.17,7.43
+38,4,Hearst Gym Annex,E14 Physics,1312.91,11.17,8.16
+38,5,Hearst Gym Annex,E14 Physics,1312.91,11.17,8.16
+38,6,Hearst Gym Annex,U16 Durant Hall,1438.85,12.24,8.94
+38,7,Hearst Gym Annex,W11 Moffitt Library @ Press,1598.96,13.61,9.94
+38,8,Hearst Gym Annex,Bechtel East,1278.85,10.88,7.95
+38,9,Hearst Gym Annex,001 Berkeley Way (Offsite),1523.51,12.96,9.47
+38,10,Hearst Gym Annex,W11 Moffitt Library @ Press,1598.96,13.61,9.94
+38,11,Hearst Gym Annex,Bechtel East,1278.85,10.88,7.95
+38,12,Hearst Gym Annex,W13 Recreational Sport Facility (LF),394.51,3.35,2.45
+38,13,Hearst Gym Annex,E25 Cronk Gate,744.08,6.32,4.62
+38,14,Hearst Gym Annex,W02 Crescent,1200.63,10.21,7.46
+38,15,Hearst Gym Annex,E06 Sutardja Dali Hall/Yali's 1,1715.98,14.59,10.66
+38,16,Hearst Gym Annex,E29 Campanile East,1359.97,11.57,8.45
+38,17,Hearst Gym Annex,E16 Campanile,1235.45,10.51,7.68
+38,18,Hearst Gym Annex,U09 MLK Ramp,325.16,2.77,2.02
+38,19,Hearst Gym Annex,E13 Stanley Hall,1228.49,10.45,7.63
+38,20,Hearst Gym Annex,U27 Anthony Hall,277.38,2.35,1.72
+38,21,Hearst Gym Annex,E15 Bancroft Library,1363.35,11.6,8.47
+38,22,Hearst Gym Annex,U05 Cesar Chavez,1489.5,12.68,9.26
+38,23,Hearst Gym Annex,U17 Dwinelle Plaza Entry,1467.65,12.48,9.12
+38,24,Hearst Gym Annex,E02 North Entrance Memorial Glade,1499.07,12.75,9.31
+38,25,Hearst Gym Annex,W12 VLSB/Campanile Way,1372.82,11.68,8.53
+38,26,Hearst Gym Annex,E02 North Entrance Memorial Glade,1499.07,12.75,9.31
+38,27,Hearst Gym Annex,E05 V&A Cafe/Etcheverry,1520.9,12.94,9.45
+38,28,Hearst Gym Annex,E02 North Entrance Memorial Glade,1499.07,12.75,9.31
+38,29,Hearst Gym Annex,E07 Sutardja Dai Hall/Yali's 2,1715.98,14.59,10.66
+38,30,Hearst Gym Annex,U07 Cal Book Store,207.36,1.77,1.29
+38,31,Hearst Gym Annex,E06 Sutardja Dali Hall/Yali's 1,1715.98,14.59,10.66
+38,32,Hearst Gym Annex,E03 University Library,1363.35,11.6,8.47
+38,33,Hearst Gym Annex,U33 Spieker Plaza,321.54,2.74,2.0
+38,34,Hearst Gym Annex,W17 Mulford Hall,1447.22,12.31,8.99
+38,35,Hearst Gym Annex,W16 VLSB Northside,1530.82,13.02,9.51
+38,36,Hearst Gym Annex,U28 Wheeler,1344.96,11.44,8.36
+38,37,Hearst Gym Annex,E30 Tan Hall North Side,1164.94,9.91,7.24
+38,38,Hearst Gym Annex,Hearst Gym Annex,0.0,0.0,0.0
+38,39,Hearst Gym Annex,U03 Grade Street,1489.5,12.68,9.26
+38,40,Hearst Gym Annex,U26 A&E Sproul,456.09,3.87,2.83
+38,41,Hearst Gym Annex,W06 West Circle,1340.98,11.4,8.33
+39,0,U03 Grade Street,DEPOT,1540.17,13.1,9.57
+39,1,U03 Grade Street,W08 University Drive,1008.12,8.57,6.26
+39,2,U03 Grade Street,E19 South Path Drive,1717.44,14.61,10.67
+39,3,U03 Grade Street,W18 Campanile Way West Entrance,294.07,2.51,1.83
+39,4,U03 Grade Street,E14 Physics,1516.06,12.9,9.42
+39,5,U03 Grade Street,E14 Physics,1516.06,12.9,9.42
+39,6,U03 Grade Street,U16 Durant Hall,50.65,0.42,0.31
+39,7,U03 Grade Street,W11 Moffitt Library @ Press,1187.96,10.1,7.38
+39,8,U03 Grade Street,Bechtel East,1625.94,13.83,10.1
+39,9,U03 Grade Street,001 Berkeley Way (Offsite),1074.87,9.14,6.68
+39,10,U03 Grade Street,W11 Moffitt Library @ Press,1187.96,10.1,7.38
+39,11,U03 Grade Street,Bechtel East,1625.94,13.83,10.1
+39,12,U03 Grade Street,W13 Recreational Sport Facility (LF),1094.98,9.31,6.8
+39,13,U03 Grade Street,E25 Cronk Gate,2042.83,17.37,12.69
+39,14,U03 Grade Street,W02 Crescent,751.99,6.39,4.67
+39,15,U03 Grade Street,E06 Sutardja Dali Hall/Yali's 1,1504.76,12.8,9.35
+39,16,U03 Grade Street,E29 Campanile East,1540.17,13.1,9.57
+39,17,U03 Grade Street,E16 Campanile,1698.88,14.46,10.56
+39,18,U03 Grade Street,U09 MLK Ramp,1273.16,10.83,7.91
+39,19,U03 Grade Street,E13 Stanley Hall,1692.22,14.39,10.51
+39,20,U03 Grade Street,U27 Anthony Hall,1677.39,14.26,10.42
+39,21,U03 Grade Street,E15 Bancroft Library,1423.57,12.12,8.85
+39,22,U03 Grade Street,U05 Cesar Chavez,0.0,0.0,0.0
+39,23,U03 Grade Street,U17 Dwinelle Plaza Entry,21.85,0.19,0.14
+39,24,U03 Grade Street,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+39,25,U03 Grade Street,W12 VLSB/Campanile Way,130.22,1.11,0.81
+39,26,U03 Grade Street,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+39,27,U03 Grade Street,E05 V&A Cafe/Etcheverry,1483.85,12.62,9.22
+39,28,U03 Grade Street,E02 North Entrance Memorial Glade,1287.84,10.95,8.0
+39,29,U03 Grade Street,E07 Sutardja Dai Hall/Yali's 2,1504.76,12.8,9.35
+39,30,U03 Grade Street,U07 Cal Book Store,1282.14,10.91,7.97
+39,31,U03 Grade Street,E06 Sutardja Dali Hall/Yali's 1,1504.76,12.8,9.35
+39,32,U03 Grade Street,E03 University Library,1423.57,12.12,8.85
+39,33,U03 Grade Street,U33 Spieker Plaza,1167.96,9.94,7.26
+39,34,U03 Grade Street,W17 Mulford Hall,998.58,8.49,6.2
+39,35,U03 Grade Street,W16 VLSB Northside,1082.18,9.2,6.72
+39,36,U03 Grade Street,U28 Wheeler,1643.0,13.98,10.21
+39,37,U03 Grade Street,E30 Tan Hall North Side,1621.98,13.8,10.08
+39,38,U03 Grade Street,Hearst Gym Annex,1489.5,12.68,9.26
+39,39,U03 Grade Street,U03 Grade Street,0.0,0.0,0.0
+39,40,U03 Grade Street,U26 A&E Sproul,1856.09,15.78,11.53
+39,41,U03 Grade Street,W06 West Circle,892.34,7.58,5.54
+40,0,U26 A&E Sproul,DEPOT,1816.05,15.44,11.28
+40,1,U26 A&E Sproul,W08 University Drive,1823.35,15.51,11.33
+40,2,U26 A&E Sproul,E19 South Path Drive,1573.56,13.39,9.78
+40,3,U26 A&E Sproul,W18 Campanile Way West Entrance,1562.02,13.29,9.71
+40,4,U26 A&E Sproul,E14 Physics,1769.0,15.04,10.99
+40,5,U26 A&E Sproul,E14 Physics,1769.0,15.04,10.99
+40,6,U26 A&E Sproul,U16 Durant Hall,1805.44,15.36,11.22
+40,7,U26 A&E Sproul,W11 Moffitt Library @ Press,2003.2,17.04,12.45
+40,8,U26 A&E Sproul,Bechtel East,1734.94,14.76,10.78
+40,9,U26 A&E Sproul,001 Berkeley Way (Offsite),1890.11,16.07,11.74
+40,10,U26 A&E Sproul,W11 Moffitt Library @ Press,2003.2,17.04,12.45
+40,11,U26 A&E Sproul,Bechtel East,1734.94,14.76,10.78
+40,12,U26 A&E Sproul,W13 Recreational Sport Facility (LF),761.11,6.48,4.73
+40,13,U26 A&E Sproul,E25 Cronk Gate,1200.17,10.21,7.46
+40,14,U26 A&E Sproul,W02 Crescent,1567.23,13.33,9.74
+40,15,U26 A&E Sproul,E06 Sutardja Dali Hall/Yali's 1,2172.07,18.48,13.5
+40,16,U26 A&E Sproul,E29 Campanile East,1816.05,15.44,11.28
+40,17,U26 A&E Sproul,E16 Campanile,1691.54,14.39,10.51
+40,18,U26 A&E Sproul,U09 MLK Ramp,691.76,5.89,4.3
+40,19,U26 A&E Sproul,E13 Stanley Hall,1684.58,14.33,10.47
+40,20,U26 A&E Sproul,U27 Anthony Hall,178.71,1.52,1.11
+40,21,U26 A&E Sproul,E15 Bancroft Library,1819.44,15.48,11.31
+40,22,U26 A&E Sproul,U05 Cesar Chavez,1856.09,15.78,11.53
+40,23,U26 A&E Sproul,U17 Dwinelle Plaza Entry,1834.25,15.61,11.4
+40,24,U26 A&E Sproul,E02 North Entrance Memorial Glade,1955.16,16.63,12.15
+40,25,U26 A&E Sproul,W12 VLSB/Campanile Way,1739.41,14.8,10.81
+40,26,U26 A&E Sproul,E02 North Entrance Memorial Glade,1955.16,16.63,12.15
+40,27,U26 A&E Sproul,E05 V&A Cafe/Etcheverry,1976.99,16.81,12.28
+40,28,U26 A&E Sproul,E02 North Entrance Memorial Glade,1955.16,16.63,12.15
+40,29,U26 A&E Sproul,E07 Sutardja Dai Hall/Yali's 2,2172.07,18.48,13.5
+40,30,U26 A&E Sproul,U07 Cal Book Store,573.96,4.89,3.57
+40,31,U26 A&E Sproul,E06 Sutardja Dali Hall/Yali's 1,2172.07,18.48,13.5
+40,32,U26 A&E Sproul,E03 University Library,1819.44,15.48,11.31
+40,33,U26 A&E Sproul,U33 Spieker Plaza,688.13,5.86,4.28
+40,34,U26 A&E Sproul,W17 Mulford Hall,1813.81,15.43,11.27
+40,35,U26 A&E Sproul,W16 VLSB Northside,1897.42,16.14,11.79
+40,36,U26 A&E Sproul,U28 Wheeler,1801.05,15.32,11.19
+40,37,U26 A&E Sproul,E30 Tan Hall North Side,1621.03,13.79,10.07
+40,38,U26 A&E Sproul,Hearst Gym Annex,456.09,3.87,2.83
+40,39,U26 A&E Sproul,U03 Grade Street,1856.09,15.78,11.53
+40,40,U26 A&E Sproul,U26 A&E Sproul,0.0,0.0,0.0
+40,41,U26 A&E Sproul,W06 West Circle,1707.58,14.52,10.61
+41,0,W06 West Circle,DEPOT,647.83,5.52,4.03
+41,1,W06 West Circle,W08 University Drive,115.78,0.99,0.72
+41,2,W06 West Circle,E19 South Path Drive,825.1,7.02,5.13
+41,3,W06 West Circle,W18 Campanile Way West Entrance,598.27,5.09,3.72
+41,4,W06 West Circle,E14 Physics,623.72,5.31,3.88
+41,5,W06 West Circle,E14 Physics,623.72,5.31,3.88
+41,6,W06 West Circle,U16 Durant Hall,841.69,7.16,5.23
+41,7,W06 West Circle,W11 Moffitt Library @ Press,295.62,2.52,1.84
+41,8,W06 West Circle,Bechtel East,733.61,6.24,4.56
+41,9,W06 West Circle,001 Berkeley Way (Offsite),564.34,4.81,3.51
+41,10,W06 West Circle,W11 Moffitt Library @ Press,295.62,2.52,1.84
+41,11,W06 West Circle,Bechtel East,733.61,6.24,4.56
+41,12,W06 West Circle,W13 Recreational Sport Facility (LF),946.46,8.05,5.88
+41,13,W06 West Circle,E25 Cronk Gate,1150.5,9.79,7.15
+41,14,W06 West Circle,W02 Crescent,155.24,1.31,0.96
+41,15,W06 West Circle,E06 Sutardja Dali Hall/Yali's 1,612.42,5.22,3.81
+41,16,W06 West Circle,E29 Campanile East,647.83,5.52,4.03
+41,17,W06 West Circle,E16 Campanile,806.54,6.86,5.01
+41,18,W06 West Circle,U09 MLK Ramp,1124.65,9.57,6.99
+41,19,W06 West Circle,E13 Stanley Hall,799.89,6.8,4.97
+41,20,W06 West Circle,U27 Anthony Hall,1528.87,13.01,9.5
+41,21,W06 West Circle,E15 Bancroft Library,531.23,4.52,3.3
+41,22,W06 West Circle,U05 Cesar Chavez,892.34,7.58,5.54
+41,23,W06 West Circle,U17 Dwinelle Plaza Entry,870.49,7.41,5.41
+41,24,W06 West Circle,E02 North Entrance Memorial Glade,395.51,3.37,2.46
+41,25,W06 West Circle,W12 VLSB/Campanile Way,775.66,6.6,4.82
+41,26,W06 West Circle,E02 North Entrance Memorial Glade,395.51,3.37,2.46
+41,27,W06 West Circle,E05 V&A Cafe/Etcheverry,591.52,5.04,3.68
+41,28,W06 West Circle,E02 North Entrance Memorial Glade,395.51,3.37,2.46
+41,29,W06 West Circle,E07 Sutardja Dai Hall/Yali's 2,612.42,5.22,3.81
+41,30,W06 West Circle,U07 Cal Book Store,1133.62,9.64,7.04
+41,31,W06 West Circle,E06 Sutardja Dali Hall/Yali's 1,612.42,5.22,3.81
+41,32,W06 West Circle,E03 University Library,531.23,4.52,3.3
+41,33,W06 West Circle,U33 Spieker Plaza,1019.44,8.67,6.33
+41,34,W06 West Circle,W17 Mulford Hall,130.76,1.11,0.81
+41,35,W06 West Circle,W16 VLSB Northside,189.84,1.62,1.18
+41,36,W06 West Circle,U28 Wheeler,750.66,6.38,4.66
+41,37,W06 West Circle,E30 Tan Hall North Side,729.64,6.2,4.53
+41,38,W06 West Circle,Hearst Gym Annex,1340.98,11.4,8.33
+41,39,W06 West Circle,U03 Grade Street,892.34,7.58,5.54
+41,40,W06 West Circle,U26 A&E Sproul,1707.58,14.52,10.61
+41,41,W06 West Circle,W06 West Circle,0.0,0.0,0.0

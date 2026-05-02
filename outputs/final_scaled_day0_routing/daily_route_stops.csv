@@ -1,0 +1,50 @@
+day,stream,truck,routing_mode,stop_order,local_node,Stop_ID,Serials_at_stop,label,is_depot,pickup_gal,pickup_lb,service_min
+0,Bottles/Cans,T2,SingleTruckRoute,1,0,,,DEPOT,1,0,0,0
+0,Bottles/Cans,T2,SingleTruckRoute,2,1,1503642,1503642,E14 Physics,0,0,0,4
+0,Bottles/Cans,T2,SingleTruckRoute,3,4,1515723,1515723,E13 Stanley Hall,0,0,0,4
+0,Bottles/Cans,T2,SingleTruckRoute,4,5,1515725,1515725,U27 Anthony Hall,0,0,0,4
+0,Bottles/Cans,T2,SingleTruckRoute,5,12,1515773,1515773,U07 Cal Book Store,0,127,38,4
+0,Bottles/Cans,T2,SingleTruckRoute,6,3,1515722,1515722,U09 MLK Ramp,0,48,14,4
+0,Bottles/Cans,T2,SingleTruckRoute,7,14,1516530,1516530,U33 Spieker Plaza,0,3,1,4
+0,Bottles/Cans,T2,SingleTruckRoute,8,8,1515739,1515739,U17 Dwinelle Plaza Entry,0,130,39,4
+0,Bottles/Cans,T2,SingleTruckRoute,9,7,1515738,1515738,U05 Cesar Chavez,0,0,0,4
+0,Bottles/Cans,T2,SingleTruckRoute,10,2,1514021,1514021,001 Berkeley Way (Offsite),0,8,3,4
+0,Bottles/Cans,T2,SingleTruckRoute,11,9,1515761,1515761,E05 V&A Cafe/Etcheverry,0,17,5,4
+0,Bottles/Cans,T2,SingleTruckRoute,12,11,1515766,1515766,E07 Sutardja Dai Hall/Yali's 2,0,5,2,4
+0,Bottles/Cans,T2,SingleTruckRoute,13,13,1515776,1515776,E06 Sutardja Dali Hall/Yali's 1,0,12,4,4
+0,Bottles/Cans,T2,SingleTruckRoute,14,10,1515765,1515765,E02 North Entrance Memorial Glade,0,57,17,4
+0,Bottles/Cans,T2,SingleTruckRoute,15,6,1515726,1515726,E15 Bancroft Library,0,0,0,4
+0,Bottles/Cans,T2,SingleTruckRoute,16,0,,,DEPOT,1,0,0,0
+0,Compostables,T3,SingleTruckRoute,1,0,,,DEPOT,1,0,0,0
+0,Compostables,T3,SingleTruckRoute,2,4,1514003,1514003,W11 Moffitt Library @ Press,0,134,161,4
+0,Compostables,T3,SingleTruckRoute,3,10,2503763,2503763,U03 Grade Street,0,30,36,4
+0,Compostables,T3,SingleTruckRoute,4,3,1514001,1514001,U16 Durant Hall,0,40,48,4
+0,Compostables,T3,SingleTruckRoute,5,1,1503614,1503614,W08 University Drive,0,90,108,4
+0,Compostables,T3,SingleTruckRoute,6,7,1515750,1515750,E02 North Entrance Memorial Glade,0,105,126,4
+0,Compostables,T3,SingleTruckRoute,7,8,1515788,1515788,E03 University Library,0,50,60,4
+0,Compostables,T3,SingleTruckRoute,8,2,1503651,1503651,E14 Physics,0,10,12,4
+0,Compostables,T3,SingleTruckRoute,9,5,1514004,1514004,Bechtel East,0,1,2,4
+0,Compostables,T3,SingleTruckRoute,10,9,1520912,1520912,E30 Tan Hall North Side,0,0,0,4
+0,Compostables,T3,SingleTruckRoute,11,6,1515716,1515716,E16 Campanile,0,40,48,4
+0,Compostables,T3,SingleTruckRoute,12,0,,,DEPOT,1,0,0,0
+0,Waste,T1,VRP,1,0,,,DEPOT,1,0,0,0
+0,Waste,T1,VRP,2,13,1515700,1515700,E06 Sutardja Dali Hall/Yali's 1,0,41,41,4
+0,Waste,T1,VRP,3,12,1515674,1515674,W02 Crescent,0,150,150,4
+0,Waste,T1,VRP,4,15,1515745,1515745,W12 VLSB/Campanile Way,0,4,4,4
+0,Waste,T1,VRP,5,9,1503633,1503633,W18 Campanile Way West Entrance,0,20,20,4
+0,Waste,T1,VRP,6,1,1514031,1514031,W13 Recreational Sport Facility (LF),0,91,91,4
+0,Waste,T1,VRP,7,17,2503767,2503767,U26 A&E Sproul,0,0,0,4
+0,Waste,T1,VRP,8,6,1520915,1520915,Hearst Gym Annex,0,87,87,4
+0,Waste,T1,VRP,9,2,1515668,1515668,E25 Cronk Gate,0,13,13,4
+0,Waste,T1,VRP,10,8,1503621,1503621,E19 South Path Drive,0,25,25,4
+0,Waste,T1,VRP,11,11,1514027,1514027,Bechtel East,0,55,55,4
+0,Waste,T1,VRP,12,5,1516556,1516556,U28 Wheeler,0,13,13,4
+0,Waste,T1,VRP,13,0,,,DEPOT,1,0,0,0
+0,Waste,T4,VRP,1,0,,,DEPOT,1,0,0,0
+0,Waste,T4,VRP,2,3,1515743,1515743,E02 North Entrance Memorial Glade,0,140,140,4
+0,Waste,T4,VRP,3,16,1516548,1516548,W17 Mulford Hall,0,23,23,4
+0,Waste,T4,VRP,4,7,2503768,2503768,W06 West Circle,0,7,7,4
+0,Waste,T4,VRP,5,4,1516554,1516554,W16 VLSB Northside,0,150,150,4
+0,Waste,T4,VRP,6,10,1514026,1514026,W11 Moffitt Library @ Press,0,150,150,4
+0,Waste,T4,VRP,7,14,1515710,1515710,E29 Campanile East,0,27,27,4
+0,Waste,T4,VRP,8,0,,,DEPOT,1,0,0,0
