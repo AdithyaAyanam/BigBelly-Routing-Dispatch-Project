@@ -1,0 +1,2 @@
+original_period1_bins,rolling_day2_bins,unchanged_bins,removed_from_period1_after_resolve,added_to_period1_after_resolve,jaccard_similarity
+60,52,35,25,17,0.45454545454545453
