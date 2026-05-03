@@ -402,6 +402,14 @@ def main() -> None:
             "Do not use this flag for final report runs."
         ),
     )
+    parser.add_argument(
+        "--allow-stop-dropping",
+        action="store_true",
+        help=(
+            "Allow fallback stop-dropping if routing is infeasible. "
+            "Do not use this flag for final validation or final report runs."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -703,6 +711,14 @@ def main() -> None:
             )
             use_single_truck_route = nonbinding_capacity
 
+        # For final validation, do NOT allow the routing layer to drop scheduled stops.
+        # If --allow-stop-dropping is not passed, the solver must keep every scheduled stop.
+        min_stops_to_keep = (
+            args.min_stops_to_keep
+            if args.allow_stop_dropping
+            else len(stop_agg)
+        )
+
         result, kept_stop_ids, dropped_stop_ids, service_minutes, gallon_demands, pound_demands = solve_with_stop_dropping(
             stop_agg=stop_agg,
             stop_to_local=stop_to_local,
@@ -710,7 +726,7 @@ def main() -> None:
             vehicle_gal_caps=vehicle_gal_caps,
             vehicle_lb_caps=vehicle_lb_caps,
             vehicle_time_caps=vehicle_time_caps,
-            min_stops_to_keep=args.min_stops_to_keep,
+            min_stops_to_keep=min_stops_to_keep,
             routing_time_limit_sec=args.routing_time_limit_sec,
         )
 
@@ -732,7 +748,7 @@ def main() -> None:
             print(f"vehicle_lb_caps = {vehicle_lb_caps}")
             print(f"vehicle_time_caps = {vehicle_time_caps}")
             print(f"routing_time_limit_sec = {args.routing_time_limit_sec}")
-            print(f"min_stops_to_keep = {args.min_stops_to_keep}")
+            print(f"min_stops_to_keep = {min_stops_to_keep}")
 
             print("\n[TOP STOP DEMANDS]")
             if not stop_agg.empty:
@@ -753,7 +769,7 @@ def main() -> None:
 
             msg = (
                 f"Routing failed for day={day}, stream={stream}. "
-                "No feasible route was found even after low-demand stop-dropping. "
+                "No feasible route was found even after while keeping all scheduled stops. "
                 "Do not use this run as a final routed result."
             )
 
